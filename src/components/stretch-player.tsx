@@ -27,6 +27,7 @@ export function StretchPlayer({ exercises }: { exercises: ExerciseRow[] }) {
   );
   const [playing, setPlaying] = useState(false);
   const [finished, setFinished] = useState(false);
+  const [sessionSecs, setSessionSecs] = useState(0);
   const elapsedRef = useRef(0);
   const submittedRef = useRef(false);
   const [, startTransition] = useTransition();
@@ -34,11 +35,44 @@ export function StretchPlayer({ exercises }: { exercises: ExerciseRow[] }) {
 
   const current = exercises[index];
 
-  const finish = useCallback(() => {
-    if (submittedRef.current) return;
+  const goTo = useCallback(
+    (nextIndex: number) => {
+      if (nextIndex >= exercises.length) {
+        setPlaying(false);
+        setFinished(true);
+        return;
+      }
+      setIndex(nextIndex);
+      setRemaining(exercises[nextIndex].default_secs ?? FALLBACK_SECS);
+    },
+    [exercises],
+  );
+
+  // Tik elke seconde; als de tijd om is: door naar de volgende oefening
+  useEffect(() => {
+    if (!playing || finished) return;
+    const timer = setInterval(() => {
+      elapsedRef.current += 1;
+      setRemaining((r) => {
+        const next = r - 1;
+        if (next > 0) return next;
+        if (index + 1 >= exercises.length) {
+          setPlaying(false);
+          setFinished(true);
+          return 0;
+        }
+        setIndex(index + 1);
+        return exercises[index + 1].default_secs ?? FALLBACK_SECS;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [playing, finished, index, exercises]);
+
+  // Afronden: sessie + XP loggen zodra de laatste oefening klaar is
+  useEffect(() => {
+    if (!finished || submittedRef.current) return;
     submittedRef.current = true;
-    setPlaying(false);
-    setFinished(true);
+    setSessionSecs(elapsedRef.current);
     startTransition(async () => {
       const result = await completeSession({
         kind: "stretch",
@@ -47,36 +81,7 @@ export function StretchPlayer({ exercises }: { exercises: ExerciseRow[] }) {
       if (result.error) showMessage(result.error);
       else showAward(result.award);
     });
-  }, [showAward, showMessage]);
-
-  const goTo = useCallback(
-    (nextIndex: number) => {
-      if (nextIndex >= exercises.length) {
-        finish();
-        return;
-      }
-      setIndex(nextIndex);
-      setRemaining(exercises[nextIndex].default_secs ?? FALLBACK_SECS);
-    },
-    [exercises, finish],
-  );
-
-  // Tik elke seconde zolang er gespeeld wordt
-  useEffect(() => {
-    if (!playing || finished) return;
-    const timer = setInterval(() => {
-      elapsedRef.current += 1;
-      setRemaining((r) => r - 1);
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [playing, finished]);
-
-  // Auto-advance als de tijd om is
-  useEffect(() => {
-    if (remaining <= 0 && !finished) {
-      goTo(index + 1);
-    }
-  }, [remaining, finished, index, goTo]);
+  }, [finished, showAward, showMessage]);
 
   if (exercises.length === 0) {
     return (
@@ -100,7 +105,7 @@ export function StretchPlayer({ exercises }: { exercises: ExerciseRow[] }) {
         <div>
           <h2 className="text-lg font-semibold">Sessie afgerond</h2>
           <p className="mt-1 font-mono text-sm text-muted">
-            {formatSecs(elapsedRef.current)} · +40 XP · Soepelheid
+            {formatSecs(sessionSecs)} · +40 XP · Soepelheid
           </p>
         </div>
         <Link
