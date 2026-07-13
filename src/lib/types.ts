@@ -44,6 +44,24 @@ export interface BreathworkPatternRow {
   phases: BreathworkPhase[];
 }
 
+export interface MeditationRow {
+  id: number;
+  title: string;
+  category: string | null;
+  media_type: string | null;
+  media_url: string | null;
+  duration_secs: number | null;
+  description: string | null;
+}
+
+export interface JournalEntryRow {
+  id: number;
+  date: string;
+  type: string | null;
+  content: string | null;
+  mood: number | null;
+}
+
 export interface FoodCheckinRow {
   id: number;
   date: string;
