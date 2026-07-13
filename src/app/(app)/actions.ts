@@ -91,6 +91,24 @@ export async function completeSession(input: {
   return { award: parseAward((data as { award: unknown }).award) };
 }
 
+/** Journal-entry met optionele mood; XP alleen bij de eerste van de dag. */
+export async function addJournalEntry(input: {
+  type: "ochtend" | "avond" | "dankbaarheid" | "vrij";
+  content: string;
+  mood?: number;
+}): Promise<ActionResult> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("add_journal_entry", {
+    p_type: input.type,
+    p_content: input.content.trim(),
+    p_mood: input.mood ?? null,
+  });
+  if (error) return fail(error);
+  revalidatePath("/vandaag");
+  revalidatePath("/geest/journal");
+  return { award: parseAward((data as { award: unknown }).award) };
+}
+
 /** One-tap metric-taak uit de takenstack. */
 export async function logMetric(metricId: number): Promise<ActionResult> {
   const supabase = await createClient();

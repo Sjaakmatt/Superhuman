@@ -1,15 +1,45 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { PagePlaceholder } from "@/components/page-placeholder";
 
 export const metadata = { title: "Geest" };
 
+interface HubCard {
+  href: string;
+  title: string;
+  meta: string;
+  xp: string;
+}
+
 export default async function GeestPage() {
   const supabase = await createClient();
-  const { data: patterns } = await supabase
-    .from("breathwork_patterns")
-    .select("id")
-    .limit(10);
+  const [{ count: patternCount }, { count: meditationCount }] =
+    await Promise.all([
+      supabase
+        .from("breathwork_patterns")
+        .select("id", { count: "exact", head: true }),
+      supabase.from("meditations").select("id", { count: "exact", head: true }),
+    ]);
+
+  const cards: HubCard[] = [
+    {
+      href: "/geest/breathwork",
+      title: "Breathwork",
+      meta: `${patternCount ?? 0} patronen · begeleide bol-animatie`,
+      xp: "+25 XP",
+    },
+    {
+      href: "/geest/meditaties",
+      title: "Meditaties",
+      meta: `${meditationCount ?? 0} sessies · focus, slaap, kalmte, reset`,
+      xp: "+30 XP",
+    },
+    {
+      href: "/geest/journal",
+      title: "Journal",
+      meta: "Ochtend, avond, dankbaarheid of vrij · met stemming",
+      xp: "+15 XP",
+    },
+  ];
 
   return (
     <div className="flex flex-col gap-6">
@@ -20,34 +50,30 @@ export default async function GeestPage() {
         </p>
       </div>
 
-      <Link
-        href="/geest/breathwork"
-        className="flex items-center gap-3 rounded-2xl border border-line bg-card p-4 transition-colors hover:border-muted"
-      >
-        <span
-          aria-hidden
-          className="size-2.5 shrink-0 rounded-full"
-          style={{
-            background: "var(--attr-geest)",
-            boxShadow: "0 0 10px var(--attr-geest)",
-          }}
-        />
-        <span className="min-w-0 flex-1">
-          <span className="block text-sm font-medium">Breathwork</span>
-          <span className="block text-xs text-muted">
-            {patterns?.length ?? 0} patronen · begeleide bol-animatie
-          </span>
-        </span>
-        <span className="font-mono text-xs text-muted">+25 XP</span>
-      </Link>
-
-      <PagePlaceholder
-        title="Meditaties & journaling"
-        description="De meditatie-bibliotheek met player en journaling met stemming."
-        phase="Komt in Fase 2"
-        accent="var(--attr-geest)"
-        as="h2"
-      />
+      <ul className="flex flex-col gap-2">
+        {cards.map((card) => (
+          <li key={card.href}>
+            <Link
+              href={card.href}
+              className="flex items-center gap-3 rounded-2xl border border-line bg-card p-4 transition-colors hover:border-muted"
+            >
+              <span
+                aria-hidden
+                className="size-2.5 shrink-0 rounded-full"
+                style={{
+                  background: "var(--attr-geest)",
+                  boxShadow: "0 0 10px var(--attr-geest)",
+                }}
+              />
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-medium">{card.title}</span>
+                <span className="block text-xs text-muted">{card.meta}</span>
+              </span>
+              <span className="font-mono text-xs text-muted">{card.xp}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
