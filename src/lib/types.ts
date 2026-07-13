@@ -56,3 +56,17 @@ export interface WaterLogRow {
   glasses: number;
   goal: number;
 }
+
+/** Eén eenheid in de takenstack van Vandaag (server-side samengesteld). */
+export interface DayTask {
+  id: string;
+  label: string;
+  meta: string;
+  attribute: AttributeKey;
+  xp: number;
+  done: boolean;
+  /** One-tap taak: metric die gelogd wordt */
+  metricId?: number;
+  /** Player-taak: route die geopend wordt */
+  href?: string;
+}
