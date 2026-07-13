@@ -4,8 +4,10 @@ import { getSupabaseEnv } from "./env";
 
 /** Supabase-client voor Server Components, Server Actions en Route Handlers. */
 export async function createClient() {
-  const { url, key } = getSupabaseEnv();
+  // cookies() eerst: dat markeert de route als dynamisch, zodat de
+  // env-check niet tijdens de statische build afgaat.
   const cookieStore = await cookies();
+  const { url, key } = getSupabaseEnv();
 
   return createServerClient(url, key, {
     cookies: {
