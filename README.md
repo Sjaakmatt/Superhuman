@@ -29,8 +29,9 @@ npm run dev     # http://localhost:3000
 
 ## Status
 
-**Fase 0 — Fundament** en **Fase 1 — Vandaag + XP-motor** zijn af: living
-core met dag-completion, attribuut-rings, watertracker, takenstack,
-transactionele XP-motor, voeding-check-in, stretch-player met timer en
-breathwork met bol-animatie. Volgende: **Fase 2 — Progressie + Geest**
-(character sheet, streaks, heatmap, meditaties, journaling).
+**Fase 0 t/m 2** zijn af: living core met dag-completion, attribuut-rings,
+watertracker, takenstack, transactionele XP-motor, voeding-check-in,
+stretch-player, breathwork-animatie, character sheet met streaks en
+week-heatmap, meditatie-bibliotheek met ring-timer-player en journaling met
+stemming. Volgende: **Fase 3 — Voeding & Beweging compleet** (bibliotheek
+met video, krachttraining, calorieënteller, voedingsplan, boodschappenlijst).

@@ -99,8 +99,10 @@ Instellingen.
   meditatie 30, metrics eigen `xp_reward` — alleen de eerste log per dag.
   Transacties via Postgres-functies (migration `..003_xp_engine.sql`),
   aangeroepen met `supabase.rpc()` vanuit `src/app/(app)/actions.ts`.
-- ⬜ **Fase 2 — Progressie + Geest**: character sheet, streaks, heatmap,
-  meditatie-bibliotheek + player, journaling.
+- ✅ **Fase 2 — Progressie + Geest**: character sheet, streaks, heatmap,
+  meditatie-bibliotheek + player, journaling (15 XP, `add_journal_entry`).
+  Streak-/ritme-berekening in `src/lib/streaks.ts` (afgeleid uit xp_events,
+  profiel-tijdzone; vandaag zonder event breekt de streak niet).
 - ⬜ **Fase 3 — Voeding & Beweging compleet**: bibliotheek met video, kracht-
   logging, calorieënteller, voedingsplan, auto-boodschappenlijst.
 - ⬜ **Fase 4 — Discipline**: doelen, review-flow, input-vs-output-trends.
