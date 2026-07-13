@@ -29,7 +29,8 @@ npm run dev     # http://localhost:3000
 
 ## Status
 
-**Fase 0 — Fundament** is af: scaffold, design-tokens, e-mail-auth met
-beschermde layout, volledig DB-schema + RLS + seed, en de app-shell met
-bottom-nav. Volgende: **Fase 1 — Vandaag + XP-motor** (living core, rings,
-watertracker, takenstack, stretch-player, breathwork).
+**Fase 0 — Fundament** en **Fase 1 — Vandaag + XP-motor** zijn af: living
+core met dag-completion, attribuut-rings, watertracker, takenstack,
+transactionele XP-motor, voeding-check-in, stretch-player met timer en
+breathwork met bol-animatie. Volgende: **Fase 2 — Progressie + Geest**
+(character sheet, streaks, heatmap, meditaties, journaling).

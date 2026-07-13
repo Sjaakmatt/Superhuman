@@ -93,8 +93,12 @@ Instellingen.
 ## Roadmap & status
 
 - ✅ **Fase 0 — Fundament**: scaffold, tokens, auth, schema + RLS + seed, app-shell.
-- ⬜ **Fase 1 — Vandaag + XP-motor**: living core, rings, water, takenstack,
+- ✅ **Fase 1 — Vandaag + XP-motor**: living core, rings, water, takenstack,
   `awardXp`, food-check-in, stretch-player, breathwork-animatie.
+  XP-regels: water 5/glas t/m goal, check-in 20, stretch 40, breathwork 25,
+  meditatie 30, metrics eigen `xp_reward` — alleen de eerste log per dag.
+  Transacties via Postgres-functies (migration `..003_xp_engine.sql`),
+  aangeroepen met `supabase.rpc()` vanuit `src/app/(app)/actions.ts`.
 - ⬜ **Fase 2 — Progressie + Geest**: character sheet, streaks, heatmap,
   meditatie-bibliotheek + player, journaling.
 - ⬜ **Fase 3 — Voeding & Beweging compleet**: bibliotheek met video, kracht-
