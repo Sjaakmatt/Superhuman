@@ -1,0 +1,58 @@
+import type { AttributeKey } from "./attributes";
+
+/** Databaserijen die de app gebruikt (subset van het schema). */
+
+export interface UserAttributeRow {
+  user_id: string;
+  key: AttributeKey;
+  level: number;
+  xp: number;
+  xp_max: number;
+}
+
+export interface MetricRow {
+  id: number;
+  key: string;
+  label: string;
+  attribute_key: AttributeKey | null;
+  type: string;
+  xp_reward: number;
+  direction: string;
+  active: boolean;
+}
+
+export interface ExerciseRow {
+  id: number;
+  name: string;
+  kind: string;
+  default_secs: number | null;
+  reps: number | null;
+  cue: string | null;
+  muscle_group: string | null;
+  video_url: string | null;
+}
+
+export interface BreathworkPhase {
+  label: string;
+  secs: number;
+  scale: number;
+}
+
+export interface BreathworkPatternRow {
+  id: number;
+  name: string;
+  phases: BreathworkPhase[];
+}
+
+export interface FoodCheckinRow {
+  id: number;
+  date: string;
+  satisfied: boolean | null;
+  feeling: string | null;
+  note: string | null;
+}
+
+export interface WaterLogRow {
+  glasses: number;
+  goal: number;
+}

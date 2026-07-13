@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { BottomNav } from "@/components/bottom-nav";
+import { ToastProvider } from "@/components/toast";
 import { signOut } from "@/app/(auth)/actions";
 
 /**
@@ -34,7 +35,9 @@ export default async function AppLayout({
           </button>
         </form>
       </header>
-      <main className="flex-1 px-4 pb-28 pt-6">{children}</main>
+      <ToastProvider>
+        <main className="flex-1 px-4 pb-28 pt-6">{children}</main>
+      </ToastProvider>
       <BottomNav />
     </div>
   );
