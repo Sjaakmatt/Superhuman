@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import Link from "next/link";
 import { BottomNav } from "@/components/bottom-nav";
 import { ToastProvider } from "@/components/toast";
+import { SwRegister } from "@/components/sw-register";
 import { signOut } from "@/app/(auth)/actions";
 
 /**
@@ -26,15 +28,24 @@ export default async function AppLayout({
         <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-muted">
           Superhuman OS
         </p>
-        <form action={signOut}>
-          <button
-            type="submit"
+        <div className="flex items-center gap-4">
+          <Link
+            href="/instellingen"
             className="text-[11px] text-muted transition-colors hover:text-text"
           >
-            Uitloggen
-          </button>
-        </form>
+            Instellingen
+          </Link>
+          <form action={signOut}>
+            <button
+              type="submit"
+              className="text-[11px] text-muted transition-colors hover:text-text"
+            >
+              Uitloggen
+            </button>
+          </form>
+        </div>
       </header>
+      <SwRegister />
       <ToastProvider>
         <main className="flex-1 px-4 pb-28 pt-6">{children}</main>
       </ToastProvider>
