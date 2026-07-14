@@ -81,6 +81,17 @@ export interface ReminderRow {
   enabled: boolean;
 }
 
+export interface ScheduleBlockRow {
+  id: number;
+  label: string;
+  kind: string; // stretch|breath|workout|meditation|meal|water|focus|journal|review
+  ref_id: number | null;
+  start_min: number;
+  window_min: number;
+  days: string[];
+  enabled: boolean;
+}
+
 export interface GoalRow {
   id: number;
   title: string;

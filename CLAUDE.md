@@ -166,7 +166,14 @@ nog in de repo (nodig voor L2/L4).
   HydrationDay met doel-tot-nu + nudge, check-in als coaching. Migration
   `..013` (meal_plan.target_min, recipes.prep_min); planMeal zet default
   richttijd.
-- ⬜ **L6 — "Nu"-motor** · ⬜ **L7 — Levende copy + zintuigen**
+- ✅ **L6 — "Nu"-motor**: `src/lib/now.ts` (pickNowBlock: actief-en-niet-
+  gedaan blok, anders straks-preview; kind→route/cta/regel). NowCard bovenaan
+  Vandaag tikt op de klok (profiel-tz), stelt één primaire actie voor met
+  straks-preview, of een rustige "je bent bij"-staat. `schedule_blocks`
+  geseed via `ensure_default_schedule` (dagritme → gedeelde routines),
+  dagritme-lijst + toggle in /instellingen, `sync_schedule_reminders` maakt
+  web-push-reminders (kind 'block') uit de blokken. Migration `..014`.
+- ⬜ **L7 — Levende copy + zintuigen**
 
 Commit per fase; stop na elke fase voor akkoord van de gebruiker.
 

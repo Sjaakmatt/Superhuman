@@ -389,6 +389,34 @@ export async function saveReview(input: {
 }
 
 /** Profiel bijwerken (naam + tijdzone; tijdzone stuurt alle dag-logica). */
+/** Dagritme-blok aan/uit zetten. */
+export async function toggleScheduleBlock(
+  id: number,
+  enabled: boolean,
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("schedule_blocks")
+    .update({ enabled })
+    .eq("id", id);
+  if (error) return { error: error.message };
+  revalidatePath("/instellingen");
+  revalidatePath("/vandaag");
+  return {};
+}
+
+/** Reminders (web-push) synchroniseren uit de ingeschakelde dagritme-blokken. */
+export async function syncScheduleReminders(): Promise<{
+  error?: string;
+  count?: number;
+}> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("sync_schedule_reminders");
+  if (error) return { error: error.message };
+  revalidatePath("/instellingen");
+  return { count: (data as { reminders: number }).reminders };
+}
+
 export async function saveProfile(input: {
   displayName: string;
   timezone: string;

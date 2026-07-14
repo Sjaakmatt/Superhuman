@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { todayInTz } from "@/lib/xp";
-import { dateStrInTz, shiftDate } from "@/lib/streaks";
+import { dateStrInTz, isoWeekday, shiftDate } from "@/lib/streaks";
 import {
   attrTotalXp,
   nextStage,
@@ -10,7 +10,13 @@ import {
 } from "@/lib/evolution";
 import { ATTRIBUTE_KEYS, type AttributeKey } from "@/lib/attributes";
 import { computeReflections } from "@/lib/reflections";
-import type { DayTask, MetricRow, UserAttributeRow } from "@/lib/types";
+import type {
+  DayTask,
+  MetricRow,
+  ScheduleBlockRow,
+  UserAttributeRow,
+} from "@/lib/types";
+import { NowCard } from "@/components/now-card";
 import { LivingCore } from "@/components/living-core";
 import { MomentumCells } from "@/components/momentum-cells";
 import { EvolutionCeremony } from "@/components/evolution-ceremony";
@@ -66,6 +72,9 @@ export default async function VandaagPage() {
     metrics = (seeded ?? []) as MetricRow[];
   }
 
+  // Eerste bezoek: standaard-dagritme seeden
+  await supabase.rpc("ensure_default_schedule");
+
   // Batch 2: de datumafhankelijke logs van vandaag
   const [
     { data: water },
@@ -75,6 +84,10 @@ export default async function VandaagPage() {
     { data: breathworkLogs },
     { data: recentEvents },
     { data: journals },
+    { data: blocks },
+    { data: meditationLogs },
+    { data: journalToday },
+    { data: reviewRow },
   ] = await Promise.all([
     supabase
       .from("water_logs")
@@ -104,6 +117,26 @@ export default async function VandaagPage() {
       .select("date, mood")
       .gte("date", shiftDate(today, -14))
       .not("mood", "is", null),
+    supabase
+      .from("schedule_blocks")
+      .select("id, label, kind, ref_id, start_min, window_min, days, enabled")
+      .eq("enabled", true),
+    supabase
+      .from("session_logs")
+      .select("id")
+      .eq("date", today)
+      .eq("kind", "meditation")
+      .limit(1),
+    supabase
+      .from("journal_entries")
+      .select("id")
+      .eq("date", today)
+      .limit(1),
+    supabase
+      .from("reviews")
+      .select("week_start")
+      .eq("week_start", shiftDate(today, -(isoWeekday(today) - 1)))
+      .maybeSingle(),
   ]);
 
   // Voed-dagen per attribuut (lokale tz) — voor fedToday én de spiegel
@@ -151,6 +184,17 @@ export default async function VandaagPage() {
   const next = stage ? nextStage(stageRows, stage) : null;
   const pendingCeremony =
     stage && stage.ordinal > (profile?.last_stage ?? 0) ? stage : null;
+
+  // Nu-motor: wat is vandaag al gedaan (per blok-soort)?
+  const doneKeys: string[] = [];
+  if (fedToday.has("soepel")) doneKeys.push("stretch");
+  if (fedToday.has("kracht")) doneKeys.push("workout");
+  if (fedToday.has("focus")) doneKeys.push("focus");
+  if ((breathworkLogs ?? []).length > 0) doneKeys.push("breath");
+  if ((meditationLogs ?? []).length > 0) doneKeys.push("meditation");
+  if ((journalToday ?? []).length > 0) doneKeys.push("journal");
+  if (reviewRow) doneKeys.push("review");
+  const scheduleBlocks = (blocks ?? []) as ScheduleBlockRow[];
 
   // De spiegel: 2 gerankte regels uit echte data
   const reflections = computeReflections({
@@ -224,6 +268,12 @@ export default async function VandaagPage() {
       {pendingCeremony ? (
         <EvolutionCeremony stage={pendingCeremony} totalXp={totalXp} />
       ) : null}
+
+      <NowCard
+        timezone={timezone}
+        blocks={scheduleBlocks}
+        doneKeys={doneKeys}
+      />
 
       {/* Home-hero: de levende core */}
       {stage ? (
