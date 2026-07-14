@@ -112,9 +112,14 @@ Instellingen.
   voorgevulde weekreview (/review, `save_review`, 25 XP focus), trends in
   Progressie (Recharts, twee gestapelde panelen i.p.v. dual-axis;
   chartkleuren `--chart-input`/`--chart-output`, CVD-gevalideerd).
-- ⬜ **Fase 5 — Notificaties & PWA**: reminders, web-push, service worker, polish.
+- ✅ **Fase 5 — Notificaties & PWA**: manifest + maskable icons, service
+  worker (push + notificatie-klik), /instellingen (profiel, reminders-CRUD,
+  push-toggle), Edge Function `send-reminders` (5-min-slots, profiel-tz).
+  Handmatig eenmalig: VAPID-secrets + pg_cron-schedule, zie
+  `supabase/README.md`.
 
-Commit per fase; ga pas door na akkoord van de gebruiker.
+Alle fasen uit de brief zijn af. Nieuw werk = nieuwe afspraken met de
+gebruiker; blijf committen per afgeronde subtaak.
 
 ## Commands
 

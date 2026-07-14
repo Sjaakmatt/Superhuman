@@ -35,5 +35,8 @@ stretch-player, breathwork-animatie, character sheet met streaks en
 week-heatmap, meditatie-player, journaling, oefeningen-bibliotheek,
 krachttraining met routine-builder, calorieënteller, voedingsplan en de
 auto-gegenereerde boodschappenlijst, doelen-hiërarchie, voorgevulde
-wekelijkse review en input-vs-output-trends. Volgende: **Fase 5 —
-Notificaties & PWA** (reminders, web-push, service worker, polish).
+wekelijkse review, input-vs-output-trends, en als afronding de PWA-laag:
+installeerbaar manifest, service worker, reminders-engine en web-push
+(eenmalige VAPID/pg_cron-setup: zie `supabase/README.md`).
+
+**Alle vijf fasen uit de build brief zijn af.**
