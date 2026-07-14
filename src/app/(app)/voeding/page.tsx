@@ -1,7 +1,7 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { todayInTz } from "@/lib/xp";
 import { FoodCheckinForm } from "@/components/food-checkin-form";
-import { PagePlaceholder } from "@/components/page-placeholder";
 
 export const metadata = { title: "Voeding" };
 
@@ -19,11 +19,47 @@ export default async function VoedingPage() {
     .single();
   const today = todayInTz(profile?.timezone ?? "Europe/Amsterdam");
 
-  const { data: checkin } = await supabase
-    .from("food_checkins")
-    .select("satisfied, feeling, note")
-    .eq("date", today)
-    .maybeSingle();
+  const [{ data: checkin }, { data: calorieItems }, { count: recipeCount }] =
+    await Promise.all([
+      supabase
+        .from("food_checkins")
+        .select("satisfied, feeling, note")
+        .eq("date", today)
+        .maybeSingle(),
+      supabase.from("calorie_logs").select("calories").eq("date", today),
+      supabase.from("recipes").select("id", { count: "exact", head: true }),
+    ]);
+
+  const kcalToday = (calorieItems ?? []).reduce(
+    (sum, row: { calories: number | null }) => sum + (row.calories ?? 0),
+    0,
+  );
+
+  const cards = [
+    {
+      href: "/voeding/calorieen",
+      title: "Calorieën",
+      meta:
+        kcalToday > 0
+          ? `${kcalToday} kcal gelogd vandaag`
+          : "Optioneel inzicht, geen budget",
+    },
+    {
+      href: "/voeding/plan",
+      title: "Voedingsplan",
+      meta: "Recepten per dag en maaltijd",
+    },
+    {
+      href: "/voeding/boodschappen",
+      title: "Boodschappen",
+      meta: "Automatisch uit je weekplan",
+    },
+    {
+      href: "/voeding/recepten",
+      title: "Recepten",
+      meta: `${recipeCount ?? 0} recepten`,
+    },
+  ];
 
   return (
     <div className="flex flex-col gap-6">
@@ -39,13 +75,19 @@ export default async function VoedingPage() {
         <FoodCheckinForm initial={checkin} />
       </section>
 
-      <PagePlaceholder
-        title="Voedingsplan & boodschappen"
-        description="Recepten per maaltijd en de auto-gegenereerde boodschappenlijst."
-        phase="Komt in Fase 3"
-        accent="var(--attr-voeding)"
-        as="h2"
-      />
+      <ul className="grid grid-cols-2 gap-2">
+        {cards.map((card) => (
+          <li key={card.href}>
+            <Link
+              href={card.href}
+              className="flex h-full flex-col gap-1 rounded-2xl border border-line bg-card p-4 transition-colors hover:border-muted"
+            >
+              <span className="text-sm font-medium">{card.title}</span>
+              <span className="text-xs text-muted">{card.meta}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
