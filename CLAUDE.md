@@ -144,9 +144,14 @@ nog in de repo (nodig voor L2/L4).
   home-hero met stage-voortgang + state-regel, EvolutionCeremony (ack via
   `ackStage`). Content-pack toegepast: 30 oefeningen met coaching_cues,
   6 gedeelde programma's (user_id null, eigen leespolicies).
-- ⬜ **L3 — De spiegel** · ⬜ **L4 — Sessie-diepte** ·
-  ⬜ **L5 — Voeding tot leven** · ⬜ **L6 — "Nu"-motor** ·
-  ⬜ **L7 — Levende copy + zintuigen**
+- ✅ **L3 — De spiegel**: `computeReflections` (src/lib/reflections.ts,
+  puur/testbaar) — verval-alarm 4 > drempel 3.5 > dim 3 > streak 2 >
+  vitaliteit-stemming 1-1.5 > cross-domein 0.8 (bewegen×stemming bij ≥5
+  mood-dagen, anders voed-ritme bij ≥3 dagen); max 2 regels, Mirror-UI op
+  Vandaag met gekleurde linkerrand. Decay kreeg een gratieperiode voor
+  nieuwe accounts (migration `..011`).
+- ⬜ **L4 — Sessie-diepte** · ⬜ **L5 — Voeding tot leven** ·
+  ⬜ **L6 — "Nu"-motor** · ⬜ **L7 — Levende copy + zintuigen**
 
 Commit per fase; stop na elke fase voor akkoord van de gebruiker.
 

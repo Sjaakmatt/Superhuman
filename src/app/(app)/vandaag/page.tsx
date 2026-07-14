@@ -8,11 +8,13 @@ import {
   stateLine,
   type EvolutionStage,
 } from "@/lib/evolution";
-import type { AttributeKey } from "@/lib/attributes";
+import { ATTRIBUTE_KEYS, type AttributeKey } from "@/lib/attributes";
+import { computeReflections } from "@/lib/reflections";
 import type { DayTask, MetricRow, UserAttributeRow } from "@/lib/types";
 import { LivingCore } from "@/components/living-core";
 import { MomentumCells } from "@/components/momentum-cells";
 import { EvolutionCeremony } from "@/components/evolution-ceremony";
+import { Mirror } from "@/components/mirror";
 import { WaterTracker } from "@/components/water-tracker";
 import { TaskStack } from "@/components/task-stack";
 
@@ -71,7 +73,8 @@ export default async function VandaagPage() {
     { data: metricLogs },
     { data: stretchLogs },
     { data: breathworkLogs },
-    { data: todaysEvents },
+    { data: recentEvents },
+    { data: journals },
   ] = await Promise.all([
     supabase
       .from("water_logs")
@@ -91,22 +94,46 @@ export default async function VandaagPage() {
       .eq("date", today)
       .eq("kind", "breathwork")
       .limit(1),
-    // Ruim venster (UTC) — de precieze lokale-dag-filter gebeurt hieronder
+    // 30 dagen events: voedt fedToday, streaks én de spiegel
     supabase
       .from("xp_events")
       .select("attribute_key, created_at")
-      .gte("created_at", `${shiftDate(today, -1)}T00:00:00Z`),
+      .gte("created_at", `${shiftDate(today, -30)}T00:00:00Z`),
+    supabase
+      .from("journal_entries")
+      .select("date, mood")
+      .gte("date", shiftDate(today, -14))
+      .not("mood", "is", null),
   ]);
 
-  // Welke attributen zijn vandaag (lokale tijd) gevoed?
-  const fedToday = new Set<AttributeKey>(
-    (todaysEvents ?? [])
-      .filter(
-        (e: { created_at: string }) =>
-          dateStrInTz(new Date(e.created_at), timezone) === today,
-      )
-      .map((e: { attribute_key: string }) => e.attribute_key as AttributeKey),
+  // Voed-dagen per attribuut (lokale tz) — voor fedToday én de spiegel
+  const fedDates = new Map<AttributeKey, Set<string>>(
+    ATTRIBUTE_KEYS.map((k) => [k, new Set<string>()]),
   );
+  for (const event of (recentEvents ?? []) as {
+    attribute_key: string;
+    created_at: string;
+  }[]) {
+    fedDates
+      .get(event.attribute_key as AttributeKey)
+      ?.add(dateStrInTz(new Date(event.created_at), timezone));
+  }
+  const fedToday = new Set<AttributeKey>(
+    ATTRIBUTE_KEYS.filter((k) => fedDates.get(k)?.has(today)),
+  );
+
+  // Gemiddelde stemming per dag (voor het cross-domein-patroon)
+  const moodByDay = new Map<string, number>();
+  {
+    const perDay = new Map<string, number[]>();
+    for (const j of (journals ?? []) as { date: string; mood: number }[]) {
+      if (!perDay.has(j.date)) perDay.set(j.date, []);
+      perDay.get(j.date)!.push(j.mood);
+    }
+    for (const [day, moods] of perDay) {
+      moodByDay.set(day, moods.reduce((a, b) => a + b, 0) / moods.length);
+    }
+  }
 
   // Levende laag: totaal-XP, vitaliteit, stage en eventuele ceremonie
   const attrRows = (attributes ?? []) as UserAttributeRow[];
@@ -124,6 +151,16 @@ export default async function VandaagPage() {
   const next = stage ? nextStage(stageRows, stage) : null;
   const pendingCeremony =
     stage && stage.ordinal > (profile?.last_stage ?? 0) ? stage : null;
+
+  // De spiegel: 2 gerankte regels uit echte data
+  const reflections = computeReflections({
+    attributes: attrRows,
+    stages: stageRows,
+    fedDates,
+    moodByDay,
+    today,
+    vitality,
+  });
 
   // Takenstack
   const loggedMetricIds = new Set(
@@ -227,6 +264,7 @@ export default async function VandaagPage() {
       ) : null}
 
       <MomentumCells attributes={attrRows} fedToday={fedToday} />
+      <Mirror reflections={reflections} />
       <WaterTracker glasses={glasses} goal={goal} />
       <TaskStack tasks={tasks} />
     </div>
