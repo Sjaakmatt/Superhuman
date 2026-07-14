@@ -25,6 +25,55 @@ supabase db query < supabase/seed.sql   # of plak seed.sql in de SQL editor
 - Bij signup maakt de `on_auth_user_created`-trigger automatisch een profiel
   en de zes attribuut-rijen (`user_attributes`) aan.
 
+## Web-push (Fase 5)
+
+De Edge Function `functions/send-reminders/` matcht elke 5 minuten de
+`reminders` tegen de lokale tijd (profiel-tijdzone) en stuurt web-push naar
+alle `push_subscriptions` van die gebruiker. Setup:
+
+1. **VAPID-secrets** (eenmalig):
+
+   ```bash
+   supabase secrets set --project-ref <REF> \
+     VAPID_PUBLIC_KEY=<public key> \
+     VAPID_PRIVATE_KEY=<private key> \
+     VAPID_SUBJECT=mailto:jij@voorbeeld.nl
+   ```
+
+   Dezelfde public key hoort in `.env.local` als
+   `NEXT_PUBLIC_VAPID_PUBLIC_KEY`. Genereren: `npx web-push generate-vapid-keys`.
+
+2. **Function deployen** (als dat nog niet via MCP is gebeurd):
+
+   ```bash
+   supabase functions deploy send-reminders --project-ref <REF>
+   ```
+
+3. **Elke 5 minuten aanroepen** via pg_cron + pg_net (SQL editor):
+
+   ```sql
+   create extension if not exists pg_cron;
+   create extension if not exists pg_net;
+
+   select cron.schedule(
+     'send-reminders',
+     '*/5 * * * *',
+     $$
+     select net.http_post(
+       url := 'https://<REF>.supabase.co/functions/v1/send-reminders',
+       headers := jsonb_build_object(
+         'Content-Type', 'application/json',
+         'Authorization', 'Bearer <ANON_KEY>'
+       ),
+       body := '{}'::jsonb
+     );
+     $$
+   );
+   ```
+
+   De anon key volstaat: de functie draait zelf met de service-role key
+   die Edge Functions automatisch krijgen.
+
 ## Auth-instelling
 
 Voor de e-mailbevestigingsflow verwijst de app naar `/auth/confirm` met het
