@@ -85,3 +85,15 @@ de "Confirm signup"-template aan zodat de link wijst naar:
 ```
 
 en zet de Site URL op je app-URL (lokaal: `http://localhost:3000`).
+
+## Momentum-decay (levende laag)
+
+`run_momentum_decay()` draait elk uur via pg_cron (job `momentum-decay`,
+`5 * * * *`) en verwerkt gebruikers bij wie het lokaal na 03:00 is, één keer
+per dag (`profiles.last_decay_on`). Pure SQL — geen Edge Function of secrets
+nodig. Beheer:
+
+```sql
+select * from cron.job;                       -- status
+select cron.unschedule('momentum-decay');     -- uitzetten
+```

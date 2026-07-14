@@ -118,8 +118,32 @@ Instellingen.
   Handmatig eenmalig: VAPID-secrets + pg_cron-schedule, zie
   `supabase/README.md`.
 
-Alle fasen uit de brief zijn af. Nieuw werk = nieuwe afspraken met de
-gebruiker; blijf committen per afgeronde subtaak.
+Alle fasen uit de oorspronkelijke brief zijn af.
+
+## Levende laag (SUPERHUMAN_OS_LIVING_BRIEF.md)
+
+**Model:** XP = blijvend (wie je geworden bent); **momentum** = levenspuls
+0-100 per attribuut: +34 bij voeden (cap 100), −17 per niet-gevoede dag
+(pg_cron, profiel-tz, na lokale 03:00), zacht verval −12 XP bij ≥2 dagen op
+momentum 0. **Stages** op totaal-XP (som zes attributen via `attr_total_xp`):
+Sluimerend 0 · Ontwakend 600 · Gedisciplineerd 1800 · Onverzettelijk 3600 ·
+Superhuman 6000. `award_xp` retourneert `momentum`, `total_xp` en `new_stage`
+(ceremonie-payload zodra ordinal > `profiles.last_stage`; bevestigen met
+`ack_stage`). Vitaliteit = gemiddeld momentum / 100.
+⚠️ Afwijkingen van de briefing: bestaande per-actie-XP behouden i.p.v.
+uniforme FEED_XP=24; decay als pure SQL-functie + pg_cron i.p.v. Edge
+Function. `reference/LivingOS.jsx` en `002_exercise_content.sql` ontbreken
+nog in de repo (nodig voor L2/L4).
+
+- ✅ **L1 — Levende laag datamodel**: migration `..009_living_layer.sql`
+  (momentum/idle_days, evolution_stages + seed, last_stage/last_decay_on,
+  schedule_blocks + RLS), `award_xp` v2, `decay_user_attributes` +
+  `run_momentum_decay`, cron-job `momentum-decay` (elk uur op :05).
+- ⬜ **L2 — Levende core + ceremonie** · ⬜ **L3 — De spiegel** ·
+  ⬜ **L4 — Sessie-diepte** · ⬜ **L5 — Voeding tot leven** ·
+  ⬜ **L6 — "Nu"-motor** · ⬜ **L7 — Levende copy + zintuigen**
+
+Commit per fase; stop na elke fase voor akkoord van de gebruiker.
 
 ## Commands
 
