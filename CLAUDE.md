@@ -159,8 +159,14 @@ nog in de repo (nodig voor L2/L4).
   `workout_logs.sets`, migration `..012`). Breathwork: settle-in 10s,
   fase-tellingen, ronde-teller, zachte afsluiting. Beweging-hub toont de
   gedeelde programma's per moment.
-- ⬜ **L5 — Voeding tot leven** · ⬜ **L6 — "Nu"-motor** ·
-  ⬜ **L7 — Levende copy + zintuigen**
+- ✅ **L5 — Voeding tot leven**: `src/lib/nutrition.ts` (MEAL_WINDOWS met
+  richttijden, mealStatus nu/straks/gehad, activeMeal, hydrationTarget).
+  /voeding is een begeleide dag: Nu-regel + maaltijd-tijdlijn met vensters
+  en gekoppelde recepten (MealTimeline tikt op de klok in profiel-tz),
+  HydrationDay met doel-tot-nu + nudge, check-in als coaching. Migration
+  `..013` (meal_plan.target_min, recipes.prep_min); planMeal zet default
+  richttijd.
+- ⬜ **L6 — "Nu"-motor** · ⬜ **L7 — Levende copy + zintuigen**
 
 Commit per fase; stop na elke fase voor akkoord van de gebruiker.
 

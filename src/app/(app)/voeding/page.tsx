@@ -1,74 +1,106 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { todayInTz } from "@/lib/xp";
+import { mealWindow, type MealType } from "@/lib/nutrition";
 import { FoodCheckinForm } from "@/components/food-checkin-form";
+import { MealTimeline, type PlannedMeal } from "@/components/meal-timeline";
+import { HydrationDay } from "@/components/hydration-day";
 
 export const metadata = { title: "Voeding" };
 
+interface MealPlanJoin {
+  meal_type: string;
+  target_min: number | null;
+  recipes: { name: string } | { name: string }[] | null;
+}
+
+const MEAL_TYPES: MealType[] = ["ontbijt", "lunch", "snack", "diner"];
+
 export default async function VoedingPage() {
   const supabase = await createClient();
-  const [{ data: profile }, { count: recipeCount }] = await Promise.all([
-    supabase.from("profiles").select("timezone").single(),
-    supabase.from("recipes").select("id", { count: "exact", head: true }),
-  ]);
-  const today = todayInTz(profile?.timezone ?? "Europe/Amsterdam");
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("timezone")
+    .single();
+  const timezone = profile?.timezone ?? "Europe/Amsterdam";
+  const today = todayInTz(timezone);
 
-  const [{ data: checkin }, { data: calorieItems }] = await Promise.all([
-    supabase
-      .from("food_checkins")
-      .select("satisfied, feeling, note")
-      .eq("date", today)
-      .maybeSingle(),
-    supabase.from("calorie_logs").select("calories").eq("date", today),
-  ]);
+  const [{ data: checkin }, { data: water }, { data: planRows }] =
+    await Promise.all([
+      supabase
+        .from("food_checkins")
+        .select("satisfied, feeling, note")
+        .eq("date", today)
+        .maybeSingle(),
+      supabase
+        .from("water_logs")
+        .select("glasses, goal")
+        .eq("date", today)
+        .maybeSingle(),
+      supabase
+        .from("meal_plan")
+        .select("meal_type, target_min, recipes (name)")
+        .eq("date", today),
+    ]);
 
-  const kcalToday = (calorieItems ?? []).reduce(
-    (sum, row: { calories: number | null }) => sum + (row.calories ?? 0),
-    0,
-  );
+  // Vandaag geplande maaltijden per type
+  const plannedByType = new Map<string, MealPlanJoin>();
+  for (const row of (planRows ?? []) as MealPlanJoin[]) {
+    plannedByType.set(row.meal_type, row);
+  }
+  const meals: PlannedMeal[] = MEAL_TYPES.map((type) => {
+    const row = plannedByType.get(type);
+    const recipe = row
+      ? Array.isArray(row.recipes)
+        ? row.recipes[0]
+        : row.recipes
+      : null;
+    return {
+      mealType: type,
+      recipeName: recipe?.name ?? null,
+      targetMin: row?.target_min ?? mealWindow(type).target,
+    };
+  });
 
-  const cards = [
-    {
-      href: "/voeding/calorieen",
-      title: "Calorieën",
-      meta:
-        kcalToday > 0
-          ? `${kcalToday} kcal gelogd vandaag`
-          : "Optioneel inzicht, geen budget",
-    },
-    {
-      href: "/voeding/plan",
-      title: "Voedingsplan",
-      meta: "Recepten per dag en maaltijd",
-    },
-    {
-      href: "/voeding/boodschappen",
-      title: "Boodschappen",
-      meta: "Automatisch uit je weekplan",
-    },
-    {
-      href: "/voeding/recepten",
-      title: "Recepten",
-      meta: `${recipeCount ?? 0} recepten`,
-    },
-  ];
+  const glasses = water?.glasses ?? 0;
+  const goal = water?.goal ?? 8;
 
   return (
     <div className="flex flex-col gap-6">
+      <div>
+        <h1 className="text-xl font-semibold">Voeding</h1>
+        <p className="mt-1 text-sm text-muted">
+          Eiwit bij elke maaltijd, eet binnen je vensters, hydrateer. Geen
+          streng budget — sturing.
+        </p>
+      </div>
+
+      <MealTimeline timezone={timezone} meals={meals} />
+
+      <HydrationDay timezone={timezone} glasses={glasses} goal={goal} />
+
       <section className="flex flex-col gap-3">
-        <div>
-          <h1 className="text-xl font-semibold">Voeding</h1>
-          <p className="mt-1 text-sm text-muted">
-            {checkin
-              ? "Je hebt vandaag al ingecheckt — aanpassen kan altijd."
-              : "Een check-in, geen calorieënjacht."}
-          </p>
-        </div>
+        <h2 className="text-sm font-medium text-muted">
+          {checkin ? "Je check-in van vandaag" : "Sluit je eetdag af"}
+        </h2>
         <FoodCheckinForm initial={checkin} />
       </section>
 
       <ul className="grid grid-cols-2 gap-2">
-        {cards.map((card) => (
+        {[
+          { href: "/voeding/plan", title: "Voedingsplan", meta: "Week per maaltijd" },
+          {
+            href: "/voeding/boodschappen",
+            title: "Boodschappen",
+            meta: "Uit je weekplan",
+          },
+          { href: "/voeding/recepten", title: "Recepten", meta: "Je bouwstenen" },
+          {
+            href: "/voeding/calorieen",
+            title: "Calorieën",
+            meta: "Optioneel inzicht",
+          },
+        ].map((card) => (
           <li key={card.href}>
             <Link
               href={card.href}

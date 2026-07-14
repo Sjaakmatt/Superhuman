@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import type { AttributeKey } from "@/lib/attributes";
+import { mealWindow } from "@/lib/nutrition";
 import type { LoggedExerciseSets } from "@/lib/types";
 import { parseAward, type XpAward } from "@/lib/xp";
 
@@ -289,12 +290,14 @@ export async function planMeal(input: {
         date: input.date,
         meal_type: input.mealType,
         recipe_id: input.recipeId,
+        target_min: mealWindow(input.mealType).target,
       },
       { onConflict: "user_id,date,meal_type" },
     );
     if (error) return { error: error.message };
   }
   revalidatePath("/voeding/plan");
+  revalidatePath("/voeding");
   return {};
 }
 
