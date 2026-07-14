@@ -44,6 +44,19 @@ export interface BreathworkPatternRow {
   phases: BreathworkPhase[];
 }
 
+export interface ReminderSchedule {
+  times: string[]; // ['09:00', '13:00']
+  days: string[]; // ['MO', 'TU', ...]
+}
+
+export interface ReminderRow {
+  id: number;
+  kind: string; // water|stretch|meditation|review|custom
+  label: string | null;
+  schedule: ReminderSchedule | null;
+  enabled: boolean;
+}
+
 export interface GoalRow {
   id: number;
   title: string;

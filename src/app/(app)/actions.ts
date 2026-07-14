@@ -373,6 +373,131 @@ export async function saveReview(input: {
   return { award: parseAward((data as { award: unknown }).award) };
 }
 
+/** Profiel bijwerken (naam + tijdzone; tijdzone stuurt alle dag-logica). */
+export async function saveProfile(input: {
+  displayName: string;
+  timezone: string;
+}): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Niet ingelogd" };
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      display_name: input.displayName.trim() || null,
+      timezone: input.timezone || "Europe/Amsterdam",
+    })
+    .eq("id", user.id);
+  if (error) return { error: error.message };
+  revalidatePath("/instellingen");
+  revalidatePath("/vandaag");
+  return {};
+}
+
+/** Reminder aanmaken of bijwerken. */
+export async function upsertReminder(input: {
+  id?: number;
+  kind: string;
+  label: string;
+  times: string[];
+  days: string[];
+  enabled: boolean;
+}): Promise<{ error?: string }> {
+  if (input.times.length === 0) return { error: "Kies minstens één tijd." };
+  if (input.days.length === 0) return { error: "Kies minstens één dag." };
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Niet ingelogd" };
+
+  const row = {
+    user_id: user.id,
+    kind: input.kind,
+    label: input.label.trim() || null,
+    schedule: { times: input.times, days: input.days },
+    enabled: input.enabled,
+  };
+  const { error } = input.id
+    ? await supabase.from("reminders").update(row).eq("id", input.id)
+    : await supabase.from("reminders").insert(row);
+  if (error) return { error: error.message };
+  revalidatePath("/instellingen");
+  return {};
+}
+
+export async function toggleReminder(
+  id: number,
+  enabled: boolean,
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("reminders")
+    .update({ enabled })
+    .eq("id", id);
+  if (error) return { error: error.message };
+  revalidatePath("/instellingen");
+  return {};
+}
+
+export async function deleteReminder(id: number): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const { error } = await supabase.from("reminders").delete().eq("id", id);
+  if (error) return { error: error.message };
+  revalidatePath("/instellingen");
+  return {};
+}
+
+/** Push-subscription van deze browser opslaan (dedupe op endpoint). */
+export async function savePushSubscription(
+  subscription: Record<string, unknown>,
+): Promise<{ error?: string }> {
+  const endpoint = subscription.endpoint;
+  if (typeof endpoint !== "string" || !endpoint) {
+    return { error: "Ongeldige subscription." };
+  }
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Niet ingelogd" };
+
+  await supabase
+    .from("push_subscriptions")
+    .delete()
+    .eq("user_id", user.id)
+    .eq("subscription->>endpoint", endpoint);
+  const { error } = await supabase
+    .from("push_subscriptions")
+    .insert({ user_id: user.id, subscription });
+  if (error) return { error: error.message };
+  revalidatePath("/instellingen");
+  return {};
+}
+
+export async function removePushSubscription(
+  endpoint: string,
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Niet ingelogd" };
+
+  const { error } = await supabase
+    .from("push_subscriptions")
+    .delete()
+    .eq("user_id", user.id)
+    .eq("subscription->>endpoint", endpoint);
+  if (error) return { error: error.message };
+  revalidatePath("/instellingen");
+  return {};
+}
+
 export async function toggleShoppingItem(
   id: number,
   checked: boolean,
