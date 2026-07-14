@@ -38,6 +38,15 @@ export async function awardXp(
   return { award: parseAward(data) };
 }
 
+/** Evolutie-ceremonie bevestigen: stage onthouden zodat hij één keer toont. */
+export async function ackStage(ordinal: number): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("ack_stage", { p_ordinal: ordinal });
+  if (error) return { error: error.message };
+  revalidatePath("/vandaag");
+  return {};
+}
+
 /** Water: +1 of -1 glas. XP zit in de DB-functie (5 XP per glas t/m goal). */
 export async function addWater(delta: 1 | -1): Promise<
   ActionResult & { glasses?: number; goal?: number }

@@ -1,8 +1,18 @@
 import { createClient } from "@/lib/supabase/server";
-import { superhumanLevel, todayInTz } from "@/lib/xp";
+import { todayInTz } from "@/lib/xp";
+import { dateStrInTz, shiftDate } from "@/lib/streaks";
+import {
+  attrTotalXp,
+  nextStage,
+  pickStage,
+  stateLine,
+  type EvolutionStage,
+} from "@/lib/evolution";
+import type { AttributeKey } from "@/lib/attributes";
 import type { DayTask, MetricRow, UserAttributeRow } from "@/lib/types";
 import { LivingCore } from "@/components/living-core";
-import { AttributeRings } from "@/components/attribute-rings";
+import { MomentumCells } from "@/components/momentum-cells";
+import { EvolutionCeremony } from "@/components/evolution-ceremony";
 import { WaterTracker } from "@/components/water-tracker";
 import { TaskStack } from "@/components/task-stack";
 
@@ -15,19 +25,30 @@ export default async function VandaagPage() {
   const supabase = await createClient();
 
   // Batch 1: alles wat niet van de datum afhangt (RLS scopet op de gebruiker)
-  const [{ data: profile }, { data: attributes }, metricsResult] =
-    await Promise.all([
-      supabase.from("profiles").select("timezone").single(),
-      supabase.from("user_attributes").select("key, level, xp, xp_max"),
-      supabase
-        .from("metrics")
-        .select(METRIC_COLUMNS)
-        .eq("active", true)
-        .eq("direction", "input")
-        .eq("cadence", "daily")
-        .order("id"),
-    ]);
-  const today = todayInTz(profile?.timezone ?? "Europe/Amsterdam");
+  const [
+    { data: profile },
+    { data: attributes },
+    { data: stages },
+    metricsResult,
+  ] = await Promise.all([
+    supabase.from("profiles").select("timezone, last_stage").single(),
+    supabase
+      .from("user_attributes")
+      .select("key, level, xp, xp_max, momentum, idle_days"),
+    supabase
+      .from("evolution_stages")
+      .select("ordinal, name, min_total_xp, particles, rings, hue, glow, line")
+      .order("ordinal"),
+    supabase
+      .from("metrics")
+      .select(METRIC_COLUMNS)
+      .eq("active", true)
+      .eq("direction", "input")
+      .eq("cadence", "daily")
+      .order("id"),
+  ]);
+  const timezone = profile?.timezone ?? "Europe/Amsterdam";
+  const today = todayInTz(timezone);
 
   // Eerste bezoek: basistakenstack aanmaken en opnieuw ophalen
   let metrics = (metricsResult.data ?? []) as MetricRow[];
@@ -50,6 +71,7 @@ export default async function VandaagPage() {
     { data: metricLogs },
     { data: stretchLogs },
     { data: breathworkLogs },
+    { data: todaysEvents },
   ] = await Promise.all([
     supabase
       .from("water_logs")
@@ -69,17 +91,49 @@ export default async function VandaagPage() {
       .eq("date", today)
       .eq("kind", "breathwork")
       .limit(1),
+    // Ruim venster (UTC) — de precieze lokale-dag-filter gebeurt hieronder
+    supabase
+      .from("xp_events")
+      .select("attribute_key, created_at")
+      .gte("created_at", `${shiftDate(today, -1)}T00:00:00Z`),
   ]);
 
+  // Welke attributen zijn vandaag (lokale tijd) gevoed?
+  const fedToday = new Set<AttributeKey>(
+    (todaysEvents ?? [])
+      .filter(
+        (e: { created_at: string }) =>
+          dateStrInTz(new Date(e.created_at), timezone) === today,
+      )
+      .map((e: { attribute_key: string }) => e.attribute_key as AttributeKey),
+  );
+
+  // Levende laag: totaal-XP, vitaliteit, stage en eventuele ceremonie
+  const attrRows = (attributes ?? []) as UserAttributeRow[];
+  const totalXp = attrRows.reduce(
+    (sum, a) => sum + attrTotalXp(a.level, a.xp),
+    0,
+  );
+  const vitality =
+    attrRows.length > 0
+      ? attrRows.reduce((sum, a) => sum + Math.min(a.momentum ?? 50, 100), 0) /
+        (attrRows.length * 100)
+      : 0.5;
+  const stageRows = (stages ?? []) as EvolutionStage[];
+  const stage = stageRows.length > 0 ? pickStage(stageRows, totalXp) : null;
+  const next = stage ? nextStage(stageRows, stage) : null;
+  const pendingCeremony =
+    stage && stage.ordinal > (profile?.last_stage ?? 0) ? stage : null;
+
+  // Takenstack
   const loggedMetricIds = new Set(
     (metricLogs ?? []).map((l: { metric_id: number }) => l.metric_id),
   );
-
   const tasks: DayTask[] = [
     {
       id: "stretch",
       label: "Stretchen",
-      meta: "Stretch-sessie met timer",
+      meta: "Begeleide sessie met timer",
       attribute: "soepel",
       xp: 40,
       done: (stretchLogs ?? []).length > 0,
@@ -118,18 +172,61 @@ export default async function VandaagPage() {
 
   const glasses = water?.glasses ?? 0;
   const goal = water?.goal ?? 8;
-  const plannedUnits = tasks.length + 1; // + watergoal
-  const completedUnits =
-    tasks.filter((t) => t.done).length + (glasses >= goal ? 1 : 0);
-  const completion = plannedUnits > 0 ? completedUnits / plannedUnits : 0;
-
-  const attrRows = (attributes ?? []) as UserAttributeRow[];
-  const level = superhumanLevel(attrRows.map((a) => a.level));
+  const stagePct =
+    stage && next
+      ? Math.min(
+          100,
+          ((totalXp - stage.min_total_xp) /
+            (next.min_total_xp - stage.min_total_xp)) *
+            100,
+        )
+      : 100;
 
   return (
     <div className="flex flex-col gap-6">
-      <LivingCore level={level} completion={completion} />
-      <AttributeRings attributes={attrRows} />
+      {pendingCeremony ? (
+        <EvolutionCeremony stage={pendingCeremony} totalXp={totalXp} />
+      ) : null}
+
+      {/* Home-hero: de levende core */}
+      {stage ? (
+        <section
+          aria-label="Je core"
+          className="flex flex-col items-center gap-3.5 pt-2"
+        >
+          <p className="text-xl font-extrabold">{stage.name}</p>
+          <LivingCore totalXp={totalXp} vitality={vitality} stage={stage} />
+          {next ? (
+            <div className="w-52">
+              <div className="h-1.5 overflow-hidden rounded-full bg-ink-2">
+                <div
+                  className="h-full rounded-full"
+                  style={{
+                    width: `${stagePct}%`,
+                    background: `linear-gradient(90deg, ${stage.hue}, ${next.hue})`,
+                    transition: "width .8s",
+                  }}
+                />
+              </div>
+              <p className="mt-1.5 text-center font-mono text-[10.5px] text-muted">
+                {next.min_total_xp - totalXp} XP tot {next.name}
+              </p>
+            </div>
+          ) : (
+            <p
+              className="font-mono text-xs font-bold tracking-widest"
+              style={{ color: stage.hue }}
+            >
+              MAX · SUPERHUMAN
+            </p>
+          )}
+          <p className="max-w-[300px] text-center text-[13px] leading-relaxed text-muted">
+            {stateLine(vitality, fedToday.size > 0)}
+          </p>
+        </section>
+      ) : null}
+
+      <MomentumCells attributes={attrRows} fedToday={fedToday} />
       <WaterTracker glasses={glasses} goal={goal} />
       <TaskStack tasks={tasks} />
     </div>

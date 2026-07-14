@@ -8,6 +8,9 @@ export interface UserAttributeRow {
   level: number;
   xp: number;
   xp_max: number;
+  /** Levenspuls 0-100 (levende laag) */
+  momentum: number;
+  idle_days: number;
 }
 
 export interface MetricRow {

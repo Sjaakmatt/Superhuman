@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Mockups/prototypes zijn referentie, geen app-code:
+    "reference/**",
+    "supabase/functions/**",
   ]),
 ]);
 
