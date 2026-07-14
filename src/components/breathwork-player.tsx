@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { completeSession } from "@/app/(app)/actions";
 import type { BreathworkPatternRow } from "@/lib/types";
+import type { XpAward } from "@/lib/xp";
 import { useToast } from "./toast";
 
 const ROUND_OPTIONS = [3, 5, 8] as const;
@@ -21,9 +22,10 @@ export function BreathworkPlayer({
   const [phaseRemaining, setPhaseRemaining] = useState(0);
   const [running, setRunning] = useState(false);
   const [finished, setFinished] = useState(false);
+  const [award, setAward] = useState<XpAward | null>(null);
   const elapsedRef = useRef(0);
   const submittedRef = useRef(false);
-  const [, startTransition] = useTransition();
+  const [pending, startTransition] = useTransition();
   const { showAward, showMessage } = useToast();
 
   const phases = pattern?.phases ?? [];
@@ -84,8 +86,12 @@ export function BreathworkPlayer({
         refId: pattern.id,
         durationSecs: Math.round(elapsedRef.current),
       });
-      if (result.error) showMessage(result.error);
-      else showAward(result.award);
+      if (result.error) {
+        showMessage(result.error);
+        return;
+      }
+      setAward(result.award);
+      showAward(result.award);
     });
   }, [finished, pattern, showAward, showMessage]);
 
@@ -111,7 +117,12 @@ export function BreathworkPlayer({
         <div>
           <h2 className="text-lg font-semibold">Sessie afgerond</h2>
           <p className="mt-1 font-mono text-sm text-muted">
-            {pattern?.name} · {targetRounds} rondes · +25 XP · Geest
+            {pattern?.name} · {targetRounds} rondes
+            {award
+              ? ` · +${award.amount} XP · Geest`
+              : pending
+                ? ""
+                : " · XP van vandaag al binnen"}
           </p>
         </div>
         <Link

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { completeSession } from "@/app/(app)/actions";
 import type { MeditationRow } from "@/lib/types";
+import type { XpAward } from "@/lib/xp";
 import { useToast } from "./toast";
 
 const R = 88;
@@ -20,9 +21,10 @@ export function MeditationPlayer({ meditation }: { meditation: MeditationRow }) 
   const [remaining, setRemaining] = useState(duration);
   const [playing, setPlaying] = useState(false);
   const [finished, setFinished] = useState(false);
+  const [award, setAward] = useState<XpAward | null>(null);
   const submittedRef = useRef(false);
   const mediaRef = useRef<HTMLAudioElement | HTMLVideoElement | null>(null);
-  const [, startTransition] = useTransition();
+  const [pending, startTransition] = useTransition();
   const { showAward, showMessage } = useToast();
 
   // Ring-timer: elke seconde aftellen zolang er gespeeld wordt
@@ -57,8 +59,12 @@ export function MeditationPlayer({ meditation }: { meditation: MeditationRow }) 
         refId: meditation.id,
         durationSecs: duration,
       });
-      if (result.error) showMessage(result.error);
-      else showAward(result.award);
+      if (result.error) {
+        showMessage(result.error);
+        return;
+      }
+      setAward(result.award);
+      showAward(result.award);
     });
   }, [finished, meditation.id, duration, showAward, showMessage]);
 
@@ -76,7 +82,12 @@ export function MeditationPlayer({ meditation }: { meditation: MeditationRow }) 
         <div>
           <h2 className="text-lg font-semibold">Sessie afgerond</h2>
           <p className="mt-1 font-mono text-sm text-muted">
-            {meditation.title} · +30 XP · Geest
+            {meditation.title}
+            {award
+              ? ` · +${award.amount} XP · Geest`
+              : pending
+                ? ""
+                : " · XP van vandaag al binnen"}
           </p>
         </div>
         <Link

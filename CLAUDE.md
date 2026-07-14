@@ -103,8 +103,11 @@ Instellingen.
   meditatie-bibliotheek + player, journaling (15 XP, `add_journal_entry`).
   Streak-/ritme-berekening in `src/lib/streaks.ts` (afgeleid uit xp_events,
   profiel-tijdzone; vandaag zonder event breekt de streak niet).
-- ⬜ **Fase 3 — Voeding & Beweging compleet**: bibliotheek met video, kracht-
-  logging, calorieënteller, voedingsplan, auto-boodschappenlijst.
+- ✅ **Fase 3 — Voeding & Beweging compleet**: bibliotheek met video, kracht-
+  logging (routine-builder + `complete_workout`, 45 XP), calorieënteller
+  (zonder XP/budget), voedingsplan met weeknavigatie, boodschappenlijst via
+  `generate_shopping_list`. Sessie-XP overal eerste-per-dag
+  (`xp_awarded_today`, migration `..006`).
 - ⬜ **Fase 4 — Discipline**: doelen, review-flow, input-vs-output-trends.
 - ⬜ **Fase 5 — Notificaties & PWA**: reminders, web-push, service worker, polish.
 

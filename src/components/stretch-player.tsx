@@ -10,6 +10,7 @@ import {
 } from "react";
 import { completeSession } from "@/app/(app)/actions";
 import type { ExerciseRow } from "@/lib/types";
+import type { XpAward } from "@/lib/xp";
 import { useToast } from "./toast";
 
 const FALLBACK_SECS = 30;
@@ -28,9 +29,10 @@ export function StretchPlayer({ exercises }: { exercises: ExerciseRow[] }) {
   const [playing, setPlaying] = useState(false);
   const [finished, setFinished] = useState(false);
   const [sessionSecs, setSessionSecs] = useState(0);
+  const [award, setAward] = useState<XpAward | null>(null);
   const elapsedRef = useRef(0);
   const submittedRef = useRef(false);
-  const [, startTransition] = useTransition();
+  const [pending, startTransition] = useTransition();
   const { showAward, showMessage } = useToast();
 
   const current = exercises[index];
@@ -78,8 +80,12 @@ export function StretchPlayer({ exercises }: { exercises: ExerciseRow[] }) {
         kind: "stretch",
         durationSecs: elapsedRef.current,
       });
-      if (result.error) showMessage(result.error);
-      else showAward(result.award);
+      if (result.error) {
+        showMessage(result.error);
+        return;
+      }
+      setAward(result.award);
+      showAward(result.award);
     });
   }, [finished, showAward, showMessage]);
 
@@ -105,7 +111,12 @@ export function StretchPlayer({ exercises }: { exercises: ExerciseRow[] }) {
         <div>
           <h2 className="text-lg font-semibold">Sessie afgerond</h2>
           <p className="mt-1 font-mono text-sm text-muted">
-            {formatSecs(sessionSecs)} · +40 XP · Soepelheid
+            {formatSecs(sessionSecs)}
+            {award
+              ? ` · +${award.amount} XP · Soepelheid`
+              : pending
+                ? ""
+                : " · XP van vandaag al binnen"}
           </p>
         </div>
         <Link

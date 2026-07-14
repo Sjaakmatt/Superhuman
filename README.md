@@ -29,9 +29,10 @@ npm run dev     # http://localhost:3000
 
 ## Status
 
-**Fase 0 t/m 2** zijn af: living core met dag-completion, attribuut-rings,
+**Fase 0 t/m 3** zijn af: living core met dag-completion, attribuut-rings,
 watertracker, takenstack, transactionele XP-motor, voeding-check-in,
 stretch-player, breathwork-animatie, character sheet met streaks en
-week-heatmap, meditatie-bibliotheek met ring-timer-player en journaling met
-stemming. Volgende: **Fase 3 — Voeding & Beweging compleet** (bibliotheek
-met video, krachttraining, calorieënteller, voedingsplan, boodschappenlijst).
+week-heatmap, meditatie-player, journaling, oefeningen-bibliotheek,
+krachttraining met routine-builder, calorieënteller, voedingsplan en de
+auto-gegenereerde boodschappenlijst. Volgende: **Fase 4 — Discipline**
+(doelen-hiërarchie, wekelijkse review, input-vs-output-trends).
