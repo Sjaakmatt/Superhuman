@@ -139,9 +139,14 @@ nog in de repo (nodig voor L2/L4).
   (momentum/idle_days, evolution_stages + seed, last_stage/last_decay_on,
   schedule_blocks + RLS), `award_xp` v2, `decay_user_attributes` +
   `run_momentum_decay`, cron-job `momentum-decay` (elk uur op :05).
-- ⬜ **L2 — Levende core + ceremonie** · ⬜ **L3 — De spiegel** ·
-  ⬜ **L4 — Sessie-diepte** · ⬜ **L5 — Voeding tot leven** ·
-  ⬜ **L6 — "Nu"-motor** · ⬜ **L7 — Levende copy + zintuigen**
+- ✅ **L2 — Levende core + ceremonie**: LivingCore (deeltjes/gloed uit
+  stage, adem op vitaliteit), momentum-cellen (lucide-icons, tik → domein),
+  home-hero met stage-voortgang + state-regel, EvolutionCeremony (ack via
+  `ackStage`). Content-pack toegepast: 30 oefeningen met coaching_cues,
+  6 gedeelde programma's (user_id null, eigen leespolicies).
+- ⬜ **L3 — De spiegel** · ⬜ **L4 — Sessie-diepte** ·
+  ⬜ **L5 — Voeding tot leven** · ⬜ **L6 — "Nu"-motor** ·
+  ⬜ **L7 — Levende copy + zintuigen**
 
 Commit per fase; stop na elke fase voor akkoord van de gebruiker.
 
