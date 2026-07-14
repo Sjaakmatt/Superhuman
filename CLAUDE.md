@@ -108,7 +108,10 @@ Instellingen.
   (zonder XP/budget), voedingsplan met weeknavigatie, boodschappenlijst via
   `generate_shopping_list`. Sessie-XP overal eerste-per-dag
   (`xp_awarded_today`, migration `..006`).
-- ⬜ **Fase 4 — Discipline**: doelen, review-flow, input-vs-output-trends.
+- ✅ **Fase 4 — Discipline**: doelen-hiërarchie met metric-ritme (/doelen),
+  voorgevulde weekreview (/review, `save_review`, 25 XP focus), trends in
+  Progressie (Recharts, twee gestapelde panelen i.p.v. dual-axis;
+  chartkleuren `--chart-input`/`--chart-output`, CVD-gevalideerd).
 - ⬜ **Fase 5 — Notificaties & PWA**: reminders, web-push, service worker, polish.
 
 Commit per fase; ga pas door na akkoord van de gebruiker.

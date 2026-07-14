@@ -34,5 +34,6 @@ watertracker, takenstack, transactionele XP-motor, voeding-check-in,
 stretch-player, breathwork-animatie, character sheet met streaks en
 week-heatmap, meditatie-player, journaling, oefeningen-bibliotheek,
 krachttraining met routine-builder, calorieënteller, voedingsplan en de
-auto-gegenereerde boodschappenlijst. Volgende: **Fase 4 — Discipline**
-(doelen-hiërarchie, wekelijkse review, input-vs-output-trends).
+auto-gegenereerde boodschappenlijst, doelen-hiërarchie, voorgevulde
+wekelijkse review en input-vs-output-trends. Volgende: **Fase 5 —
+Notificaties & PWA** (reminders, web-push, service worker, polish).
