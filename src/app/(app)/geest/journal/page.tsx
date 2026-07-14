@@ -45,7 +45,11 @@ export default async function JournalPage() {
             ))}
           </ul>
         </section>
-      ) : null}
+      ) : (
+        <p className="rounded-2xl border border-dashed border-line p-6 text-center text-sm text-muted">
+          Nog een lege bladzijde. Eén zin is genoeg om te beginnen.
+        </p>
+      )}
     </div>
   );
 }

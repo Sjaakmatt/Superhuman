@@ -173,7 +173,17 @@ nog in de repo (nodig voor L2/L4).
   geseed via `ensure_default_schedule` (dagritme → gedeelde routines),
   dagritme-lijst + toggle in /instellingen, `sync_schedule_reminders` maakt
   web-push-reminders (kind 'block') uit de blokken. Migration `..014`.
-- ⬜ **L7 — Levende copy + zintuigen**
+- ✅ **L7 — Levende copy + zintuigen**: `src/lib/haptics.ts` (vibrate-tik
+  bij voeden, puls bij level-up/ceremonie, gated op reduced-motion),
+  gekoppeld via de XP-toast en EvolutionCeremony. Reduced-motion
+  neutraliseert animaties + transitions + scroll; zachte rise-in op
+  Nu-kaart/spiegel. Copy-sweep: lege staten nodigen uit, succes-toasts als
+  warme stem, missers met compassie (geen streak-shame).
+
+**Alle levende-laag-fasen (L1-L7) zijn af.** Het OS leeft: geen dood
+dashboard, altijd een volgende stap + spiegel; acties hebben voelbaar
+gevolg (momentum, ademende cellen, verval); groei transformeert zichtbaar
+(core-evolutie + ceremonie); elke sessie stuurt en houdt vast.
 
 Commit per fase; stop na elke fase voor akkoord van de gebruiker.
 

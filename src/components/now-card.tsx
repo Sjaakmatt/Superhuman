@@ -81,6 +81,7 @@ export function NowCard({ timezone, blocks, doneKeys }: NowCardProps) {
       style={{
         borderColor: CORE,
         boxShadow: `0 8px 30px -12px ${CORE}`,
+        animation: "rise-in .4s ease",
       }}
     >
       <div className="flex items-center justify-between">

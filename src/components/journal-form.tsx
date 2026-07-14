@@ -30,7 +30,7 @@ export function JournalForm() {
       }
       setContent("");
       if (result.award) showAward(result.award);
-      else showMessage("Entry opgeslagen.");
+      else showMessage("Opgeschreven. Fijn dat je het even liet landen.");
     });
   }
 

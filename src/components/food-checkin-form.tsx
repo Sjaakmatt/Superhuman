@@ -43,7 +43,7 @@ export function FoodCheckinForm({ initial }: FoodCheckinFormProps) {
       } else if (result.award) {
         showAward(result.award);
       } else {
-        showMessage("Check-in bijgewerkt.");
+        showMessage("Bijgewerkt. Morgen bouw je hierop voort.");
       }
     });
   }

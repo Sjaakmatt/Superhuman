@@ -119,7 +119,7 @@ export function CalorieTracker({ items }: { items: CalorieLogRow[] }) {
         ))}
         {items.length === 0 ? (
           <li className="rounded-2xl border border-dashed border-line p-6 text-center text-sm text-muted">
-            Nog niets gelogd vandaag.
+            Nog niets gelogd — loggen mag, moeten hoeft niet.
           </li>
         ) : null}
       </ul>

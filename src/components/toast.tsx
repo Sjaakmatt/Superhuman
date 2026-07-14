@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import { ATTRIBUTES } from "@/lib/attributes";
+import { haptic } from "@/lib/haptics";
 import type { XpAward } from "@/lib/xp";
 
 interface ToastState {
@@ -42,7 +43,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
   const showAward = useCallback(
     (award: XpAward | null) => {
-      if (award) show({ award });
+      if (award) {
+        haptic(award.levelUp ? "success" : "tick");
+        show({ award });
+      }
     },
     [show],
   );

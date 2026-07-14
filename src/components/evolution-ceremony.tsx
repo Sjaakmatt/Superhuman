@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { ackStage } from "@/app/(app)/actions";
 import type { EvolutionStage } from "@/lib/evolution";
+import { haptic } from "@/lib/haptics";
 import { LivingCore } from "./living-core";
 
 interface EvolutionCeremonyProps {
@@ -17,6 +18,11 @@ interface EvolutionCeremonyProps {
 export function EvolutionCeremony({ stage, totalXp }: EvolutionCeremonyProps) {
   const [dismissed, setDismissed] = useState(false);
   const [pending, startTransition] = useTransition();
+
+  // Eén warme puls bij het verschijnen van de ceremonie
+  useEffect(() => {
+    haptic("celebrate");
+  }, []);
 
   if (dismissed) return null;
 

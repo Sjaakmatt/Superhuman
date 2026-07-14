@@ -109,7 +109,7 @@ export default async function BibliotheekPage({
         ))}
         {(exercises ?? []).length === 0 ? (
           <li className="rounded-2xl border border-dashed border-line p-6 text-center text-sm text-muted">
-            Geen oefeningen gevonden.
+            Niets gevonden — probeer een andere zoekterm of een ander filter.
           </li>
         ) : null}
       </ul>

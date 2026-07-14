@@ -90,7 +90,7 @@ export default async function MeditatiesPage({
         ))}
         {(meditations ?? []).length === 0 ? (
           <li className="rounded-2xl border border-dashed border-line p-6 text-center text-sm text-muted">
-            Geen meditaties in deze categorie.
+            Nog niets in deze categorie — kies een ander gevoel.
           </li>
         ) : null}
       </ul>
