@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { ATTRIBUTE_KEYS, ATTRIBUTES, type AttributeKey } from "@/lib/attributes";
 import { superhumanLevel, todayInTz } from "@/lib/xp";
@@ -7,8 +8,10 @@ import {
   dateStrInTz,
   shiftDate,
 } from "@/lib/streaks";
+import { rollingAvg, type TrendPoint } from "@/lib/trends";
 import type { UserAttributeRow } from "@/lib/types";
 import { WeekHeatmap } from "@/components/week-heatmap";
+import { TrendsChart } from "@/components/trends-chart";
 
 export const metadata = { title: "Progressie" };
 
@@ -31,13 +34,19 @@ export default async function ProgressiePage() {
 
   const cutoff = `${shiftDate(today, -LOOKBACK_DAYS)}T00:00:00Z`;
 
-  const [{ data: attributes }, { data: events }] = await Promise.all([
-    supabase.from("user_attributes").select("key, level, xp, xp_max"),
-    supabase
-      .from("xp_events")
-      .select("attribute_key, created_at")
-      .gte("created_at", cutoff),
-  ]);
+  const [{ data: attributes }, { data: events }, { data: journals }] =
+    await Promise.all([
+      supabase.from("user_attributes").select("key, level, xp, xp_max"),
+      supabase
+        .from("xp_events")
+        .select("attribute_key, amount, created_at")
+        .gte("created_at", cutoff),
+      supabase
+        .from("journal_entries")
+        .select("date, mood")
+        .gte("date", shiftDate(today, -LOOKBACK_DAYS))
+        .not("mood", "is", null),
+    ]);
 
   // Per attribuut: set van actieve dagen (in de tijdzone van de gebruiker)
   const activeDates = new Map<AttributeKey, Set<string>>(
@@ -61,6 +70,35 @@ export default async function ProgressiePage() {
   const attrRows = (attributes ?? []) as UserAttributeRow[];
   const byKey = new Map(attrRows.map((a) => [a.key, a]));
   const level = superhumanLevel(attrRows.map((a) => a.level));
+
+  // Trends: XP per dag (input) tegen stemming (output), 7d rolling
+  const xpPerDay = new Map<string, number>();
+  for (const event of events ?? []) {
+    const day = dateStrInTz(new Date(event.created_at), timezone);
+    xpPerDay.set(day, (xpPerDay.get(day) ?? 0) + (event.amount ?? 0));
+  }
+  const moodPerDay = new Map<string, number[]>();
+  for (const j of (journals ?? []) as { date: string; mood: number }[]) {
+    if (!moodPerDay.has(j.date)) moodPerDay.set(j.date, []);
+    moodPerDay.get(j.date)!.push(j.mood);
+  }
+  const trendDates = Array.from({ length: 30 }, (_, i) =>
+    shiftDate(today, -(29 - i)),
+  );
+  const inputSeries = rollingAvg(
+    trendDates.map((d) => xpPerDay.get(d) ?? 0),
+  );
+  const outputSeries = rollingAvg(
+    trendDates.map((d) => {
+      const moods = moodPerDay.get(d);
+      return moods ? moods.reduce((a, b) => a + b, 0) / moods.length : null;
+    }),
+  );
+  const trendData: TrendPoint[] = trendDates.map((date, i) => ({
+    date,
+    input: inputSeries[i],
+    output: outputSeries[i],
+  }));
 
   return (
     <div className="flex flex-col gap-6">
@@ -139,6 +177,30 @@ export default async function ProgressiePage() {
           );
         })}
       </section>
+
+      <TrendsChart data={trendData} />
+
+      {/* Discipline-laag */}
+      <ul className="grid grid-cols-2 gap-2">
+        <li>
+          <Link
+            href="/doelen"
+            className="flex h-full flex-col gap-1 rounded-2xl border border-line bg-card p-4 transition-colors hover:border-muted"
+          >
+            <span className="text-sm font-medium">Doelen</span>
+            <span className="text-xs text-muted">leven → week</span>
+          </Link>
+        </li>
+        <li>
+          <Link
+            href="/review"
+            className="flex h-full flex-col gap-1 rounded-2xl border border-line bg-card p-4 transition-colors hover:border-muted"
+          >
+            <span className="text-sm font-medium">Review</span>
+            <span className="text-xs text-muted">wekelijks, voorgevuld</span>
+          </Link>
+        </li>
+      </ul>
     </div>
   );
 }

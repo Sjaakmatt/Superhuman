@@ -22,6 +22,11 @@
   --attr-voeding: #8fe05b; /* lime */
   --attr-focus: #5b9bff; /* blauw */
   --attr-geest: #ff6fa8; /* rose */
+
+  /* Chart-serie-kleuren: donkerder stappen van focus/geest, gevalideerd
+     (lightness-band, CVD-separatie en contrast) tegen --card */
+  --chart-input: #3d7eea;
+  --chart-output: #f0518d;
 }
 
 @theme inline {
