@@ -150,8 +150,17 @@ nog in de repo (nodig voor L2/L4).
   mood-dagen, anders voed-ritme bij ≥3 dagen); max 2 regels, Mirror-UI op
   Vandaag met gekleurde linkerrand. Decay kreeg een gratieperiode voor
   nieuwe accounts (migration `..011`).
-- ⬜ **L4 — Sessie-diepte** · ⬜ **L5 — Voeding tot leven** ·
-  ⬜ **L6 — "Nu"-motor** · ⬜ **L7 — Levende copy + zintuigen**
+- ✅ **L4 — Sessie-diepte**: session-engine (`src/lib/session.ts`:
+  buildTimeline, activeCue, breathScale, explainTempo). Stretch-player is
+  een state machine (INTRO→COUNT-IN→HOLD met ademindicator + getimede cues
+  →REST met preview; bilateraal "wissel van kant") die een programma draait
+  → `/beweging/stretch/[id]`. Kracht-logger met sets/tempo-uitleg/cue/fout,
+  rust-timer per set en progressive overload ("vorige keer" uit
+  `workout_logs.sets`, migration `..012`). Breathwork: settle-in 10s,
+  fase-tellingen, ronde-teller, zachte afsluiting. Beweging-hub toont de
+  gedeelde programma's per moment.
+- ⬜ **L5 — Voeding tot leven** · ⬜ **L6 — "Nu"-motor** ·
+  ⬜ **L7 — Levende copy + zintuigen**
 
 Commit per fase; stop na elke fase voor akkoord van de gebruiker.
 

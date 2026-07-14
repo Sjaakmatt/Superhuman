@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import type { AttributeKey } from "@/lib/attributes";
+import type { LoggedExerciseSets } from "@/lib/types";
 import { parseAward, type XpAward } from "@/lib/xp";
 
 export interface ActionResult {
@@ -135,12 +136,14 @@ export async function completeWorkout(input: {
   routineId: number;
   durationSecs?: number;
   note?: string;
+  sets?: LoggedExerciseSets[];
 }): Promise<ActionResult> {
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("complete_workout", {
     p_routine_id: input.routineId,
     p_duration_secs: input.durationSecs ?? null,
     p_note: input.note?.trim() || null,
+    p_sets: input.sets && input.sets.length > 0 ? input.sets : null,
   });
   if (error) return fail(error);
   revalidatePath("/vandaag");

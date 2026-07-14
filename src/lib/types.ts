@@ -24,16 +24,37 @@ export interface MetricRow {
   active: boolean;
 }
 
+export interface CoachingCue {
+  at_pct: number;
+  text: string;
+}
+
 export interface ExerciseRow {
   id: number;
   name: string;
   kind: string;
   default_secs: number | null;
   reps: number | null;
+  sets: number | null;
+  tempo: string | null;
+  rest_secs: number | null;
+  bilateral: boolean | null;
+  level: string | null;
   cue: string | null;
+  setup: string | null;
+  breathing: string | null;
+  common_mistake: string | null;
+  progression: string | null;
+  regression: string | null;
+  benefit: string | null;
   muscle_group: string | null;
   video_url: string | null;
+  coaching_cues: CoachingCue[] | null;
 }
+
+/** Kolommen die de begeleide sessies nodig hebben. */
+export const EXERCISE_COLUMNS =
+  "id, name, kind, default_secs, reps, sets, tempo, rest_secs, bilateral, level, cue, setup, breathing, common_mistake, progression, regression, benefit, muscle_group, video_url, coaching_cues";
 
 export interface BreathworkPhase {
   label: string;
@@ -83,6 +104,10 @@ export interface RoutineRow {
   id: number;
   name: string;
   kind: string;
+  description: string | null;
+  duration_min: number | null;
+  level: string | null;
+  moment: string | null;
 }
 
 export interface RoutineExerciseRow {
@@ -90,7 +115,20 @@ export interface RoutineExerciseRow {
   secs: number | null;
   reps: number | null;
   sets: number | null;
+  rest_secs: number | null;
   exercises: ExerciseRow | null;
+}
+
+/** Eén set uit een eerdere workout (progressive overload). */
+export interface LoggedSet {
+  reps?: number | null;
+  weight?: number | null;
+}
+
+export interface LoggedExerciseSets {
+  exercise_id: number;
+  name: string;
+  sets: LoggedSet[];
 }
 
 export interface RecipeIngredient {

@@ -4,54 +4,81 @@ import type { RoutineRow } from "@/lib/types";
 
 export const metadata = { title: "Beweging" };
 
+const MOMENT_LABEL: Record<string, string> = {
+  ochtend: "ochtend",
+  desk: "tussendoor",
+  avond: "avond",
+  training: "training",
+  any: "altijd",
+};
+
+function metaLine(r: RoutineRow): string {
+  return [
+    r.duration_min ? `${r.duration_min} min` : null,
+    r.moment && MOMENT_LABEL[r.moment] ? MOMENT_LABEL[r.moment] : null,
+    r.level,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+}
+
 export default async function BewegingPage() {
   const supabase = await createClient();
-  const [{ data: stretches }, { data: routines }, { count: exerciseCount }] =
-    await Promise.all([
-      supabase.from("exercises").select("id, default_secs").eq("kind", "stretch"),
-      supabase.from("routines").select("id, name, kind").order("id"),
-      supabase.from("exercises").select("id", { count: "exact", head: true }),
-    ]);
+  const [{ data: routines }, { count: exerciseCount }] = await Promise.all([
+    supabase
+      .from("routines")
+      .select("id, name, kind, description, duration_min, level, moment")
+      .order("kind")
+      .order("duration_min"),
+    supabase.from("exercises").select("id", { count: "exact", head: true }),
+  ]);
 
-  const stretchCount = stretches?.length ?? 0;
-  const stretchSecs = (stretches ?? []).reduce(
-    (sum, e: { default_secs: number | null }) => sum + (e.default_secs ?? 30),
-    0,
-  );
-  const workoutRoutines = ((routines ?? []) as RoutineRow[]).filter(
-    (r) => r.kind === "workout",
-  );
+  const all = (routines ?? []) as RoutineRow[];
+  const stretchProgs = all.filter((r) => r.kind === "stretch");
+  const workoutProgs = all.filter((r) => r.kind === "workout");
 
   return (
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-xl font-semibold">Beweging</h1>
         <p className="mt-1 text-sm text-muted">
-          Stretchen, kracht en de oefeningen-bibliotheek.
+          Begeleide sessies die je sturen — hoe lang, wanneer wisselen, wanneer
+          rusten.
         </p>
       </div>
 
-      <Link
-        href="/beweging/stretch"
-        className="flex items-center gap-3 rounded-2xl border border-line bg-card p-4 transition-colors hover:border-muted"
-      >
-        <span
-          aria-hidden
-          className="size-2.5 shrink-0 rounded-full"
-          style={{
-            background: "var(--attr-soepel)",
-            boxShadow: "0 0 10px var(--attr-soepel)",
-          }}
-        />
-        <span className="min-w-0 flex-1">
-          <span className="block text-sm font-medium">Stretch-sessie</span>
-          <span className="block text-xs text-muted">
-            {stretchCount} oefeningen · ±{Math.round(stretchSecs / 60)} min
-          </span>
-        </span>
-        <span className="font-mono text-xs text-muted">+40 XP</span>
-      </Link>
+      {/* Stretchen & mobiliteit */}
+      <section aria-label="Stretchen" className="flex flex-col gap-2">
+        <h2 className="text-sm font-medium text-muted">Stretchen & mobiliteit</h2>
+        <ul className="flex flex-col gap-2">
+          {stretchProgs.map((r) => (
+            <li key={r.id}>
+              <Link
+                href={`/beweging/stretch/${r.id}`}
+                className="flex items-center gap-3 rounded-2xl border border-line bg-card p-4 transition-colors hover:border-muted"
+              >
+                <span
+                  aria-hidden
+                  className="size-2.5 shrink-0 rounded-full"
+                  style={{
+                    background: "var(--attr-soepel)",
+                    boxShadow: "0 0 10px var(--attr-soepel)",
+                  }}
+                />
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-medium">{r.name}</span>
+                  <span className="block font-mono text-xs text-muted">
+                    {metaLine(r)}
+                  </span>
+                </span>
+                <span className="font-mono text-xs text-muted">+40 XP</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
 
+      {/* Krachttraining */}
       <section aria-label="Krachttraining" className="flex flex-col gap-2">
         <div className="flex items-baseline justify-between">
           <h2 className="text-sm font-medium text-muted">Krachttraining</h2>
@@ -59,41 +86,35 @@ export default async function BewegingPage() {
             href="/beweging/routines/nieuw"
             className="text-xs text-muted underline underline-offset-4 transition-colors hover:text-text"
           >
-            + nieuwe routine
+            + eigen routine
           </Link>
         </div>
-        {workoutRoutines.length > 0 ? (
-          <ul className="flex flex-col gap-2">
-            {workoutRoutines.map((routine) => (
-              <li key={routine.id}>
-                <Link
-                  href={`/beweging/routines/${routine.id}`}
-                  className="flex items-center gap-3 rounded-2xl border border-line bg-card p-4 transition-colors hover:border-muted"
-                >
-                  <span
-                    aria-hidden
-                    className="size-2.5 shrink-0 rounded-full"
-                    style={{
-                      background: "var(--attr-kracht)",
-                      boxShadow: "0 0 10px var(--attr-kracht)",
-                    }}
-                  />
-                  <span className="min-w-0 flex-1 text-sm font-medium">
-                    {routine.name}
+        <ul className="flex flex-col gap-2">
+          {workoutProgs.map((r) => (
+            <li key={r.id}>
+              <Link
+                href={`/beweging/routines/${r.id}`}
+                className="flex items-center gap-3 rounded-2xl border border-line bg-card p-4 transition-colors hover:border-muted"
+              >
+                <span
+                  aria-hidden
+                  className="size-2.5 shrink-0 rounded-full"
+                  style={{
+                    background: "var(--attr-kracht)",
+                    boxShadow: "0 0 10px var(--attr-kracht)",
+                  }}
+                />
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-medium">{r.name}</span>
+                  <span className="block font-mono text-xs text-muted">
+                    {metaLine(r)}
                   </span>
-                  <span className="font-mono text-xs text-muted">+45 XP</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <Link
-            href="/beweging/routines/nieuw"
-            className="rounded-2xl border border-dashed border-line p-6 text-center text-sm text-muted transition-colors hover:text-text"
-          >
-            Nog geen routines — stel je eerste workout samen.
-          </Link>
-        )}
+                </span>
+                <span className="font-mono text-xs text-muted">+45 XP</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <Link
@@ -103,7 +124,7 @@ export default async function BewegingPage() {
         <span className="min-w-0 flex-1">
           <span className="block text-sm font-medium">Bibliotheek</span>
           <span className="block text-xs text-muted">
-            {exerciseCount ?? 0} oefeningen · zoeken en filteren
+            {exerciseCount ?? 0} oefeningen met uitleg, cues en fouten
           </span>
         </span>
         <span aria-hidden className="text-muted">
