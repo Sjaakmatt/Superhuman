@@ -15,16 +15,10 @@ export default async function PlanPage({
   const { week } = await searchParams;
 
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("timezone")
-    .eq("id", user.id)
-    .single();
+  const [{ data: profile }, { data: recipes }] = await Promise.all([
+    supabase.from("profiles").select("timezone").single(),
+    supabase.from("recipes").select("id, name").order("name"),
+  ]);
   const today = todayInTz(profile?.timezone ?? "Europe/Amsterdam");
 
   const currentMonday = shiftDate(today, -(isoWeekday(today) - 1));
@@ -33,14 +27,11 @@ export default async function PlanPage({
     : currentMonday;
   const days = Array.from({ length: 7 }, (_, i) => shiftDate(weekStart, i));
 
-  const [{ data: recipes }, { data: plan }] = await Promise.all([
-    supabase.from("recipes").select("id, name").order("name"),
-    supabase
-      .from("meal_plan")
-      .select("id, date, meal_type, recipe_id")
-      .gte("date", weekStart)
-      .lte("date", days[6]),
-  ]);
+  const { data: plan } = await supabase
+    .from("meal_plan")
+    .select("id, date, meal_type, recipe_id")
+    .gte("date", weekStart)
+    .lte("date", days[6]);
 
   return (
     <div className="flex flex-col gap-5">

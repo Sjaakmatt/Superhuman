@@ -8,15 +8,9 @@ export const metadata = { title: "Boodschappen" };
 
 export default async function BoodschappenPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-
   const { data: profile } = await supabase
     .from("profiles")
     .select("timezone")
-    .eq("id", user.id)
     .single();
   const today = todayInTz(profile?.timezone ?? "Europe/Amsterdam");
   const weekStart = shiftDate(today, -(isoWeekday(today) - 1));

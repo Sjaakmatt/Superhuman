@@ -7,15 +7,9 @@ export const metadata = { title: "Calorieën" };
 
 export default async function CalorieenPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-
   const { data: profile } = await supabase
     .from("profiles")
     .select("timezone")
-    .eq("id", user.id)
     .single();
   const today = todayInTz(profile?.timezone ?? "Europe/Amsterdam");
 

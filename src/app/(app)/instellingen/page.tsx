@@ -8,22 +8,21 @@ export const metadata = { title: "Instellingen" };
 
 export default async function InstellingenPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-
-  const [{ data: profile }, { data: reminders }] = await Promise.all([
-    supabase
-      .from("profiles")
-      .select("display_name, timezone")
-      .eq("id", user.id)
-      .single(),
+  const [
+    {
+      data: { user },
+    },
+    { data: profile },
+    { data: reminders },
+  ] = await Promise.all([
+    supabase.auth.getUser(),
+    supabase.from("profiles").select("display_name, timezone").single(),
     supabase
       .from("reminders")
       .select("id, kind, label, schedule, enabled")
       .order("id"),
   ]);
+  if (!user) return null;
 
   return (
     <div className="flex flex-col gap-6">

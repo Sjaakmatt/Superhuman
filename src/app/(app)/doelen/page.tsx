@@ -9,26 +9,17 @@ export const metadata = { title: "Doelen" };
 
 export default async function DoelenPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("timezone")
-    .eq("id", user.id)
-    .single();
+  const [{ data: profile }, { data: goals }, { data: metrics }] =
+    await Promise.all([
+      supabase.from("profiles").select("timezone").single(),
+      supabase
+        .from("goals")
+        .select("id, title, horizon, parent_id, status, target_date, linked_metric_id")
+        .order("id"),
+      supabase.from("metrics").select("id, label").eq("active", true).order("id"),
+    ]);
   const timezone = profile?.timezone ?? "Europe/Amsterdam";
   const today = todayInTz(timezone);
-
-  const [{ data: goals }, { data: metrics }] = await Promise.all([
-    supabase
-      .from("goals")
-      .select("id, title, horizon, parent_id, status, target_date, linked_metric_id")
-      .order("id"),
-    supabase.from("metrics").select("id, label").eq("active", true).order("id"),
-  ]);
 
   // Ritme-% (28d) voor metrics die aan een doel gekoppeld zijn
   const linkedIds = [

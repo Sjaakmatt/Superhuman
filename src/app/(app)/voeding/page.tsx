@@ -7,28 +7,20 @@ export const metadata = { title: "Voeding" };
 
 export default async function VoedingPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("timezone")
-    .eq("id", user.id)
-    .single();
+  const [{ data: profile }, { count: recipeCount }] = await Promise.all([
+    supabase.from("profiles").select("timezone").single(),
+    supabase.from("recipes").select("id", { count: "exact", head: true }),
+  ]);
   const today = todayInTz(profile?.timezone ?? "Europe/Amsterdam");
 
-  const [{ data: checkin }, { data: calorieItems }, { count: recipeCount }] =
-    await Promise.all([
-      supabase
-        .from("food_checkins")
-        .select("satisfied, feeling, note")
-        .eq("date", today)
-        .maybeSingle(),
-      supabase.from("calorie_logs").select("calories").eq("date", today),
-      supabase.from("recipes").select("id", { count: "exact", head: true }),
-    ]);
+  const [{ data: checkin }, { data: calorieItems }] = await Promise.all([
+    supabase
+      .from("food_checkins")
+      .select("satisfied, feeling, note")
+      .eq("date", today)
+      .maybeSingle(),
+    supabase.from("calorie_logs").select("calories").eq("date", today),
+  ]);
 
   const kcalToday = (calorieItems ?? []).reduce(
     (sum, row: { calories: number | null }) => sum + (row.calories ?? 0),

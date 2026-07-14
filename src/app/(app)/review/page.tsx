@@ -9,15 +9,9 @@ export const metadata = { title: "Wekelijkse review" };
 
 export default async function ReviewPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-
   const { data: profile } = await supabase
     .from("profiles")
     .select("timezone")
-    .eq("id", user.id)
     .single();
   const timezone = profile?.timezone ?? "Europe/Amsterdam";
   const today = todayInTz(timezone);

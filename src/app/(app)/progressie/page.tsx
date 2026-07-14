@@ -19,34 +19,26 @@ const LOOKBACK_DAYS = 35;
 
 export default async function ProgressiePage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("timezone")
-    .eq("id", user.id)
-    .single();
+  const [{ data: profile }, { data: attributes }] = await Promise.all([
+    supabase.from("profiles").select("timezone").single(),
+    supabase.from("user_attributes").select("key, level, xp, xp_max"),
+  ]);
   const timezone = profile?.timezone ?? "Europe/Amsterdam";
   const today = todayInTz(timezone);
 
   const cutoff = `${shiftDate(today, -LOOKBACK_DAYS)}T00:00:00Z`;
 
-  const [{ data: attributes }, { data: events }, { data: journals }] =
-    await Promise.all([
-      supabase.from("user_attributes").select("key, level, xp, xp_max"),
-      supabase
-        .from("xp_events")
-        .select("attribute_key, amount, created_at")
-        .gte("created_at", cutoff),
-      supabase
-        .from("journal_entries")
-        .select("date, mood")
-        .gte("date", shiftDate(today, -LOOKBACK_DAYS))
-        .not("mood", "is", null),
-    ]);
+  const [{ data: events }, { data: journals }] = await Promise.all([
+    supabase
+      .from("xp_events")
+      .select("attribute_key, amount, created_at")
+      .gte("created_at", cutoff),
+    supabase
+      .from("journal_entries")
+      .select("date, mood")
+      .gte("date", shiftDate(today, -LOOKBACK_DAYS))
+      .not("mood", "is", null),
+  ]);
 
   // Per attribuut: set van actieve dagen (in de tijdzone van de gebruiker)
   const activeDates = new Map<AttributeKey, Set<string>>(

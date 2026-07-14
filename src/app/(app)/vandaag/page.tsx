@@ -8,33 +8,49 @@ import { TaskStack } from "@/components/task-stack";
 
 export const metadata = { title: "Vandaag" };
 
+const METRIC_COLUMNS =
+  "id, key, label, attribute_key, type, xp_reward, direction, active";
+
 export default async function VandaagPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null; // layout redirect vangt dit al af
 
-  // Eerste bezoek: zorg dat er een basistakenstack is
-  await supabase.rpc("ensure_default_metrics");
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("timezone")
-    .eq("id", user.id)
-    .single();
+  // Batch 1: alles wat niet van de datum afhangt (RLS scopet op de gebruiker)
+  const [{ data: profile }, { data: attributes }, metricsResult] =
+    await Promise.all([
+      supabase.from("profiles").select("timezone").single(),
+      supabase.from("user_attributes").select("key, level, xp, xp_max"),
+      supabase
+        .from("metrics")
+        .select(METRIC_COLUMNS)
+        .eq("active", true)
+        .eq("direction", "input")
+        .eq("cadence", "daily")
+        .order("id"),
+    ]);
   const today = todayInTz(profile?.timezone ?? "Europe/Amsterdam");
 
+  // Eerste bezoek: basistakenstack aanmaken en opnieuw ophalen
+  let metrics = (metricsResult.data ?? []) as MetricRow[];
+  if (metrics.length === 0) {
+    await supabase.rpc("ensure_default_metrics");
+    const { data: seeded } = await supabase
+      .from("metrics")
+      .select(METRIC_COLUMNS)
+      .eq("active", true)
+      .eq("direction", "input")
+      .eq("cadence", "daily")
+      .order("id");
+    metrics = (seeded ?? []) as MetricRow[];
+  }
+
+  // Batch 2: de datumafhankelijke logs van vandaag
   const [
-    { data: attributes },
     { data: water },
     { data: foodCheckin },
-    { data: metrics },
     { data: metricLogs },
     { data: stretchLogs },
     { data: breathworkLogs },
   ] = await Promise.all([
-    supabase.from("user_attributes").select("key, level, xp, xp_max"),
     supabase
       .from("water_logs")
       .select("glasses, goal")
@@ -45,13 +61,6 @@ export default async function VandaagPage() {
       .select("id")
       .eq("date", today)
       .maybeSingle(),
-    supabase
-      .from("metrics")
-      .select("id, key, label, attribute_key, type, xp_reward, direction, active")
-      .eq("active", true)
-      .eq("direction", "input")
-      .eq("cadence", "daily")
-      .order("id"),
     supabase.from("metric_logs").select("metric_id").eq("date", today),
     supabase.from("workout_logs").select("id").eq("date", today).limit(1),
     supabase
@@ -94,7 +103,7 @@ export default async function VandaagPage() {
       done: Boolean(foodCheckin),
       href: "/voeding",
     },
-    ...((metrics ?? []) as MetricRow[]).map(
+    ...metrics.map(
       (m): DayTask => ({
         id: `metric-${m.id}`,
         label: m.label,
