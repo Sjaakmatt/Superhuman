@@ -275,6 +275,9 @@ export default async function VandaagPage() {
         doneKeys={doneKeys}
       />
 
+      {/* Op desktop twee kolommen: core + cellen links, spiegel/water/taken rechts */}
+      <div className="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:items-start lg:gap-8">
+        <div className="flex flex-col gap-6">
       {/* Home-hero: de levende core */}
       {stage ? (
         <section
@@ -313,10 +316,15 @@ export default async function VandaagPage() {
         </section>
       ) : null}
 
-      <MomentumCells attributes={attrRows} fedToday={fedToday} />
-      <Mirror reflections={reflections} />
-      <WaterTracker glasses={glasses} goal={goal} />
-      <TaskStack tasks={tasks} />
+          <MomentumCells attributes={attrRows} fedToday={fedToday} />
+        </div>
+
+        <div className="flex flex-col gap-6">
+          <Mirror reflections={reflections} />
+          <WaterTracker glasses={glasses} goal={goal} />
+          <TaskStack tasks={tasks} />
+        </div>
+      </div>
     </div>
   );
 }
