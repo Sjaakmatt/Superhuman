@@ -299,6 +299,80 @@ export async function generateShoppingList(
   return { items: (data as { items: number }).items };
 }
 
+/** Nieuw doel in de hiërarchie leven → jaar → kwartaal → week. */
+export async function createGoal(input: {
+  title: string;
+  horizon: "leven" | "jaar" | "kwartaal" | "week";
+  parentId?: number;
+  targetDate?: string;
+  linkedMetricId?: number;
+}): Promise<{ error?: string }> {
+  if (!input.title.trim()) return { error: "Geef het doel een titel." };
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Niet ingelogd" };
+
+  const { error } = await supabase.from("goals").insert({
+    user_id: user.id,
+    title: input.title.trim(),
+    horizon: input.horizon,
+    parent_id: input.parentId ?? null,
+    target_date: input.targetDate || null,
+    linked_metric_id: input.linkedMetricId ?? null,
+  });
+  if (error) return { error: error.message };
+  revalidatePath("/doelen");
+  return {};
+}
+
+export async function setGoalStatus(
+  id: number,
+  status: "active" | "done",
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("goals")
+    .update({ status })
+    .eq("id", id);
+  if (error) return { error: error.message };
+  revalidatePath("/doelen");
+  return {};
+}
+
+export async function deleteGoal(id: number): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const { error } = await supabase.from("goals").delete().eq("id", id);
+  if (error) return { error: error.message };
+  revalidatePath("/doelen");
+  return {};
+}
+
+/** Wekelijkse review opslaan; 25 XP Focus bij de eerste save van de week. */
+export async function saveReview(input: {
+  weekStart: string;
+  wins: string;
+  lessons: string;
+  adjustments: string;
+  domainScores: Record<string, number>;
+  focusNext: string;
+}): Promise<ActionResult> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("save_review", {
+    p_week_start: input.weekStart,
+    p_wins: input.wins.trim() || null,
+    p_lessons: input.lessons.trim() || null,
+    p_adjustments: input.adjustments.trim() || null,
+    p_domain_scores: input.domainScores,
+    p_focus_next: input.focusNext.trim() || null,
+  });
+  if (error) return fail(error);
+  revalidatePath("/review");
+  revalidatePath("/vandaag");
+  return { award: parseAward((data as { award: unknown }).award) };
+}
+
 export async function toggleShoppingItem(
   id: number,
   checked: boolean,

@@ -44,6 +44,25 @@ export interface BreathworkPatternRow {
   phases: BreathworkPhase[];
 }
 
+export interface GoalRow {
+  id: number;
+  title: string;
+  horizon: string;
+  parent_id: number | null;
+  status: string;
+  target_date: string | null;
+  linked_metric_id: number | null;
+}
+
+export interface ReviewRow {
+  week_start: string;
+  wins: string | null;
+  lessons: string | null;
+  adjustments: string | null;
+  domain_scores: Record<string, number> | null;
+  focus_next: string | null;
+}
+
 export interface RoutineRow {
   id: number;
   name: string;
