@@ -44,6 +44,61 @@ export interface BreathworkPatternRow {
   phases: BreathworkPhase[];
 }
 
+export interface RoutineRow {
+  id: number;
+  name: string;
+  kind: string;
+}
+
+export interface RoutineExerciseRow {
+  position: number;
+  secs: number | null;
+  reps: number | null;
+  sets: number | null;
+  exercises: ExerciseRow | null;
+}
+
+export interface RecipeIngredient {
+  name: string;
+  qty: number | null;
+  unit: string | null;
+}
+
+export interface RecipeRow {
+  id: number;
+  name: string;
+  ingredients: RecipeIngredient[] | null;
+  calories: number | null;
+  protein: number | null;
+  carbs: number | null;
+  fat: number | null;
+  instructions: string | null;
+}
+
+export interface CalorieLogRow {
+  id: number;
+  item: string | null;
+  calories: number | null;
+  protein: number | null;
+  carbs: number | null;
+  fat: number | null;
+}
+
+export interface MealPlanRow {
+  id: number;
+  date: string;
+  meal_type: string;
+  recipe_id: number | null;
+}
+
+export interface ShoppingItemRow {
+  id: number;
+  name: string;
+  qty: number | null;
+  unit: string | null;
+  checked: boolean;
+}
+
 export interface MeditationRow {
   id: number;
   title: string;

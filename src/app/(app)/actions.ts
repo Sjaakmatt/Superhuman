@@ -120,3 +120,195 @@ export async function logMetric(metricId: number): Promise<ActionResult> {
   revalidatePath("/vandaag");
   return { award: parseAward((data as { award: unknown }).award) };
 }
+
+/** Routine-workout afronden: log + XP (kracht of soepel, eerste per dag). */
+export async function completeWorkout(input: {
+  routineId: number;
+  durationSecs?: number;
+  note?: string;
+}): Promise<ActionResult> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("complete_workout", {
+    p_routine_id: input.routineId,
+    p_duration_secs: input.durationSecs ?? null,
+    p_note: input.note?.trim() || null,
+  });
+  if (error) return fail(error);
+  revalidatePath("/vandaag");
+  revalidatePath("/beweging");
+  return { award: parseAward((data as { award: unknown }).award) };
+}
+
+/** Nieuwe routine met oefeningen (sets/reps/secs). */
+export async function createRoutine(input: {
+  name: string;
+  kind: "workout" | "stretch";
+  exercises: { exerciseId: number; sets?: number; reps?: number; secs?: number }[];
+}): Promise<{ error?: string; routineId?: number }> {
+  if (!input.name.trim() || input.exercises.length === 0) {
+    return { error: "Geef de routine een naam en minstens één oefening." };
+  }
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Niet ingelogd" };
+
+  const { data: routine, error } = await supabase
+    .from("routines")
+    .insert({ user_id: user.id, name: input.name.trim(), kind: input.kind })
+    .select("id")
+    .single();
+  if (error || !routine) return { error: error?.message ?? "Opslaan mislukt" };
+
+  const { error: exError } = await supabase.from("routine_exercises").insert(
+    input.exercises.map((ex, i) => ({
+      routine_id: routine.id,
+      exercise_id: ex.exerciseId,
+      position: i + 1,
+      sets: ex.sets ?? null,
+      reps: ex.reps ?? null,
+      secs: ex.secs ?? null,
+    })),
+  );
+  if (exError) {
+    await supabase.from("routines").delete().eq("id", routine.id);
+    return { error: exError.message };
+  }
+
+  revalidatePath("/beweging");
+  return { routineId: routine.id };
+}
+
+/** Calorie-item loggen (licht hulpmiddel, geen XP en geen budget). */
+export async function addCalorieItem(input: {
+  item: string;
+  calories: number;
+  protein?: number;
+  carbs?: number;
+  fat?: number;
+}): Promise<{ error?: string }> {
+  if (!input.item.trim()) return { error: "Vul een omschrijving in." };
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Niet ingelogd" };
+
+  const { data: today } = await supabase.rpc("user_today");
+  const { error } = await supabase.from("calorie_logs").insert({
+    user_id: user.id,
+    date: today,
+    item: input.item.trim(),
+    calories: input.calories || null,
+    protein: input.protein || null,
+    carbs: input.carbs || null,
+    fat: input.fat || null,
+  });
+  if (error) return { error: error.message };
+  revalidatePath("/voeding/calorieen");
+  return {};
+}
+
+export async function deleteCalorieItem(id: number): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const { error } = await supabase.from("calorie_logs").delete().eq("id", id);
+  if (error) return { error: error.message };
+  revalidatePath("/voeding/calorieen");
+  return {};
+}
+
+/** Nieuw recept met ingrediënten en optionele macro's. */
+export async function createRecipe(input: {
+  name: string;
+  ingredients: { name: string; qty: number | null; unit: string | null }[];
+  calories?: number;
+  protein?: number;
+  carbs?: number;
+  fat?: number;
+  instructions?: string;
+}): Promise<{ error?: string }> {
+  if (!input.name.trim()) return { error: "Geef het recept een naam." };
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Niet ingelogd" };
+
+  const { error } = await supabase.from("recipes").insert({
+    user_id: user.id,
+    name: input.name.trim(),
+    ingredients: input.ingredients.filter((i) => i.name.trim()),
+    calories: input.calories || null,
+    protein: input.protein || null,
+    carbs: input.carbs || null,
+    fat: input.fat || null,
+    instructions: input.instructions?.trim() || null,
+  });
+  if (error) return { error: error.message };
+  revalidatePath("/voeding/recepten");
+  revalidatePath("/voeding/plan");
+  return {};
+}
+
+/** Maaltijd in het weekplan zetten of leegmaken. */
+export async function planMeal(input: {
+  date: string;
+  mealType: "ontbijt" | "lunch" | "diner" | "snack";
+  recipeId: number | null;
+}): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Niet ingelogd" };
+
+  if (input.recipeId === null) {
+    const { error } = await supabase
+      .from("meal_plan")
+      .delete()
+      .eq("date", input.date)
+      .eq("meal_type", input.mealType);
+    if (error) return { error: error.message };
+  } else {
+    const { error } = await supabase.from("meal_plan").upsert(
+      {
+        user_id: user.id,
+        date: input.date,
+        meal_type: input.mealType,
+        recipe_id: input.recipeId,
+      },
+      { onConflict: "user_id,date,meal_type" },
+    );
+    if (error) return { error: error.message };
+  }
+  revalidatePath("/voeding/plan");
+  return {};
+}
+
+/** Boodschappenlijst (opnieuw) genereren uit het weekplan. */
+export async function generateShoppingList(
+  weekStart: string,
+): Promise<{ error?: string; items?: number }> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("generate_shopping_list", {
+    p_week_start: weekStart,
+  });
+  if (error) return { error: error.message };
+  revalidatePath("/voeding/boodschappen");
+  return { items: (data as { items: number }).items };
+}
+
+export async function toggleShoppingItem(
+  id: number,
+  checked: boolean,
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("shopping_items")
+    .update({ checked })
+    .eq("id", id);
+  if (error) return { error: error.message };
+  revalidatePath("/voeding/boodschappen");
+  return {};
+}
