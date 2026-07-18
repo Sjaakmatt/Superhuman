@@ -185,6 +185,30 @@ dashboard, altijd een volgende stap + spiegel; acties hebben voelbaar
 gevolg (momentum, ademende cellen, verval); groei transformeert zichtbaar
 (core-evolutie + ceremonie); elke sessie stuurt en houdt vast.
 
+## Beweging-diepte & visuele reset (SUPERHUMAN_OS_BEWEGING_BRIEF.md)
+
+**Kern:** calisthenics-**ladders** — per bewegingspatroon een reeks treden
+van makkelijk→moeilijk. Progressie (trede omhoog) ís de beloning, geen XP.
+De sessie-engine weet waar je op elke ladder staat en leidt je set voor set.
+⚠️ Afwijking van de briefing: de ladder-oefeningen staan in een **eigen
+tabel `ladder_exercises`** (niet de bestaande `exercises` vervangen — die
+voedt nog de mobiliteit/stretch-flow die de briefing behoudt).
+
+- ✅ **T0 — Data & content**: migration `..015_training_ladders.sql`
+  (`movement_patterns`, `ladder_exercises`, `session_templates`+`_slots`,
+  `user_ladder_state`, `run_logs`; `workout_logs` + `ladder_exercise_id`/
+  `rung`; signup-trigger + `ensure_ladder_state`; RLS op alles). Seed
+  `..016`: 9 patronen, **46 treden** volledig gecoacht (setup/execution/
+  breathing/mistakes + prescriptie + advance + regressie/progressie via
+  slug), 2 sessie-templates (`kracht_a`/`kracht_b`) + slots. Kalibratie:
+  trek_vert op trede 3 (profiel 1-3 pull-ups). Alles op het project +
+  RLS geverifieerd (anon ziet niets, gedeeld leesbaar, state afgeschermd).
+- ⬜ **T1 — Engine (lib)** · ⬜ **T2 — Sessie-player + Vandaag-koppeling** ·
+  ⬜ **T3 — Hub, ladder-map & bibliotheek** · ⬜ **T4 — Hardlopen &
+  mobiliteit** · ⬜ **T5 — Visuele reset (tokens §7)**
+
+Commit per fase; stop na elke fase voor akkoord.
+
 Commit per fase; stop na elke fase voor akkoord van de gebruiker.
 
 ## Commands
