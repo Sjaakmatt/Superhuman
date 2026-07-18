@@ -110,9 +110,20 @@ export function pickNowBlock(
         const key = blockMeta(b.kind).doneKey;
         return !key || !doneKeys.has(key);
       })
-      .sort((a, b) => a.start_min - b.start_min)[0] ?? null;
+      // Echte, afvinkbare acties eerst (een maaltijd/water blijft z'n hele
+      // venster "open" en zou anders een later blok maskeren); daarbinnen
+      // het meest recent gestarte blok — dat is wat nú net begon.
+      .sort((a, b) => {
+        const ka = blockMeta(a.kind).doneKey ? 1 : 0;
+        const kb = blockMeta(b.kind).doneKey ? 1 : 0;
+        if (ka !== kb) return kb - ka;
+        return b.start_min - a.start_min;
+      })[0] ?? null;
 
-  const next = today.find((b) => b.start_min > nowMin) ?? null;
+  // Straks-preview: het eerstvolgende blok dat nog niet begon en niet al
+  // als "nu" getoond wordt.
+  const next =
+    today.find((b) => b.start_min > nowMin && b.id !== active?.id) ?? null;
 
   return { active, next };
 }
