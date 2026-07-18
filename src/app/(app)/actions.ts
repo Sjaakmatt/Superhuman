@@ -268,6 +268,30 @@ export async function completeLadderSession(input: {
   };
 }
 
+/** Run loggen: run_log + vitaliteit-XP (eerste run per dag). */
+export async function logRun(input: {
+  kind: string;
+  distanceKm?: number | null;
+  durationMin?: number | null;
+  rpe?: number | null;
+  note?: string | null;
+  ranOn?: string | null;
+}): Promise<ActionResult> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("log_run", {
+    p_kind: input.kind,
+    p_distance_km: input.distanceKm ?? null,
+    p_duration_min: input.durationMin ?? null,
+    p_rpe: input.rpe ?? null,
+    p_note: input.note?.trim() || null,
+    p_ran_on: input.ranOn ?? null,
+  });
+  if (error) return fail(error);
+  revalidatePath("/beweging/hardlopen");
+  revalidatePath("/vandaag");
+  return { award: parseAward((data as { award: unknown }).award) };
+}
+
 /** Nieuwe routine met oefeningen (sets/reps/secs). */
 export async function createRoutine(input: {
   name: string;

@@ -235,7 +235,15 @@ voedt nog de mobiliteit/stretch-flow die de briefing behoudt).
   `/beweging/bibliotheek/[slug]` met volledige coaching + status ("dit is
   jouw huidige trede"). Losse ingangen `/beweging/mobiliteit` (stretch-flows)
   en `/beweging/hardlopen` (stub voor T4).
-- ⬜ **T4 — Hardlopen & mobiliteit** · ⬜ **T5 — Visuele reset (tokens §7)**
+- ✅ **T4 — Hardlopen & mobiliteit**: migration `..018` (`log_run` →
+  run_log + vitaliteit 30 XP eerste run/dag; conditioning voedt vitaliteit).
+  `src/lib/running.ts` (paceMinPerKm/formatPace, weekStartOf, weeklyVolume,
+  runSummary — puur, 4 vitest-tests). `/beweging/hardlopen` compleet:
+  `RunLogger` (soort, afstand, duur, RPE, datum, notitie → live tempo),
+  samenvattingstegels (weekvolume, runs, gem. tempo), `RunTrend` (Recharts:
+  weekvolume-bars + tempo-lijn min/km, lager=sneller), recente runs. Mobiliteit
+  als **dagelijkse flow**: `/beweging/mobiliteit` toont vandaag-afgerond-status.
+- ⬜ **T5 — Visuele reset (tokens §7)**
 
 Commit per fase; stop na elke fase voor akkoord.
 

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { todayInTz } from "@/lib/xp";
 import type { RoutineRow } from "@/lib/types";
 
 export const metadata = { title: "Mobiliteit" };
@@ -24,13 +25,28 @@ function metaLine(r: RoutineRow): string {
 
 export default async function MobiliteitPage() {
   const supabase = await createClient();
-  const { data: routines } = await supabase
-    .from("routines")
-    .select("id, name, kind, description, duration_min, level, moment")
-    .eq("kind", "stretch")
-    .order("duration_min");
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("timezone")
+    .single();
+  const today = todayInTz(profile?.timezone ?? "Europe/Amsterdam");
+
+  const [{ data: routines }, { data: doneToday }] = await Promise.all([
+    supabase
+      .from("routines")
+      .select("id, name, kind, description, duration_min, level, moment")
+      .eq("kind", "stretch")
+      .order("duration_min"),
+    supabase
+      .from("workout_logs")
+      .select("id, routines!inner(kind)")
+      .eq("date", today)
+      .eq("routines.kind", "stretch")
+      .limit(1),
+  ]);
 
   const progs = (routines ?? []) as RoutineRow[];
+  const done = (doneToday ?? []).length > 0;
 
   return (
     <div className="flex flex-col gap-5">
@@ -45,6 +61,37 @@ export default async function MobiliteitPage() {
         <p className="mt-1 text-sm text-muted">
           Begeleide stretch- en mobiliteitsflows met timer en ademindicator —
           houd los wat vastzit.
+        </p>
+      </div>
+
+      {/* Dagelijkse flow: vandaag-status */}
+      <div
+        className="flex items-center gap-3 rounded-2xl border px-4 py-3"
+        style={
+          done
+            ? {
+                borderColor: "var(--attr-soepel)",
+                background: "color-mix(in srgb, var(--attr-soepel) 8%, var(--card))",
+              }
+            : { borderColor: "var(--line)", background: "var(--card)" }
+        }
+      >
+        <span
+          aria-hidden
+          className="grid size-8 shrink-0 place-items-center rounded-full text-sm"
+          style={{
+            background: done
+              ? "var(--attr-soepel)"
+              : "color-mix(in srgb, var(--attr-soepel) 16%, transparent)",
+            color: done ? "var(--ink)" : "var(--attr-soepel)",
+          }}
+        >
+          {done ? "✓" : "~"}
+        </span>
+        <p className="text-sm">
+          {done
+            ? "Vandaag al bewogen — je lichaam dankt je."
+            : "Nog niet los vandaag. Eén korte flow is genoeg."}
         </p>
       </div>
 
