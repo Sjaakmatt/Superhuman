@@ -8,8 +8,8 @@ export default function manifest(): MetadataRoute.Manifest {
       "Persoonlijk become-superhuman dashboard: lichaam, geest, voeding, beweging en discipline in één gegamificeerd systeem.",
     start_url: "/vandaag",
     display: "standalone",
-    background_color: "#0D0C16",
-    theme_color: "#0D0C16",
+    background_color: "#0A0A0B",
+    theme_color: "#0A0A0B",
     icons: [
       {
         src: "/icons/icon-192.png",

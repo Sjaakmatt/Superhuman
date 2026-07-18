@@ -28,7 +28,9 @@ interface SetState {
   done: boolean;
 }
 
-const KRACHT = "var(--attr-kracht)";
+const KRACHT = "var(--effort)";
+const CALM = "var(--calm)";
+const ALIVE = "var(--alive)";
 
 function formatSecs(total: number): string {
   const m = Math.floor(total / 60);
@@ -503,15 +505,15 @@ function RestStep({
     <div
       className="flex flex-col items-center gap-2 rounded-2xl border px-4 py-8 text-center"
       style={{
-        borderColor: KRACHT,
-        background: `color-mix(in srgb, ${KRACHT} 7%, transparent)`,
+        borderColor: CALM,
+        background: `color-mix(in srgb, ${CALM} 7%, transparent)`,
       }}
       aria-live="polite"
     >
       <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
         Rust
       </p>
-      <p className="font-mono text-5xl font-semibold" style={{ color: KRACHT }}>
+      <p className="font-mono text-5xl font-semibold" style={{ color: CALM }}>
         {secs}s
       </p>
       <p className="text-xs text-muted">
@@ -567,14 +569,14 @@ function SessionSummary({
         <div
           className="flex w-full flex-col gap-4 rounded-2xl border p-4"
           style={{
-            borderColor: KRACHT,
-            background: `color-mix(in srgb, ${KRACHT} 8%, transparent)`,
+            borderColor: ALIVE,
+            background: `color-mix(in srgb, ${ALIVE} 8%, transparent)`,
             animation: "rise-in .5s ease",
           }}
         >
           <p
             className="font-mono text-xs font-bold uppercase tracking-[0.3em]"
-            style={{ color: KRACHT }}
+            style={{ color: ALIVE }}
           >
             Trede omhoog
           </p>

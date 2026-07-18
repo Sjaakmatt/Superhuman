@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { blockMeta, blockTime, DAY_CODES, pickNowBlock } from "@/lib/now";
 import type { ScheduleBlockRow } from "@/lib/types";
 
-const CORE = "var(--attr-focus)";
+const CORE = "var(--effort)";
 
 /** Nu-minuut + dagcode in een tijdzone; tikt elke minuut. */
 function useNow(timezone: string): { min: number; day: string } | null {

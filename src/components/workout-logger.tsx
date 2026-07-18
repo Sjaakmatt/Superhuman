@@ -211,17 +211,20 @@ export function WorkoutLogger({
         </p>
       </div>
 
-      {/* Rust-afteller */}
+      {/* Rust-afteller — koel accent */}
       {rest ? (
         <div
           className="rounded-2xl border px-4 py-3 text-center"
           style={{
-            borderColor: KRACHT,
-            background: `color-mix(in srgb, ${KRACHT} 8%, transparent)`,
+            borderColor: "var(--calm)",
+            background: "color-mix(in srgb, var(--calm) 8%, transparent)",
           }}
           aria-live="polite"
         >
-          <p className="font-mono text-2xl font-semibold" style={{ color: KRACHT }}>
+          <p
+            className="font-mono text-2xl font-semibold"
+            style={{ color: "var(--calm)" }}
+          >
             {rest.secs}s
           </p>
           <p className="mt-0.5 text-xs text-muted">{rest.label}</p>

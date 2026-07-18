@@ -243,7 +243,20 @@ voedt nog de mobiliteit/stretch-flow die de briefing behoudt).
   samenvattingstegels (weekvolume, runs, gem. tempo), `RunTrend` (Recharts:
   weekvolume-bars + tempo-lijn min/km, lager=sneller), recente runs. Mobiliteit
   als **dagelijkse flow**: `/beweging/mobiliteit` toont vandaag-afgerond-status.
-- ⬜ **T5 — Visuele reset (tokens §7)**
+- ✅ **T5 — Visuele reset**: nieuw palet in `globals.css` (bijna-zwart
+  `--bg #0A0A0B`, `--surface-1/2/3`, `--hairline`; betekenislaag
+  `--effort`/`--calm`/`--alive`) met legacy-namen als aliassen zodat het hele
+  OS mee-restyled. Typografie: **Space Grotesk** (display, koppen met
+  negatieve tracking) · **Inter** (body) · **JetBrains Mono** (data/eyebrows).
+  Betekenis in kleur: warm=inspanning (sets, Nu-actie), koel=rust (rust-timers
+  → `--calm`), pop=progressie (trede-ceremonie + ladder-doeltrede → `--alive`).
+  themeColor/manifest/icon naar `#0A0A0B`. Focus-ring koel; reduced-motion
+  intact.
+
+**De hele Beweging-brief (T0–T5) is af.** Kracht is een set-voor-set
+begeleide ladder-sessie met voelbare progressie; hardlopen en mobiliteit
+hebben hun eigen spoor; de encyclopedie is diep en per-ladder; en het OS
+draagt de nieuwe, rustige bijna-zwarte stijl met de ladder als signatuur.
 
 Commit per fase; stop na elke fase voor akkoord.
 

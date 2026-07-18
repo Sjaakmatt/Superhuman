@@ -1,42 +1,77 @@
 @import "tailwindcss";
 
 /*
- * Superhuman OS design tokens (build brief §3).
- * Donker, levend, instrument-achtig: één bold element (de living core),
- * de rest rustig en gedisciplineerd.
+ * Superhuman OS design tokens — visuele reset (beweging-brief §7).
+ * Richting: aligned-performance — bijna-zwart, editorial, rustige autoriteit,
+ * veel witruimte. Eén gedisciplineerde kleurlaag die betekenis draagt:
+ * warm = inspanning/kracht, koel = herstel/rust, pop = progressie (levend).
+ * De ladder is het signatuur-element; daar leggen we de boldness.
  */
 :root {
-  /* Basis */
-  --ink: #0d0c16; /* achtergrond diep */
-  --ink-2: #15131f; /* panelen / sheets */
-  --card: #1b1826;
-  --card-2: #221e30;
-  --line: #2c2740; /* borders */
-  --text: #ece9f6;
-  --muted: #8b86a6;
+  /* Oppervlakken — bijna-zwart met subtiele lagen */
+  --bg: #0a0a0b;
+  --surface-1: #0f0f12;
+  --surface-2: #161619;
+  --surface-3: #1c1c21;
+  --hairline: #24242a;
+  --hairline-2: #2e2e36;
 
-  /* Attribuut-kleuren (elk attribuut heeft een eigen gloed) */
+  /* Tekst */
+  --text: #f3f2ef;
+  --text-dim: #9a9aa4;
+  --text-mute: #62626d;
+
+  /* Betekenislaag: warm / koel / pop */
+  --effort: #ff8a4c; /* kracht, inspanning, "aan" */
+  --effort-hi: #ffb27a;
+  --calm: #57e3c6; /* herstel, rust, "uit", rusttimer */
+  --alive: #c6f24e; /* progressie, trede omhoog, "levend" */
+
+  /* Legacy-namen: aliassen naar het nieuwe palet zodat het hele OS
+     mee-restyled zonder elke component te herschrijven. */
+  --ink: var(--bg);
+  --ink-2: var(--surface-1);
+  --card: var(--surface-2);
+  --card-2: var(--surface-3);
+  --line: var(--hairline);
+  --muted: var(--text-dim);
+
+  /* Attribuut-kleuren: nog als kleine functionele accenten (core, cellen,
+     domeinen), niet langer als hoofdkleuren. Kracht == effort. */
   --attr-vitaliteit: #39e0c4; /* aqua */
-  --attr-kracht: #ff8a4c; /* amber */
+  --attr-kracht: #ff8a4c; /* amber — effort */
   --attr-soepel: #b58cff; /* violet */
   --attr-voeding: #8fe05b; /* lime */
   --attr-focus: #5b9bff; /* blauw */
   --attr-geest: #ff6fa8; /* rose */
 
-  /* Chart-serie-kleuren: donkerder stappen van focus/geest, gevalideerd
-     (lightness-band, CVD-separatie en contrast) tegen --card */
+  /* Chart-serie-kleuren: gevalideerd (lightness-band, CVD, contrast) */
   --chart-input: #3d7eea;
   --chart-output: #f0518d;
 }
 
 @theme inline {
+  --color-bg: var(--bg);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-hairline: var(--hairline);
+  --color-hairline-2: var(--hairline-2);
+
   --color-ink: var(--ink);
   --color-ink-2: var(--ink-2);
   --color-card: var(--card);
   --color-card-2: var(--card-2);
   --color-line: var(--line);
   --color-text: var(--text);
+  --color-text-dim: var(--text-dim);
+  --color-text-mute: var(--text-mute);
   --color-muted: var(--muted);
+
+  --color-effort: var(--effort);
+  --color-effort-hi: var(--effort-hi);
+  --color-calm: var(--calm);
+  --color-alive: var(--alive);
 
   --color-vitaliteit: var(--attr-vitaliteit);
   --color-kracht: var(--attr-kracht);
@@ -45,15 +80,25 @@
   --color-focus-attr: var(--attr-focus);
   --color-geest: var(--attr-geest);
 
-  /* Sans voor UI, monospace voor data en getallen (levels, XP, timers) */
-  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  /* Display/UI: strakke grotesk. Body: rustige sans. Data: mono. */
+  --font-display: var(--font-space-grotesk), system-ui, sans-serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 }
 
 body {
-  background: var(--ink);
+  background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
+  line-height: 1.5;
+}
+
+/* Koppen in de grotesk met negatieve tracking — editorial, memorabel. */
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
 }
 
 /* Data/getallen krijgen tabular figures zodat timers en XP niet verspringen */
@@ -61,9 +106,9 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Zichtbare keyboard-focus, in de kleur van het actieve element */
+/* Zichtbare keyboard-focus, koel accent */
 :focus-visible {
-  outline: 2px solid var(--attr-focus);
+  outline: 2px solid var(--calm);
   outline-offset: 2px;
 }
 

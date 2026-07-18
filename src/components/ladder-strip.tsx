@@ -1,6 +1,7 @@
 import type { LadderStrip as Strip } from "@/lib/training/data";
 
-const KRACHT = "var(--attr-kracht)";
+const EFFORT = "var(--effort)";
+const ALIVE = "var(--alive)";
 
 /**
  * Visualiseert een ladder: treden van makkelijk (onder) naar moeilijk (boven),
@@ -43,18 +44,16 @@ export function LadderStrip({
                 aria-hidden
                 className="grid size-5 shrink-0 place-items-center rounded-full font-mono text-[10px] transition-colors"
                 style={
-                  current || target
-                    ? {
-                        background: KRACHT,
-                        color: "var(--ink)",
-                        boxShadow: target ? `0 0 14px ${KRACHT}` : undefined,
-                      }
-                    : {
-                        background: reached
-                          ? "color-mix(in srgb, var(--attr-kracht) 22%, transparent)"
-                          : "var(--ink-2)",
-                        color: "var(--muted)",
-                      }
+                  target
+                    ? { background: ALIVE, color: "var(--bg)", boxShadow: `0 0 14px ${ALIVE}` }
+                    : current
+                      ? { background: EFFORT, color: "var(--bg)" }
+                      : {
+                          background: reached
+                            ? "color-mix(in srgb, var(--effort) 22%, transparent)"
+                            : "var(--surface-1)",
+                          color: "var(--text-mute)",
+                        }
                 }
               >
                 {r.rung}
