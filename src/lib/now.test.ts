@@ -68,6 +68,17 @@ describe("pickNowBlock", () => {
     expect(active?.id).toBe(bureau.id);
   });
 
+  it("verbergt een blok dat handmatig is afgevinkt", () => {
+    const { active } = pickNowBlock(
+      [DINER, UNWIND],
+      1234,
+      "SA",
+      new Set(),
+      new Set([UNWIND.id]), // unwind afgevinkt → diner blijft over
+    );
+    expect(active?.id).toBe(DINER.id);
+  });
+
   it("geeft geen actief blok als niets in het venster valt", () => {
     const { active, next } = pickNowBlock([UNWIND], 600, "MO", new Set());
     expect(active).toBeNull();

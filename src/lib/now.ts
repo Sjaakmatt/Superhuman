@@ -96,6 +96,7 @@ export function pickNowBlock(
   nowMin: number,
   dayCode: string,
   doneKeys: Set<string>,
+  doneBlockIds: Set<number> = new Set(),
 ): NowProposal {
   const today = blocks
     .filter((b) => b.enabled && b.days.includes(dayCode))
@@ -107,6 +108,7 @@ export function pickNowBlock(
         if (nowMin < b.start_min || nowMin > b.start_min + b.window_min) {
           return false;
         }
+        if (doneBlockIds.has(b.id)) return false; // handmatig afgevinkt
         const key = blockMeta(b.kind).doneKey;
         return !key || !doneKeys.has(key);
       })

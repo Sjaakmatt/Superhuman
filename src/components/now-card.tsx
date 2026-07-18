@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState, useTransition } from "react";
+import { setBlockDone } from "@/app/(app)/actions";
 import { blockMeta, blockTime, DAY_CODES, pickNowBlock } from "@/lib/now";
+import { haptic } from "@/lib/haptics";
 import type { ScheduleBlockRow } from "@/lib/types";
 
 const CORE = "var(--effort)";
@@ -38,18 +41,40 @@ interface NowCardProps {
   timezone: string;
   blocks: ScheduleBlockRow[];
   doneKeys: string[];
+  doneBlockIds: number[];
 }
 
-export function NowCard({ timezone, blocks, doneKeys }: NowCardProps) {
+export function NowCard({
+  timezone,
+  blocks,
+  doneKeys,
+  doneBlockIds,
+}: NowCardProps) {
   const now = useNow(timezone);
+  // Optimistisch afvinken: meteen weg van de kaart, DB volgt.
+  const [localDone, setLocalDone] = useState<number[]>([]);
+  const [pending, startTransition] = useTransition();
+  const router = useRouter();
+
   if (!now || blocks.length === 0) return null;
 
+  const doneIds = new Set<number>([...doneBlockIds, ...localDone]);
   const { active, next } = pickNowBlock(
     blocks,
     now.min,
     now.day,
     new Set(doneKeys),
+    doneIds,
   );
+
+  function markDone(id: number) {
+    setLocalDone((prev) => [...prev, id]);
+    haptic("tick");
+    startTransition(async () => {
+      await setBlockDone(id, true);
+      router.refresh();
+    });
+  }
 
   // Alles voor nu gedaan: rustige "je bent bij"-staat met de straks-preview
   if (!active) {
@@ -98,13 +123,23 @@ export function NowCard({ timezone, blocks, doneKeys }: NowCardProps) {
         ) : null}
       </div>
       <p className="mt-2 text-sm leading-relaxed">{meta.line(active.label)}</p>
-      <Link
-        href={meta.href(active.ref_id)}
-        className="mt-3 inline-flex rounded-lg px-4 py-2 text-sm font-semibold text-ink transition-opacity hover:opacity-90"
-        style={{ background: CORE }}
-      >
-        {meta.cta}
-      </Link>
+      <div className="mt-3 flex items-center gap-2">
+        <Link
+          href={meta.href(active.ref_id)}
+          className="inline-flex rounded-lg px-4 py-2 text-sm font-semibold text-ink transition-opacity hover:opacity-90"
+          style={{ background: CORE }}
+        >
+          {meta.cta}
+        </Link>
+        <button
+          type="button"
+          onClick={() => markDone(active.id)}
+          disabled={pending}
+          className="inline-flex items-center gap-1.5 rounded-lg border border-line px-3.5 py-2 text-sm text-muted transition-colors hover:text-text disabled:opacity-50"
+        >
+          <span aria-hidden>✓</span> Klaar
+        </button>
+      </div>
     </section>
   );
 }

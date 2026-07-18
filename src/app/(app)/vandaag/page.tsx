@@ -85,6 +85,7 @@ export default async function VandaagPage() {
     { data: recentEvents },
     { data: journals },
     { data: blocks },
+    { data: blockDone },
     { data: meditationLogs },
     { data: journalToday },
     { data: reviewRow },
@@ -121,6 +122,7 @@ export default async function VandaagPage() {
       .from("schedule_blocks")
       .select("id, label, kind, ref_id, start_min, window_min, days, enabled")
       .eq("enabled", true),
+    supabase.from("block_completions").select("block_id").eq("date", today),
     supabase
       .from("session_logs")
       .select("id")
@@ -195,6 +197,9 @@ export default async function VandaagPage() {
   if ((journalToday ?? []).length > 0) doneKeys.push("journal");
   if (reviewRow) doneKeys.push("review");
   const scheduleBlocks = (blocks ?? []) as ScheduleBlockRow[];
+  const doneBlockIds = ((blockDone ?? []) as { block_id: number }[]).map(
+    (r) => r.block_id,
+  );
 
   // De spiegel: 2 gerankte regels uit echte data
   const reflections = computeReflections({
@@ -273,6 +278,7 @@ export default async function VandaagPage() {
         timezone={timezone}
         blocks={scheduleBlocks}
         doneKeys={doneKeys}
+        doneBlockIds={doneBlockIds}
       />
 
       {/* Op desktop twee kolommen: core + cellen links, spiegel/water/taken rechts */}

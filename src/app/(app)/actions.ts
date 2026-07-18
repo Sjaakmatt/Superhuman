@@ -47,6 +47,21 @@ export async function awardXp(
   return { award: parseAward(data) };
 }
 
+/** Een dagritme-blok afvinken (of ontvinken) voor vandaag. */
+export async function setBlockDone(
+  blockId: number,
+  done: boolean,
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("set_block_done", {
+    p_block_id: blockId,
+    p_done: done,
+  });
+  if (error) return { error: error.message };
+  revalidatePath("/vandaag");
+  return {};
+}
+
 /** Evolutie-ceremonie bevestigen: stage onthouden zodat hij één keer toont. */
 export async function ackStage(ordinal: number): Promise<{ error?: string }> {
   const supabase = await createClient();
