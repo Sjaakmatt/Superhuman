@@ -203,7 +203,15 @@ voedt nog de mobiliteit/stretch-flow die de briefing behoudt).
   slug), 2 sessie-templates (`kracht_a`/`kracht_b`) + slots. Kalibratie:
   trek_vert op trede 3 (profiel 1-3 pull-ups). Alles op het project +
   RLS geverifieerd (anon ziet niets, gedeeld leesbaar, state afgeschermd).
-- ⬜ **T1 — Engine (lib)** · ⬜ **T2 — Sessie-player + Vandaag-koppeling** ·
+- ✅ **T1 — Engine (lib)**: `src/lib/training/` — `ladders.ts`
+  (buildLadderIndex, exerciseAtRung, clampRung, next/prevRung),
+  `generateSession.ts` (slot→trede, target, tempo, rust, vorige keer;
+  `sessionKeyForWeek` A/B), `progression.ts` (evaluateAdvance,
+  applyProgression: promotie bij `metStreak>=2`, geen auto-degradatie,
+  suggestsRegression), `sessionMachine.ts` (buildStrengthSteps: platte
+  panel/set/rest/summary-tijdlijn). Pure + getest met **vitest** (`npm test`,
+  11 tests). Testfiles buiten de Next-build (tsconfig exclude).
+- ⬜ **T2 — Sessie-player + Vandaag-koppeling** ·
   ⬜ **T3 — Hub, ladder-map & bibliotheek** · ⬜ **T4 — Hardlopen &
   mobiliteit** · ⬜ **T5 — Visuele reset (tokens §7)**
 
