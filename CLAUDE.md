@@ -225,8 +225,17 @@ voedt nog de mobiliteit/stretch-flow die de briefing behoudt).
   client vertrouwd; drempels uit DB) → `user_ladder_state`-upsert in
   `completeLadderSession`. Nu-motor 'workout' → `/beweging/sessie/auto`;
   kracht-CTA op de Beweging-hub.
-- ⬜ **T3 — Hub, ladder-map & bibliotheek** · ⬜ **T4 — Hardlopen &
-  mobiliteit** · ⬜ **T5 — Visuele reset (tokens §7)**
+- ✅ **T3 — Hub, ladder-map & bibliotheek**: data-laag `loadLadderMap`/
+  `loadLadderDetail`/`stripFromEntry`. `/beweging` herbouwd: Vandaag-kaart
+  (krachtsessie op trainingsdag, anders rustdag→mobiliteit), **ladder-map**
+  per patroon gegroepeerd op categorie (kracht/elasticiteit/mobiliteit) met
+  horizontale sporten (`LadderMapRow`) — trede X/Y + volgende trede in één
+  blik. Encyclopedie `/beweging/bibliotheek` herzien rond de ladders
+  (per patroon, makkelijk→moeilijk, huidige trede gemarkeerd), detailpagina
+  `/beweging/bibliotheek/[slug]` met volledige coaching + status ("dit is
+  jouw huidige trede"). Losse ingangen `/beweging/mobiliteit` (stretch-flows)
+  en `/beweging/hardlopen` (stub voor T4).
+- ⬜ **T4 — Hardlopen & mobiliteit** · ⬜ **T5 — Visuele reset (tokens §7)**
 
 Commit per fase; stop na elke fase voor akkoord.
 

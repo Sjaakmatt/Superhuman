@@ -1,5 +1,11 @@
 import type { createClient } from "@/lib/supabase/server";
-import { buildLadderIndex, ladderFor, type LadderIndex } from "./ladders";
+import {
+  buildLadderIndex,
+  exerciseAtRung,
+  ladderFor,
+  nextRungExercise,
+  type LadderIndex,
+} from "./ladders";
 import { generateSession, sessionKeyForWeek } from "./generateSession";
 import type {
   LadderExercise,
@@ -256,6 +262,73 @@ export function resolveSessionKey(key: string, today: string): string {
   return sessionKeyForWeek(epochWeek);
 }
 
+/** Eén patroon in de ladder-map: waar sta je, wat is de volgende trede. */
+export interface LadderMapEntry {
+  pattern: MovementPattern;
+  currentRung: number;
+  metStreak: number;
+  current: LadderExercise | null;
+  next: LadderExercise | null;
+  rungs: LadderExercise[];
+}
+
+/** Ladder-map over alle patronen (voor de hub + encyclopedie-overzicht). */
+export async function loadLadderMap(
+  supabase: Supabase,
+): Promise<LadderMapEntry[]> {
+  const { patterns, keyById } = await loadPatterns(supabase);
+  const [index, state] = await Promise.all([
+    loadLadderIndex(supabase, keyById),
+    loadLadderState(supabase, keyById),
+  ]);
+  return patterns.map((p) => {
+    const st = state.get(p.key);
+    const currentRung = st?.currentRung ?? 1;
+    return {
+      pattern: p,
+      currentRung,
+      metStreak: st?.metStreak ?? 0,
+      current: exerciseAtRung(index, p.key, currentRung),
+      next: nextRungExercise(index, p.key, currentRung),
+      rungs: ladderFor(index, p.key),
+    };
+  });
+}
+
+/** Detail van één ladder-oefening + jouw status op die ladder. */
+export interface LadderDetail {
+  entry: LadderMapEntry;
+  exercise: LadderExercise;
+  isCurrent: boolean;
+}
+
+export async function loadLadderDetail(
+  supabase: Supabase,
+  slug: string,
+): Promise<LadderDetail | null> {
+  const { patterns, keyById } = await loadPatterns(supabase);
+  const [index, state] = await Promise.all([
+    loadLadderIndex(supabase, keyById),
+    loadLadderState(supabase, keyById),
+  ]);
+  const exercise = index.bySlug.get(slug);
+  if (!exercise) return null;
+  const pattern = patterns.find((p) => p.key === exercise.patternKey);
+  if (!pattern) return null;
+
+  const st = state.get(pattern.key);
+  const currentRung = st?.currentRung ?? 1;
+  const entry: LadderMapEntry = {
+    pattern,
+    currentRung,
+    metStreak: st?.metStreak ?? 0,
+    current: exerciseAtRung(index, pattern.key, currentRung),
+    next: nextRungExercise(index, pattern.key, currentRung),
+    rungs: ladderFor(index, pattern.key),
+  };
+  return { entry, exercise, isCurrent: exercise.rung === currentRung };
+}
+
 /** De ladder van één patroon met de trede waar de gebruiker staat. */
 export interface LadderStrip {
   patternKey: PatternKey;
@@ -267,6 +340,20 @@ export interface LadderStrip {
 export interface SessionBundle {
   plan: SessionPlan;
   ladders: LadderStrip[];
+}
+
+/** Map-entry → strip voor de LadderStrip-component. */
+export function stripFromEntry(entry: LadderMapEntry): LadderStrip {
+  return {
+    patternKey: entry.pattern.key,
+    label: entry.pattern.label,
+    currentRung: entry.currentRung,
+    rungs: entry.rungs.map((e) => ({
+      rung: e.rung,
+      name: e.name,
+      slug: e.slug,
+    })),
+  };
 }
 
 /**

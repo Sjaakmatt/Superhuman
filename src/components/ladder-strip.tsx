@@ -10,10 +10,12 @@ const KRACHT = "var(--attr-kracht)";
 export function LadderStrip({
   strip,
   targetRung,
+  targetLabel = "nieuw",
   compact = false,
 }: {
   strip: Strip;
   targetRung?: number;
+  targetLabel?: string;
   compact?: boolean;
 }) {
   // Van moeilijk naar makkelijk tonen: de top is het doel
@@ -63,7 +65,7 @@ export function LadderStrip({
                 }`}
               >
                 {r.name}
-                {current ? " · nu" : target ? " · nieuw" : ""}
+                {current ? " · nu" : target ? ` · ${targetLabel}` : ""}
               </span>
             </li>
           );

@@ -1,171 +1,207 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import type { RoutineRow } from "@/lib/types";
+import { todayInTz } from "@/lib/xp";
+import { isoWeekday } from "@/lib/streaks";
+import { loadLadderMap, resolveSessionKey } from "@/lib/training/data";
+import { LadderMapRow } from "@/components/ladder-map-row";
 
 export const metadata = { title: "Beweging" };
 
-const MOMENT_LABEL: Record<string, string> = {
-  ochtend: "ochtend",
-  desk: "tussendoor",
-  avond: "avond",
-  training: "training",
-  any: "altijd",
-};
+const DAY_CODES = ["MO", "TU", "WE", "TH", "FR", "SA", "SU"];
 
-function metaLine(r: RoutineRow): string {
-  return [
-    r.duration_min ? `${r.duration_min} min` : null,
-    r.moment && MOMENT_LABEL[r.moment] ? MOMENT_LABEL[r.moment] : null,
-    r.level,
-  ]
-    .filter(Boolean)
-    .join(" · ");
-}
+const CATEGORIES: {
+  key: string;
+  label: string;
+  color: string;
+}[] = [
+  { key: "kracht", label: "Kracht", color: "var(--attr-kracht)" },
+  { key: "elasticiteit", label: "Elasticiteit", color: "var(--attr-vitaliteit)" },
+  { key: "mobiliteit", label: "Mobiliteit", color: "var(--attr-soepel)" },
+];
+
+const SESSION_LABEL: Record<string, string> = {
+  kracht_a: "Kracht A · trek-nadruk",
+  kracht_b: "Kracht B · duw-nadruk",
+};
 
 export default async function BewegingPage() {
   const supabase = await createClient();
-  const [{ data: routines }, { count: exerciseCount }] = await Promise.all([
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("timezone")
+    .single();
+  const timezone = profile?.timezone ?? "Europe/Amsterdam";
+  const today = todayInTz(timezone);
+  const dayCode = DAY_CODES[isoWeekday(today) - 1];
+
+  const [{ data: workoutBlock }, ladderMap] = await Promise.all([
     supabase
-      .from("routines")
-      .select("id, name, kind, description, duration_min, level, moment")
-      .order("kind")
-      .order("duration_min"),
-    supabase.from("exercises").select("id", { count: "exact", head: true }),
+      .from("schedule_blocks")
+      .select("days, session_key")
+      .eq("kind", "workout")
+      .maybeSingle(),
+    loadLadderMap(supabase),
   ]);
 
-  const all = (routines ?? []) as RoutineRow[];
-  const stretchProgs = all.filter((r) => r.kind === "stretch");
-  const workoutProgs = all.filter((r) => r.kind === "workout");
+  const trainingDay = (workoutBlock?.days ?? []).includes(dayCode);
+  const sessionKey = resolveSessionKey(workoutBlock?.session_key ?? "auto", today);
+  const sessionLabel = SESSION_LABEL[sessionKey] ?? "Krachtsessie";
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-7">
       <div>
         <h1 className="text-xl font-semibold">Beweging</h1>
         <p className="mt-1 text-sm text-muted">
-          Begeleide sessies die je sturen — hoe lang, wanneer wisselen, wanneer
-          rusten.
+          Calisthenics-ladders: elke sessie kent je trede en tilt je een sport
+          hoger.
         </p>
       </div>
 
-      {/* Kracht-ladders: de begeleide sessie van vandaag */}
-      <Link
-        href="/beweging/sessie/auto"
-        className="flex items-center gap-4 rounded-2xl border bg-card p-5 transition-colors"
-        style={{
-          borderColor: "var(--attr-kracht)",
-          background:
-            "linear-gradient(180deg, color-mix(in srgb, var(--attr-kracht) 8%, var(--card)), var(--card))",
-        }}
-      >
-        <span
-          aria-hidden
-          className="grid size-11 shrink-0 place-items-center rounded-full font-mono text-lg"
-          style={{
-            background: "color-mix(in srgb, var(--attr-kracht) 18%, transparent)",
-            color: "var(--attr-kracht)",
-            boxShadow: "0 0 16px -4px var(--attr-kracht)",
-          }}
-        >
-          ↑
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block text-sm font-semibold">
-            Krachtsessie van vandaag
-          </span>
-          <span className="block text-xs text-muted">
-            Calisthenics-ladders — de sessie kent je trede en leidt je set voor
-            set.
-          </span>
-        </span>
-        <span aria-hidden className="text-muted">
-          ›
-        </span>
-      </Link>
-
-      {/* Stretchen & mobiliteit */}
-      <section aria-label="Stretchen" className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium text-muted">Stretchen & mobiliteit</h2>
-        <ul className="flex flex-col gap-2">
-          {stretchProgs.map((r) => (
-            <li key={r.id}>
-              <Link
-                href={`/beweging/stretch/${r.id}`}
-                className="flex items-center gap-3 rounded-2xl border border-line bg-card p-4 transition-colors hover:border-muted"
-              >
-                <span
-                  aria-hidden
-                  className="size-2.5 shrink-0 rounded-full"
-                  style={{
-                    background: "var(--attr-soepel)",
-                    boxShadow: "0 0 10px var(--attr-soepel)",
-                  }}
-                />
-                <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-medium">{r.name}</span>
-                  <span className="block font-mono text-xs text-muted">
-                    {metaLine(r)}
-                  </span>
-                </span>
-                <span className="font-mono text-xs text-muted">+40 XP</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {/* Krachttraining */}
-      <section aria-label="Krachttraining" className="flex flex-col gap-2">
-        <div className="flex items-baseline justify-between">
-          <h2 className="text-sm font-medium text-muted">Krachttraining</h2>
+      {/* Vandaag: de gegenereerde sessie of een rustdag */}
+      <section aria-label="Vandaag" className="flex flex-col gap-2">
+        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
+          Vandaag
+        </p>
+        {trainingDay ? (
           <Link
-            href="/beweging/routines/nieuw"
-            className="text-xs text-muted underline underline-offset-4 transition-colors hover:text-text"
+            href="/beweging/sessie/auto"
+            className="flex items-center gap-4 rounded-2xl border p-5 transition-colors"
+            style={{
+              borderColor: "var(--attr-kracht)",
+              background:
+                "linear-gradient(180deg, color-mix(in srgb, var(--attr-kracht) 9%, var(--card)), var(--card))",
+            }}
           >
-            + eigen routine
+            <span
+              aria-hidden
+              className="grid size-11 shrink-0 place-items-center rounded-full font-mono text-lg"
+              style={{
+                background:
+                  "color-mix(in srgb, var(--attr-kracht) 18%, transparent)",
+                color: "var(--attr-kracht)",
+                boxShadow: "0 0 16px -4px var(--attr-kracht)",
+              }}
+            >
+              ↑
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-semibold">{sessionLabel}</span>
+              <span className="block text-xs text-muted">
+                De sessie leidt je set voor set — schoon en op tempo brengt je
+                hoger.
+              </span>
+            </span>
+            <span aria-hidden className="text-muted">
+              ›
+            </span>
           </Link>
-        </div>
-        <ul className="flex flex-col gap-2">
-          {workoutProgs.map((r) => (
-            <li key={r.id}>
-              <Link
-                href={`/beweging/routines/${r.id}`}
-                className="flex items-center gap-3 rounded-2xl border border-line bg-card p-4 transition-colors hover:border-muted"
-              >
-                <span
-                  aria-hidden
-                  className="size-2.5 shrink-0 rounded-full"
-                  style={{
-                    background: "var(--attr-kracht)",
-                    boxShadow: "0 0 10px var(--attr-kracht)",
-                  }}
-                />
-                <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-medium">{r.name}</span>
-                  <span className="block font-mono text-xs text-muted">
-                    {metaLine(r)}
-                  </span>
-                </span>
-                <span className="font-mono text-xs text-muted">+45 XP</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        ) : (
+          <Link
+            href="/beweging/mobiliteit"
+            className="flex items-center gap-4 rounded-2xl border border-line bg-card p-5 transition-colors hover:border-muted"
+          >
+            <span
+              aria-hidden
+              className="grid size-11 shrink-0 place-items-center rounded-full text-lg"
+              style={{
+                background:
+                  "color-mix(in srgb, var(--attr-soepel) 16%, transparent)",
+                color: "var(--attr-soepel)",
+              }}
+            >
+              ~
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-semibold">
+                Rustdag — houd los
+              </span>
+              <span className="block text-xs text-muted">
+                Geen krachtsessie vandaag. Een korte mobiliteitsflow houdt je
+                soepel.
+              </span>
+            </span>
+            <span aria-hidden className="text-muted">
+              ›
+            </span>
+          </Link>
+        )}
       </section>
 
-      <Link
-        href="/beweging/bibliotheek"
-        className="flex items-center gap-3 rounded-2xl border border-line bg-card p-4 transition-colors hover:border-muted"
-      >
-        <span className="min-w-0 flex-1">
-          <span className="block text-sm font-medium">Bibliotheek</span>
-          <span className="block text-xs text-muted">
-            {exerciseCount ?? 0} oefeningen met uitleg, cues en fouten
-          </span>
-        </span>
-        <span aria-hidden className="text-muted">
-          ›
-        </span>
-      </Link>
+      {/* Je ladders: in één blik waar je staat */}
+      <section aria-label="Je ladders" className="flex flex-col gap-4">
+        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
+          Je ladders
+        </p>
+        {CATEGORIES.map((cat) => {
+          const entries = ladderMap.filter(
+            (e) => e.pattern.category === cat.key,
+          );
+          if (entries.length === 0) return null;
+          return (
+            <div key={cat.key} className="flex flex-col gap-2">
+              <h2 className="flex items-center gap-2 text-sm font-medium">
+                <span
+                  aria-hidden
+                  className="size-2 rounded-full"
+                  style={{ background: cat.color }}
+                />
+                {cat.label}
+              </h2>
+              <ul className="flex flex-col gap-2">
+                {entries.map((entry) => (
+                  <li key={entry.pattern.key}>
+                    <LadderMapRow entry={entry} color={cat.color} />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
+      </section>
+
+      {/* Losse ingangen */}
+      <section aria-label="Meer" className="flex flex-col gap-2">
+        <HubLink
+          href="/beweging/mobiliteit"
+          title="Mobiliteit"
+          sub="Begeleide stretch- en mobiliteitsflows"
+        />
+        <HubLink
+          href="/beweging/hardlopen"
+          title="Hardlopen"
+          sub="Log rustig of tempo, zie je opbouw"
+        />
+        <HubLink
+          href="/beweging/bibliotheek"
+          title="Bibliotheek"
+          sub="Elke ladder, van makkelijk naar moeilijk, met jouw trede"
+        />
+      </section>
     </div>
+  );
+}
+
+function HubLink({
+  href,
+  title,
+  sub,
+}: {
+  href: string;
+  title: string;
+  sub: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="flex items-center gap-3 rounded-2xl border border-line bg-card p-4 transition-colors hover:border-muted"
+    >
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-medium">{title}</span>
+        <span className="block text-xs text-muted">{sub}</span>
+      </span>
+      <span aria-hidden className="text-muted">
+        ›
+      </span>
+    </Link>
   );
 }
