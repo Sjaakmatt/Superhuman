@@ -211,8 +211,21 @@ voedt nog de mobiliteit/stretch-flow die de briefing behoudt).
   suggestsRegression), `sessionMachine.ts` (buildStrengthSteps: platte
   panel/set/rest/summary-tijdlijn). Pure + getest met **vitest** (`npm test`,
   11 tests). Testfiles buiten de Next-build (tsconfig exclude).
-- ⬜ **T2 — Sessie-player + Vandaag-koppeling** ·
-  ⬜ **T3 — Hub, ladder-map & bibliotheek** · ⬜ **T4 — Hardlopen &
+- ✅ **T2 — Sessie-player + Vandaag-koppeling**: migration `..017`
+  (`schedule_blocks.session_key`, kracht-blok in `ensure_default_schedule` +
+  backfill bestaande users, `complete_ladder_session` → een workout_log per
+  oefening met ladder_exercise_id/rung/sets + kracht 45 XP eerste/dag).
+  Data-laag `src/lib/training/data.ts` (snake→camel loaders,
+  `buildSessionBundle` met ladder-strips, `resolveSessionKey` auto=week-A/B).
+  Route `/beweging/sessie/[key]` (auto|kracht_a|kracht_b) met
+  `LadderSessionPlayer` — state machine: coaching-paneel (opzet/uitvoering/
+  ademhaling/fouten + `LadderStrip` met huidige trede), set-logger (rep-teller,
+  schoon-&-tempo-toggle, vorige keer), rust-timer, samenvatting met
+  trede-ceremonie. Progressie in de getypte engine (alleen reps/tempo van de
+  client vertrouwd; drempels uit DB) → `user_ladder_state`-upsert in
+  `completeLadderSession`. Nu-motor 'workout' → `/beweging/sessie/auto`;
+  kracht-CTA op de Beweging-hub.
+- ⬜ **T3 — Hub, ladder-map & bibliotheek** · ⬜ **T4 — Hardlopen &
   mobiliteit** · ⬜ **T5 — Visuele reset (tokens §7)**
 
 Commit per fase; stop na elke fase voor akkoord.

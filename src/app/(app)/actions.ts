@@ -6,6 +6,13 @@ import type { AttributeKey } from "@/lib/attributes";
 import { mealWindow } from "@/lib/nutrition";
 import type { LoggedExerciseSets } from "@/lib/types";
 import { parseAward, type XpAward } from "@/lib/xp";
+import {
+  loadLadderIndex,
+  loadLadderState,
+  loadPatterns,
+} from "@/lib/training/data";
+import { applyProgression, evaluateAdvance } from "@/lib/training/progression";
+import type { LoggedSet, PatternKey } from "@/lib/training/types";
 
 export interface ActionResult {
   award: XpAward | null;
@@ -150,6 +157,115 @@ export async function completeWorkout(input: {
   revalidatePath("/vandaag");
   revalidatePath("/beweging");
   return { award: parseAward((data as { award: unknown }).award) };
+}
+
+export interface LadderSessionEntry {
+  ladderExerciseId: string;
+  rung: number;
+  sets: LoggedSet[];
+}
+
+/** Eén trede-promotie voor de ceremonie. */
+export interface LadderPromotion {
+  patternKey: PatternKey;
+  patternLabel: string;
+  fromName: string;
+  toName: string;
+  toRung: number;
+}
+
+export interface LadderSessionResult extends ActionResult {
+  promotions: LadderPromotion[];
+}
+
+/**
+ * Ladder-sessie afronden (T2). Logs + XP via de RPC; progressie wordt in de
+ * getypte engine berekend (alleen reps/tempo van de client worden vertrouwd,
+ * de drempels komen uit de DB) en daarna in user_ladder_state weggeschreven.
+ */
+export async function completeLadderSession(input: {
+  templateKey: string;
+  durationSecs?: number;
+  entries: LadderSessionEntry[];
+}): Promise<LadderSessionResult> {
+  const supabase = await createClient();
+  const { data: userData } = await supabase.auth.getUser();
+  const userId = userData.user?.id;
+  if (!userId) return { award: null, error: "Niet ingelogd", promotions: [] };
+
+  const { keyById, idByKey, labelByKey } = await loadPatterns(supabase);
+  const [index, stateByKey] = await Promise.all([
+    loadLadderIndex(supabase, keyById),
+    loadLadderState(supabase, keyById),
+  ]);
+
+  const promotions: LadderPromotion[] = [];
+  const upserts: {
+    user_id: string;
+    pattern_id: string;
+    current_rung: number;
+    sessions_at_rung: number;
+    met_streak: number;
+  }[] = [];
+
+  for (const entry of input.entries) {
+    const ex = index.byId.get(entry.ladderExerciseId);
+    if (!ex) continue;
+    const patternKey = ex.patternKey;
+    const state = stateByKey.get(patternKey) ?? {
+      patternKey,
+      currentRung: ex.rung,
+      sessionsAtRung: 0,
+      metStreak: 0,
+    };
+    const met = evaluateAdvance(ex, entry.sets);
+    const res = applyProgression(index, patternKey, state, met);
+
+    const patternId = idByKey.get(patternKey);
+    if (patternId) {
+      upserts.push({
+        user_id: userId,
+        pattern_id: patternId,
+        current_rung: res.newState.currentRung,
+        sessions_at_rung: res.newState.sessionsAtRung,
+        met_streak: res.newState.metStreak,
+      });
+    }
+    if (res.promoted && res.promotedTo) {
+      promotions.push({
+        patternKey,
+        patternLabel: labelByKey.get(patternKey) ?? patternKey,
+        fromName: ex.name,
+        toName: res.promotedTo.name,
+        toRung: res.promotedTo.rung,
+      });
+    }
+  }
+
+  const { data, error } = await supabase.rpc("complete_ladder_session", {
+    p_template_key: input.templateKey,
+    p_duration_secs: input.durationSecs ?? null,
+    p_entries: input.entries.map((e) => ({
+      ladder_exercise_id: e.ladderExerciseId,
+      rung: e.rung,
+      sets: e.sets,
+    })),
+  });
+  if (error) return { ...fail(error), promotions: [] };
+
+  if (upserts.length > 0) {
+    const { error: upErr } = await supabase
+      .from("user_ladder_state")
+      .upsert(upserts, { onConflict: "user_id,pattern_id" });
+    if (upErr) return { ...fail(upErr), promotions: [] };
+  }
+
+  revalidatePath("/vandaag");
+  revalidatePath("/beweging");
+  return {
+    award: parseAward((data as { award: unknown }).award),
+    promotions,
+  };
 }
 
 /** Nieuwe routine met oefeningen (sets/reps/secs). */

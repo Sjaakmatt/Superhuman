@@ -7,13 +7,16 @@ import type { LadderExercise, PatternKey } from "./types";
 export interface LadderIndex {
   byPattern: Map<PatternKey, LadderExercise[]>; // gesorteerd op rung
   bySlug: Map<string, LadderExercise>;
+  byId: Map<string, LadderExercise>;
 }
 
 export function buildLadderIndex(exercises: LadderExercise[]): LadderIndex {
   const byPattern = new Map<PatternKey, LadderExercise[]>();
   const bySlug = new Map<string, LadderExercise>();
+  const byId = new Map<string, LadderExercise>();
   for (const ex of exercises) {
     bySlug.set(ex.slug, ex);
+    byId.set(ex.id, ex);
     const list = byPattern.get(ex.patternKey) ?? [];
     list.push(ex);
     byPattern.set(ex.patternKey, list);
@@ -21,7 +24,7 @@ export function buildLadderIndex(exercises: LadderExercise[]): LadderIndex {
   for (const list of byPattern.values()) {
     list.sort((a, b) => a.rung - b.rung);
   }
-  return { byPattern, bySlug };
+  return { byPattern, bySlug, byId };
 }
 
 /** Alle treden van een ladder, van makkelijk naar moeilijk. */

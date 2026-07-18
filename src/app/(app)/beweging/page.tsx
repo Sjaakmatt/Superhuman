@@ -47,6 +47,41 @@ export default async function BewegingPage() {
         </p>
       </div>
 
+      {/* Kracht-ladders: de begeleide sessie van vandaag */}
+      <Link
+        href="/beweging/sessie/auto"
+        className="flex items-center gap-4 rounded-2xl border bg-card p-5 transition-colors"
+        style={{
+          borderColor: "var(--attr-kracht)",
+          background:
+            "linear-gradient(180deg, color-mix(in srgb, var(--attr-kracht) 8%, var(--card)), var(--card))",
+        }}
+      >
+        <span
+          aria-hidden
+          className="grid size-11 shrink-0 place-items-center rounded-full font-mono text-lg"
+          style={{
+            background: "color-mix(in srgb, var(--attr-kracht) 18%, transparent)",
+            color: "var(--attr-kracht)",
+            boxShadow: "0 0 16px -4px var(--attr-kracht)",
+          }}
+        >
+          ↑
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-semibold">
+            Krachtsessie van vandaag
+          </span>
+          <span className="block text-xs text-muted">
+            Calisthenics-ladders — de sessie kent je trede en leidt je set voor
+            set.
+          </span>
+        </span>
+        <span aria-hidden className="text-muted">
+          ›
+        </span>
+      </Link>
+
       {/* Stretchen & mobiliteit */}
       <section aria-label="Stretchen" className="flex flex-col gap-2">
         <h2 className="text-sm font-medium text-muted">Stretchen & mobiliteit</h2>

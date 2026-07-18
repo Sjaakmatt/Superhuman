@@ -26,9 +26,9 @@ const KIND_META: Record<string, KindMeta> = {
     doneKey: "stretch",
   },
   workout: {
-    line: (l) => `${l} staat klaar. Bouw voort op de vorige keer.`,
-    cta: "Start workout",
-    href: (id) => (id ? `/beweging/routines/${id}` : "/beweging"),
+    line: (l) => `${l} staat klaar. Eén schone rep meer dan vorige keer.`,
+    cta: "Start sessie",
+    href: () => "/beweging/sessie/auto",
     doneKey: "workout",
   },
   breath: {
