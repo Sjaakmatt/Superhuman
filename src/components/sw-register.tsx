@@ -3,6 +3,9 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+const NAV_CACHE = "sh-nav";
+const NAV_KEY = "/__pending_nav";
+
 /** Registreert de service worker en navigeert de app op notificatie-kliks. */
 export function SwRegister() {
   const router = useRouter();
@@ -17,6 +20,7 @@ export function SwRegister() {
       .then((reg) => reg.update().catch(() => undefined))
       .catch(() => undefined);
 
+    // Snelle route: de app leeft nog en krijgt de route via een bericht.
     const onMessage = (event: MessageEvent) => {
       const data = event.data as { type?: string; url?: string } | null;
       if (data?.type === "navigate" && typeof data.url === "string") {
@@ -25,24 +29,31 @@ export function SwRegister() {
     };
     navigator.serviceWorker.addEventListener("message", onMessage);
 
-    // Vraag de service worker of er een navigatie klaarstaat (bv. na een tik op
-    // een notificatie die de PWA opende). Meerdere keren proberen, want op iOS
-    // opent de PWA soms op de start-url en is de pagina nog niet klaar.
-    const askPending = () => {
-      navigator.serviceWorker.ready
-        .then((reg) =>
-          (reg.active ?? navigator.serviceWorker.controller)?.postMessage({
-            type: "get-pending-navigation",
-          }),
-        )
-        .catch(() => undefined);
+    // Robuuste route: lees een klaarstaande navigatie rechtstreeks uit de Cache
+    // (overleeft het afschieten van de service worker; geen timing nodig).
+    let consumed = false;
+    const consumePending = async () => {
+      if (consumed || !("caches" in window)) return;
+      try {
+        const cache = await caches.open(NAV_CACHE);
+        const res = await cache.match(NAV_KEY);
+        if (!res) return;
+        await cache.delete(NAV_KEY);
+        const { url, at } = (await res.json()) as { url?: string; at?: number };
+        if (url && typeof at === "number" && Date.now() - at < 180000) {
+          consumed = true;
+          router.push(url);
+        }
+      } catch {
+        /* geen cache — dan draagt openWindow de route al */
+      }
     };
-    askPending();
-    const t1 = setTimeout(askPending, 500);
-    const t2 = setTimeout(askPending, 1500);
 
+    consumePending();
+    const t1 = setTimeout(consumePending, 400);
+    const t2 = setTimeout(consumePending, 1200);
     const onVisible = () => {
-      if (document.visibilityState === "visible") askPending();
+      if (document.visibilityState === "visible") consumePending();
     };
     document.addEventListener("visibilitychange", onVisible);
 

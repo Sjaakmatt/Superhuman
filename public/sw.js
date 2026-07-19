@@ -2,10 +2,8 @@
    Bewust geen agressieve caching — de app is server-first. */
 
 const DEFAULT_URL = "/vandaag";
-
-// Onthoud kort de laatst-gevraagde navigatie, zodat een net-herleefde PWA-pagina
-// (waarvan de JS was weggegooid en de eerste postMessage miste) 'm alsnog ophaalt.
-let pendingNavigation = null; // { url, at }
+const NAV_CACHE = "sh-nav";
+const NAV_KEY = "/__pending_nav";
 
 self.addEventListener("install", () => {
   self.skipWaiting();
@@ -37,14 +35,39 @@ self.addEventListener("push", (event) => {
   );
 });
 
-// Open de app op de juiste route. Bestaat er al een venster, dan focussen we dat
-// en laten de app zélf client-side navigeren (betrouwbaarder dan client.navigate
-// in een geïnstalleerde PWA). Anders openen we een nieuw venster op de route.
+// Bewaar de doelroute DUURZAAM in de Cache API. In-memory state overleeft niet
+// (iOS schiet de service worker tussen klik en paginalaad af); de Cache wel, en
+// is bovendien rechtstreeks leesbaar vanuit de pagina — geen timing/messaging.
+async function setPending(url) {
+  try {
+    const cache = await caches.open(NAV_CACHE);
+    await cache.put(
+      NAV_KEY,
+      new Response(JSON.stringify({ url, at: Date.now() }), {
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+  } catch {
+    /* cache niet beschikbaar — dan valt de app terug op de URL van openWindow */
+  }
+}
+
+async function readPending() {
+  try {
+    const cache = await caches.open(NAV_CACHE);
+    const res = await cache.match(NAV_KEY);
+    if (!res) return null;
+    await cache.delete(NAV_KEY);
+    const { url, at } = await res.json();
+    return url && Date.now() - at < 180000 ? url : null;
+  } catch {
+    return null;
+  }
+}
+
 async function openTo(url) {
   const abs = new URL(url, self.location.origin).href;
-  // Altijd onthouden: ook als openWindow de PWA op z'n start-url opent (iOS!),
-  // kan de net-geladen pagina de juiste route alsnog ophalen via de handshake.
-  pendingNavigation = { url, at: Date.now() };
+  await setPending(url);
 
   const all = await self.clients.matchAll({
     type: "window",
@@ -55,7 +78,7 @@ async function openTo(url) {
       try {
         await client.focus();
       } catch {
-        /* focus mag falen; de postMessage doet het werk */
+        /* focus mag falen; de pagina leest de route uit de cache */
       }
       client.postMessage({ type: "navigate", url });
       return;
@@ -70,13 +93,14 @@ self.addEventListener("notificationclick", (event) => {
   event.waitUntil(openTo(url));
 });
 
-// Een (mogelijk net herleefde) pagina vraagt of er nog een navigatie klaarstaat.
+// Een pagina kan expliciet naar een klaarstaande navigatie vragen.
 self.addEventListener("message", (event) => {
   if (event.data?.type === "get-pending-navigation") {
-    const p = pendingNavigation;
-    pendingNavigation = null;
-    if (p && Date.now() - p.at < 180000) {
-      event.source?.postMessage({ type: "navigate", url: p.url });
-    }
+    event.waitUntil(
+      (async () => {
+        const url = await readPending();
+        if (url) event.source?.postMessage({ type: "navigate", url });
+      })(),
+    );
   }
 });
