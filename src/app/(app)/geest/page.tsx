@@ -12,13 +12,12 @@ interface HubCard {
 
 export default async function GeestPage() {
   const supabase = await createClient();
-  const [{ count: levelCount }, { count: meditationCount }] =
-    await Promise.all([
-      supabase
-        .from("breath_levels")
-        .select("id", { count: "exact", head: true }),
-      supabase.from("meditations").select("id", { count: "exact", head: true }),
-    ]);
+  const [{ count: levelCount }, { count: medLevelCount }] = await Promise.all([
+    supabase.from("breath_levels").select("id", { count: "exact", head: true }),
+    supabase
+      .from("meditation_levels")
+      .select("id", { count: "exact", head: true }),
+  ]);
 
   const cards: HubCard[] = [
     {
@@ -28,9 +27,9 @@ export default async function GeestPage() {
       xp: "+25 XP",
     },
     {
-      href: "/geest/meditaties",
-      title: "Meditaties",
-      meta: `${meditationCount ?? 0} sessies · focus, slaap, kalmte, reset`,
+      href: "/geest/meditatie",
+      title: "Meditatie",
+      meta: `${medLevelCount ?? 0} niveaus · van rustig landen tot diepe stilte`,
       xp: "+30 XP",
     },
     {

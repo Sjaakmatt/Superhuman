@@ -282,7 +282,8 @@ media (Engelstalige video/audio mag; app-copy blijft NL). Bouwplan C0-C4.
   (12 verdieping → 13 30-min → 14 diepe/begeleide journey, elk na 3 sessies) +
   retentie-logging; na de top een doorlopende **"gevorderd"-modus** (vrije
   beoefening + diepte-stats: sessies, minuten, hoogste BOLT, langste retentie).
-- ⬜ **C1 mobiliteit · C2 meditatie · C3 calisthenics-verdieping · C4 generalisatie**
+- ✅ **C2 — Meditatie**: migraties `meditation_curriculum`/`_seed` (`meditation_levels` 11 niveaus + `user_meditation_state` + `meditation_sessions`, RLS; `complete_meditation_session` → geest 30 XP + session_log). `src/lib/meditation.ts` (evaluateUnlock op consistentie, topReached + diepte-stats; 3 vitest-tests) + `meditation-data.ts`. `/geest/meditatie` gated pad + doorlopende gevorderd-modus (zits, minuten, langste zit); `/geest/meditatie/[slug]` met `MeditationTimer` (geleide UCLA-audio in-app + kalme ring-timer + duurkeuze). Gedeelde `MediaEmbed` (audio/youtube/link). /geest-hub + Nu-motor → `/geest/meditatie`.
+- ⬜ **C1 mobiliteit · C3 calisthenics-verdieping · C4 generalisatie**
 
 ## Commands
 

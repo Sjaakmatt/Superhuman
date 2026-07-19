@@ -40,7 +40,7 @@ const KIND_META: Record<string, KindMeta> = {
   meditation: {
     line: () => "Tijd voor stilte. Kies een korte meditatie.",
     cta: "Mediteer",
-    href: (id) => (id ? `/geest/meditaties/${id}` : "/geest/meditaties"),
+    href: () => "/geest/meditatie",
     doneKey: "meditation",
   },
   meal: {

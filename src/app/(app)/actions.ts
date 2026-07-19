@@ -65,6 +65,22 @@ export async function completeBreathSession(
   return { award: parseAward((data as { award: unknown }).award) };
 }
 
+/** Meditatie-sessie afronden: log + geest 30 XP (eerste meditatie/dag). */
+export async function completeMeditationSession(
+  level: number,
+  durationSec?: number,
+): Promise<ActionResult> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("complete_meditation_session", {
+    p_level: level,
+    p_duration_sec: durationSec ?? null,
+  });
+  if (error) return fail(error);
+  revalidatePath("/geest/meditatie");
+  revalidatePath("/vandaag");
+  return { award: parseAward((data as { award: unknown }).award) };
+}
+
 /** Een BOLT / Control Pause-meting loggen (opent de zware niveaus). */
 export async function logBolt(seconds: number): Promise<{ error?: string }> {
   const supabase = await createClient();
