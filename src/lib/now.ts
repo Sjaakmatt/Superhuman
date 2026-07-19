@@ -34,7 +34,7 @@ const KIND_META: Record<string, KindMeta> = {
   breath: {
     line: () => "Een paar minuten ademen brengt je terug bij jezelf.",
     cta: "Adem mee",
-    href: () => "/geest/breathwork",
+    href: () => "/geest/ademwerk",
     doneKey: "breath",
   },
   meditation: {

@@ -262,6 +262,24 @@ Commit per fase; stop na elke fase voor akkoord.
 
 Commit per fase; stop na elke fase voor akkoord van de gebruiker.
 
+## Gated curriculum (SUPERHUMAN_OS_CURRICULUM_BRIEF.md)
+
+Diepgaand onderzoek (4 parallelle agents) → fijnmazige, **gated** leerlijnen:
+calisthenics (8 ladders × ~12), mobiliteit (7 sporen × 10), meditatie (11),
+ademwerk (12, rond **Breathe With Sandy**). Gedeeld gating-model + gecureerde
+media (Engelstalige video/audio mag; app-copy blijft NL). Bouwplan C0-C4.
+
+- ✅ **C0 — Ademwerk-PoC**: migraties `..020/..021` (`breath_levels` +
+  `user_breath_state` + `breath_sessions` + `bolt_logs`, RLS;
+  `complete_breath_session` → geest 25 XP + session_log, `log_bolt`). Getypte
+  ontgrendel-lib `src/lib/breath.ts` (`evaluateUnlock`, CO₂-poort BOLT ≥ 20s,
+  5 vitest-tests) + `breath-data.ts`. `/geest/ademwerk` = gated pad (12 niveaus,
+  sloten tonen "nog X te gaan", zwaar-badges), `/geest/ademwerk/[slug]` met
+  `BreathPlayer`: **ademhalings-orb** (paced), **BOLT-tool** (niveau 2),
+  **rounds + retentie** (Wim Hof/holds), **follow-embed** (Sandy's video),
+  veiligheids-ack vóór de zware niveaus. Nu-motor + Vandaag-taak → `/geest/ademwerk`.
+- ⬜ **C1 mobiliteit · C2 meditatie · C3 calisthenics-verdieping · C4 generalisatie**
+
 ## Commands
 
 ```bash

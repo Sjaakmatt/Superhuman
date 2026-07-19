@@ -12,19 +12,19 @@ interface HubCard {
 
 export default async function GeestPage() {
   const supabase = await createClient();
-  const [{ count: patternCount }, { count: meditationCount }] =
+  const [{ count: levelCount }, { count: meditationCount }] =
     await Promise.all([
       supabase
-        .from("breathwork_patterns")
+        .from("breath_levels")
         .select("id", { count: "exact", head: true }),
       supabase.from("meditations").select("id", { count: "exact", head: true }),
     ]);
 
   const cards: HubCard[] = [
     {
-      href: "/geest/breathwork",
-      title: "Breathwork",
-      meta: `${patternCount ?? 0} patronen · begeleide bol-animatie`,
+      href: "/geest/ademwerk",
+      title: "Ademwerk",
+      meta: `${levelCount ?? 0} niveaus · van rustig ademen tot verbonden ademhaling`,
       xp: "+25 XP",
     },
     {

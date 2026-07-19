@@ -239,7 +239,7 @@ export default async function VandaagPage() {
       attribute: "geest",
       xp: 25,
       done: (breathworkLogs ?? []).length > 0,
-      href: "/geest/breathwork",
+      href: "/geest/ademwerk",
     },
     {
       id: "food",

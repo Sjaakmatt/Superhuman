@@ -47,6 +47,31 @@ export async function awardXp(
   return { award: parseAward(data) };
 }
 
+/** Ademwerk-sessie afronden: log + geest-XP (eerste ademwerk/dag). */
+export async function completeBreathSession(
+  level: number,
+  durationSec?: number,
+): Promise<ActionResult> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("complete_breath_session", {
+    p_level: level,
+    p_duration_sec: durationSec ?? null,
+  });
+  if (error) return fail(error);
+  revalidatePath("/geest/ademwerk");
+  revalidatePath("/vandaag");
+  return { award: parseAward((data as { award: unknown }).award) };
+}
+
+/** Een BOLT / Control Pause-meting loggen (opent de zware niveaus). */
+export async function logBolt(seconds: number): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("log_bolt", { p_seconds: seconds });
+  if (error) return { error: error.message };
+  revalidatePath("/geest/ademwerk");
+  return {};
+}
+
 /** Een dagritme-blok afvinken (of ontvinken) voor vandaag. */
 export async function setBlockDone(
   blockId: number,
