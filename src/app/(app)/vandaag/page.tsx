@@ -72,9 +72,6 @@ export default async function VandaagPage() {
     metrics = (seeded ?? []) as MetricRow[];
   }
 
-  // Eerste bezoek: standaard-dagritme seeden
-  await supabase.rpc("ensure_default_schedule");
-
   // Batch 2: de datumafhankelijke logs van vandaag
   const [
     { data: water },
@@ -196,7 +193,17 @@ export default async function VandaagPage() {
   if ((meditationLogs ?? []).length > 0) doneKeys.push("meditation");
   if ((journalToday ?? []).length > 0) doneKeys.push("journal");
   if (reviewRow) doneKeys.push("review");
-  const scheduleBlocks = (blocks ?? []) as ScheduleBlockRow[];
+  let scheduleBlocks = (blocks ?? []) as ScheduleBlockRow[];
+  // Eerste bezoek: standaard-dagritme seeden en éénmalig opnieuw ophalen.
+  // (Bestaande gebruikers betalen zo niet elke load een extra round-trip.)
+  if (scheduleBlocks.length === 0) {
+    await supabase.rpc("ensure_default_schedule");
+    const { data: seeded } = await supabase
+      .from("schedule_blocks")
+      .select("id, label, kind, ref_id, start_min, window_min, days, enabled")
+      .eq("enabled", true);
+    scheduleBlocks = (seeded ?? []) as ScheduleBlockRow[];
+  }
   const doneBlockIds = ((blockDone ?? []) as { block_id: number }[]).map(
     (r) => r.block_id,
   );

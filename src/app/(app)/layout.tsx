@@ -1,6 +1,4 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
 import { BottomNav } from "@/components/bottom-nav";
 import { SideNav } from "@/components/side-nav";
 import { ToastProvider } from "@/components/toast";
@@ -8,22 +6,15 @@ import { SwRegister } from "@/components/sw-register";
 import { signOut } from "@/app/(auth)/actions";
 
 /**
- * Beschermde app-layout: de proxy doet de optimistische check,
- * hier zit de echte server-side verificatie. Mobiel: bottom-nav +
- * header. Desktop (lg+): zijbalk links + bredere content-kolom.
+ * Beschermde app-layout. Auth wordt afgedwongen in de proxy (die op elk
+ * request `getUser()` draait en niet-ingelogde gebruikers naar /login
+ * stuurt) en door RLS op alle data. Hier dus géén tweede auth-round-trip —
+ * dat scheelt een netwerkcall per navigatie. Mobiel: bottom-nav + header.
+ * Desktop (lg+): zijbalk links + bredere content-kolom.
  */
-export default async function AppLayout({
+export default function AppLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
   return (
     <div className="min-h-dvh lg:flex">
       <SideNav />
