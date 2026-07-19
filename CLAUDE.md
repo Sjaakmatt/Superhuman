@@ -295,7 +295,24 @@ media (Engelstalige video/audio mag; app-copy blijft NL). Bouwplan C0-C4.
   hoofdlijn (onderbrak de flow); gating puur op beoefening; veiligheids-ack
   vanaf de verbonden niveaus. Follow-sessies loggen de videoduur; endgame-tegels
   sessies/minuten/niveaus.
-- ✅ **C2 — Meditatie**: migraties `meditation_curriculum`/`_seed` (`meditation_levels` 11 niveaus + `user_meditation_state` + `meditation_sessions`, RLS; `complete_meditation_session` → geest 30 XP + session_log). `src/lib/meditation.ts` (evaluateUnlock op consistentie, topReached + diepte-stats; 3 vitest-tests) + `meditation-data.ts`. `/geest/meditatie` gated pad + doorlopende gevorderd-modus (zits, minuten, langste zit); `/geest/meditatie/[slug]` met `MeditationTimer` (geleide UCLA-audio in-app + kalme ring-timer + duurkeuze). Gedeelde `MediaEmbed` (audio/youtube/link). /geest-hub + Nu-motor → `/geest/meditatie`.
+- ✅ **C2 — Meditatie**: migraties `..024_meditation_curriculum` (schema, lokaal
+  gereconstrueerd) + `meditation_levels` 11 niveaus + `user_meditation_state` +
+  `meditation_sessions`, RLS; `complete_meditation_session` → geest 30 XP +
+  session_log. `src/lib/meditation.ts` (evaluateUnlock op consistentie,
+  topReached + diepte-stats; 3 vitest-tests) + `meditation-data.ts`.
+  `/geest/meditatie` gated pad + doorlopende gevorderd-modus (zits, minuten,
+  langste zit); `/geest/meditatie/[slug]` met `MeditationTimer` (begeleide audio
+  in-app + kalme ring-timer + duurkeuze). Gedeelde `MediaEmbed` (audio/youtube/link).
+- ✅ **C2b — Audio-first herstructurering** (migration `..027`): net als
+  ademwerk was de leerlijn techniek-eerst met losse/hergebruikte media (en
+  externe artikel-/boekpagina's die niet afspeelden). Nu is de **begeleide audio
+  leidend**, elk niveau beschrijft de échte opname, oplopend in diepte, met
+  `target_min` gelijk aan de opnameduur. Alle media geverifieerd in-app
+  afspeelbaar (directe mp3, https): fundament UCLA Mindful (MARC, Diana Winston,
+  5-19 min: adem → adem/geluid/lijf → bodyscan → moeilijkheden → metta →
+  volledige zit), verdieping Tara Brach (19-30 min open-bewustzijn-sessies),
+  top een **stille zit zonder begeleiding** (ring-timer, geen media) → graduatie
+  naar de gevorderd-modus.
 - ⬜ **C1 mobiliteit · C3 calisthenics-verdieping · C4 generalisatie**
 
 ## Commands

@@ -21,8 +21,9 @@ export default async function MeditatiePage() {
       <div>
         <h1 className="text-xl font-semibold">Meditatie</h1>
         <p className="mt-1 text-sm text-muted">
-          Eén pad van rustig landen tot diepe stilte. Elk niveau opent zich als
-          je het vorige een tijd hebt beoefend — consistentie, geen prestatie.
+          Eén pad van rustig landen tot diepe stilte, begeleid door audio van
+          UCLA Mindful en Tara Brach. Elk niveau opent zich als je het vorige een
+          tijd hebt beoefend — consistentie, geen prestatie.
         </p>
       </div>
 
