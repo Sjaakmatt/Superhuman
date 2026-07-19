@@ -12,7 +12,7 @@ interface ReminderRow {
   user_id: string;
   kind: string;
   label: string | null;
-  schedule: { times?: string[]; days?: string[] } | null;
+  schedule: { times?: string[]; days?: string[]; blockKind?: string } | null;
 }
 
 const DAY_CODES = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
@@ -31,13 +31,28 @@ const KIND_CONTENT: Record<string, { title: string; body: string; url: string }>
   meditation: {
     title: "Meditatie",
     body: "Een paar minuten stilte voor je geest.",
-    url: "/geest/meditaties",
+    url: "/geest/meditatie",
   },
   review: {
     title: "Wekelijkse review",
     body: "Vijf minuten: je week in cijfers staat al klaar.",
     url: "/review",
   },
+};
+
+// Blok-reminders (dagritme) dragen hun `blockKind` mee — koppel dat aan de juiste
+// route, zodat een tik op de notificatie meteen op de taak uitkomt. Spiegelt de
+// mapping in src/lib/now.ts.
+const BLOCK_URL: Record<string, string> = {
+  stretch: "/beweging/stretch",
+  workout: "/beweging/sessie/auto",
+  breath: "/geest/ademwerk",
+  meditation: "/geest/meditatie",
+  meal: "/voeding",
+  water: "/vandaag",
+  focus: "/vandaag",
+  journal: "/geest/journal",
+  review: "/review",
 };
 
 function localParts(timezone: string): { minutes: number; day: string } {
@@ -143,12 +158,21 @@ Deno.serve(async () => {
       body: "Kleine actie, grote gloed.",
       url: "/vandaag",
     };
+    // Blok-reminders: titel = het bloklabel, route = het blok-kind.
+    const isBlock = reminder.kind === "block";
+    const url = isBlock
+      ? (BLOCK_URL[reminder.schedule?.blockKind ?? ""] ?? "/vandaag")
+      : content.url;
     const payload = JSON.stringify({
-      title: content.title,
-      body: reminder.label && reminder.kind === "custom"
-        ? reminder.label
-        : content.body,
-      url: content.url,
+      title: isBlock
+        ? (reminder.label ?? "Dagritme")
+        : content.title,
+      body: isBlock
+        ? "Tik om verder te gaan."
+        : reminder.kind === "custom" && reminder.label
+          ? reminder.label
+          : content.body,
+      url,
     });
 
     for (const row of (subscriptions ?? []).filter(
