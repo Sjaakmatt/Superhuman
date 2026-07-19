@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useOptimistic, useTransition } from "react";
 import { addWater } from "@/app/(app)/actions";
 import { useToast } from "./toast";
 
@@ -10,11 +10,17 @@ interface WaterTrackerProps {
 }
 
 export function WaterTracker({ glasses, goal }: WaterTrackerProps) {
-  const [pending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const { showAward, showMessage } = useToast();
+  // Optimistisch: het glas telt direct, de server synct op de achtergrond.
+  const [optimisticGlasses, addOptimistic] = useOptimistic(
+    glasses,
+    (state, delta: number) => Math.max(0, state + delta),
+  );
 
   function log(delta: 1 | -1) {
     startTransition(async () => {
+      addOptimistic(delta);
       const result = await addWater(delta);
       if (result.error) showMessage(result.error);
       else showAward(result.award);
@@ -43,20 +49,22 @@ export function WaterTracker({ glasses, goal }: WaterTrackerProps) {
               className="h-1.5 flex-1 rounded-full transition-colors"
               style={{
                 background:
-                  i < glasses ? "var(--attr-vitaliteit)" : "var(--line)",
+                  i < optimisticGlasses
+                    ? "var(--attr-vitaliteit)"
+                    : "var(--line)",
               }}
             />
           ))}
         </div>
       </div>
       <p className="font-mono text-sm text-muted">
-        <span className="text-text">{glasses}</span>/{goal}
+        <span className="text-text">{optimisticGlasses}</span>/{goal}
       </p>
       <div className="flex gap-1.5">
         <button
           type="button"
           onClick={() => log(-1)}
-          disabled={pending || glasses === 0}
+          disabled={optimisticGlasses === 0}
           aria-label="Glas water verwijderen"
           className="size-9 rounded-full border border-line text-muted transition-colors hover:text-text disabled:opacity-40"
         >
@@ -65,9 +73,8 @@ export function WaterTracker({ glasses, goal }: WaterTrackerProps) {
         <button
           type="button"
           onClick={() => log(1)}
-          disabled={pending}
           aria-label="Glas water toevoegen"
-          className="size-9 rounded-full border border-line font-semibold text-text transition-colors hover:border-muted disabled:opacity-40"
+          className="size-9 rounded-full border border-line font-semibold text-text transition-colors hover:border-muted"
         >
           +
         </button>

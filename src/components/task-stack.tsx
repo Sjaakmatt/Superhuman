@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useTransition } from "react";
+import { useOptimistic, useTransition } from "react";
 import { logMetric } from "@/app/(app)/actions";
 import { ATTRIBUTES } from "@/lib/attributes";
 import type { DayTask } from "@/lib/types";
@@ -54,11 +54,17 @@ function TaskBody({ task }: { task: DayTask }) {
 }
 
 export function TaskStack({ tasks }: { tasks: DayTask[] }) {
-  const [pending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const { showAward, showMessage } = useToast();
+  // Optimistisch: de metric-ids die net zijn afgetikt kleuren direct groen.
+  const [optimisticDone, addOptimisticDone] = useOptimistic(
+    new Set<number>(),
+    (state, metricId: number) => new Set(state).add(metricId),
+  );
 
   function complete(metricId: number) {
     startTransition(async () => {
+      addOptimisticDone(metricId);
       const result = await logMetric(metricId);
       if (result.error) showMessage(result.error);
       else showAward(result.award);
@@ -70,27 +76,30 @@ export function TaskStack({ tasks }: { tasks: DayTask[] }) {
       <h2 className="text-sm font-medium text-muted">Vandaag</h2>
       <ul className="flex flex-col gap-2">
         {tasks.map((task) => {
+          const done =
+            task.done ||
+            (task.metricId != null && optimisticDone.has(task.metricId));
+          const shown: DayTask = done === task.done ? task : { ...task, done };
           const baseClass = `flex w-full items-center gap-3 rounded-2xl border border-line bg-card p-3 transition-opacity ${
-            task.done ? "opacity-50" : ""
+            done ? "opacity-50" : ""
           }`;
           return (
             <li key={task.id}>
-              {task.href && !task.done ? (
+              {task.href && !done ? (
                 <Link href={task.href} className={baseClass}>
-                  <TaskBody task={task} />
+                  <TaskBody task={shown} />
                 </Link>
-              ) : task.metricId && !task.done ? (
+              ) : task.metricId && !done ? (
                 <button
                   type="button"
-                  disabled={pending}
                   onClick={() => complete(task.metricId!)}
-                  className={`${baseClass} disabled:opacity-60`}
+                  className={baseClass}
                 >
-                  <TaskBody task={task} />
+                  <TaskBody task={shown} />
                 </button>
               ) : (
                 <div className={baseClass}>
-                  <TaskBody task={task} />
+                  <TaskBody task={shown} />
                 </div>
               )}
             </li>
