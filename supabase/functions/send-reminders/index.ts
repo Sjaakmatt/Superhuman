@@ -12,7 +12,12 @@ interface ReminderRow {
   user_id: string;
   kind: string;
   label: string | null;
-  schedule: { times?: string[]; days?: string[]; blockKind?: string } | null;
+  schedule: {
+    times?: string[];
+    days?: string[];
+    blockKind?: string;
+    refId?: number | null;
+  } | null;
 }
 
 const DAY_CODES = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
@@ -158,11 +163,18 @@ Deno.serve(async () => {
       body: "Kleine actie, grote gloed.",
       url: "/vandaag",
     };
-    // Blok-reminders: titel = het bloklabel, route = het blok-kind.
+    // Blok-reminders: titel = het bloklabel, route = het blok-kind. Stretch-
+    // blokken deeplinken naar hun specifieke programma (spiegelt now.ts).
     const isBlock = reminder.kind === "block";
-    const url = isBlock
-      ? (BLOCK_URL[reminder.schedule?.blockKind ?? ""] ?? "/vandaag")
-      : content.url;
+    const blockKind = reminder.schedule?.blockKind ?? "";
+    const refId = reminder.schedule?.refId ?? null;
+    let url = content.url;
+    if (isBlock) {
+      url =
+        blockKind === "stretch" && refId
+          ? `/beweging/stretch/${refId}`
+          : (BLOCK_URL[blockKind] ?? "/vandaag");
+    }
     const payload = JSON.stringify({
       title: isBlock
         ? (reminder.label ?? "Dagritme")
