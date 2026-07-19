@@ -294,10 +294,16 @@ export function BreathPlayer({ level }: { level: BreathLevel }) {
     if (stage !== "done" || submittedRef.current) return;
     submittedRef.current = true;
     haptic("success");
+    // In follow-modus leidt de video en draait er geen timer; log dan de
+    // bekende videoduur zodat "minuten" klopt.
+    const durationSec =
+      elapsedRef.current > 0.5
+        ? Math.round(elapsedRef.current)
+        : Math.round((cfg.durationMin ?? 0) * 60);
     startTransition(async () => {
       const result = await completeBreathSession(
         level.level,
-        Math.round(elapsedRef.current),
+        durationSec,
         maxRetentionRef.current > 0 ? maxRetentionRef.current : undefined,
       );
       if (result.error) {
@@ -307,7 +313,7 @@ export function BreathPlayer({ level }: { level: BreathLevel }) {
       setAward(result.award);
       showAward(result.award);
     });
-  }, [stage, level.level, showAward, showMessage]);
+  }, [stage, level.level, cfg, showAward, showMessage]);
 
   // ── DONE ────────────────────────────────────────────────────────────────
   if (stage === "done") {

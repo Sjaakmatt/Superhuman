@@ -27,34 +27,10 @@ export default async function AdemwerkPage() {
       <div>
         <h1 className="text-xl font-semibold">Ademwerk</h1>
         <p className="mt-1 text-sm text-muted">
-          Een leerlijn rond Breathe With Sandy: van rustig ademen tot verbonden
-          ademhaling. Elk niveau opent zich zodra je klaar bent voor het volgende.
-        </p>
-      </div>
-
-      {/* BOLT-status */}
-      <div className="flex items-center gap-3 rounded-2xl border border-line bg-card px-4 py-3">
-        <span
-          aria-hidden
-          className="grid size-9 shrink-0 place-items-center rounded-full font-mono text-xs"
-          style={{
-            background: `color-mix(in srgb, ${GEEST} 16%, transparent)`,
-            color: GEEST,
-          }}
-        >
-          CP
-        </span>
-        <p className="min-w-0 flex-1 text-sm">
-          {progress.boltMax > 0 ? (
-            <>
-              Je Control Pause: <span className="font-semibold">{progress.boltMax}s</span>
-              {progress.boltMax >= 20
-                ? " — de zware niveaus zijn open."
-                : " — bij 20s openen de zware niveaus."}
-            </>
-          ) : (
-            "Nog geen BOLT-meting. Doe niveau 2 om je Control Pause te meten."
-          )}
+          Een leerlijn langs de video&apos;s van Breathe With Sandy: van korte
+          kalmerende technieken tot haar diepe verbonden-ademhaling-journeys. Je
+          volgt telkens de video; elk niveau opent zich zodra je klaar bent voor
+          het volgende.
         </p>
       </div>
 
@@ -94,13 +70,12 @@ export default async function AdemwerkPage() {
             sloten — het gaat om <span className="font-medium">consistentie en
             diepte</span>. Kies vrij een sessie hierboven en bouw je praktijk uit.
           </p>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <div className="grid grid-cols-3 gap-2">
             <Stat label="Sessies" value={`${progress.totalSessions}`} />
             <Stat label="Minuten" value={`${progress.totalMinutes}`} />
-            <Stat label="Hoogste BOLT" value={`${progress.boltMax}s`} />
             <Stat
-              label="Langste retentie"
-              value={progress.maxRetention > 0 ? `${progress.maxRetention}s` : "—"}
+              label="Niveaus"
+              value={`${Object.keys(progress.sessionsByLevel).length}`}
             />
           </div>
         </section>
