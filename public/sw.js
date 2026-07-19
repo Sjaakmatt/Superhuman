@@ -41,20 +41,27 @@ self.addEventListener("push", (event) => {
 // en laten de app zélf client-side navigeren (betrouwbaarder dan client.navigate
 // in een geïnstalleerde PWA). Anders openen we een nieuw venster op de route.
 async function openTo(url) {
+  const abs = new URL(url, self.location.origin).href;
+  // Altijd onthouden: ook als openWindow de PWA op z'n start-url opent (iOS!),
+  // kan de net-geladen pagina de juiste route alsnog ophalen via de handshake.
+  pendingNavigation = { url, at: Date.now() };
+
   const all = await self.clients.matchAll({
     type: "window",
     includeUncontrolled: true,
   });
   for (const client of all) {
     if (new URL(client.url).origin === self.location.origin) {
-      pendingNavigation = { url, at: Date.now() };
-      await client.focus();
+      try {
+        await client.focus();
+      } catch {
+        /* focus mag falen; de postMessage doet het werk */
+      }
       client.postMessage({ type: "navigate", url });
       return;
     }
   }
-  pendingNavigation = null;
-  await self.clients.openWindow(url);
+  await self.clients.openWindow(abs);
 }
 
 self.addEventListener("notificationclick", (event) => {
@@ -68,7 +75,7 @@ self.addEventListener("message", (event) => {
   if (event.data?.type === "get-pending-navigation") {
     const p = pendingNavigation;
     pendingNavigation = null;
-    if (p && Date.now() - p.at < 120000) {
+    if (p && Date.now() - p.at < 180000) {
       event.source?.postMessage({ type: "navigate", url: p.url });
     }
   }

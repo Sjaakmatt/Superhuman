@@ -10,7 +10,12 @@ export function SwRegister() {
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
 
-    navigator.serviceWorker.register("/sw.js").catch(() => undefined);
+    // updateViaCache: 'none' → het sw.js-script wordt altijd vers opgehaald,
+    // zodat fixes daadwerkelijk in de geïnstalleerde PWA landen.
+    navigator.serviceWorker
+      .register("/sw.js", { updateViaCache: "none" })
+      .then((reg) => reg.update().catch(() => undefined))
+      .catch(() => undefined);
 
     const onMessage = (event: MessageEvent) => {
       const data = event.data as { type?: string; url?: string } | null;
@@ -20,16 +25,33 @@ export function SwRegister() {
     };
     navigator.serviceWorker.addEventListener("message", onMessage);
 
-    // Net geopend/herleefd vanuit een notificatie? Haal een eventueel gemiste
-    // navigatie op bij de service worker.
-    navigator.serviceWorker.ready
-      .then((reg) =>
-        reg.active?.postMessage({ type: "get-pending-navigation" }),
-      )
-      .catch(() => undefined);
+    // Vraag de service worker of er een navigatie klaarstaat (bv. na een tik op
+    // een notificatie die de PWA opende). Meerdere keren proberen, want op iOS
+    // opent de PWA soms op de start-url en is de pagina nog niet klaar.
+    const askPending = () => {
+      navigator.serviceWorker.ready
+        .then((reg) =>
+          (reg.active ?? navigator.serviceWorker.controller)?.postMessage({
+            type: "get-pending-navigation",
+          }),
+        )
+        .catch(() => undefined);
+    };
+    askPending();
+    const t1 = setTimeout(askPending, 500);
+    const t2 = setTimeout(askPending, 1500);
 
-    return () =>
+    const onVisible = () => {
+      if (document.visibilityState === "visible") askPending();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+
+    return () => {
       navigator.serviceWorker.removeEventListener("message", onMessage);
+      document.removeEventListener("visibilitychange", onVisible);
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
   }, [router]);
 
   return null;
