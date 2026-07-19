@@ -118,6 +118,7 @@ export function BreathPlayer({ level }: { level: BreathLevel }) {
   const elapsedRef = useRef(0);
   const activeElapsedRef = useRef(0);
   const roundRef = useRef(0);
+  const maxRetentionRef = useRef(0);
   const submittedRef = useRef(false);
   const [award, setAward] = useState<XpAward | null>(null);
   const [pending, startTransition] = useTransition();
@@ -135,6 +136,7 @@ export function BreathPlayer({ level }: { level: BreathLevel }) {
     breathElapsedRef.current = 0;
     activeElapsedRef.current = 0;
     roundRef.current = 0;
+    maxRetentionRef.current = 0;
     setCountUnits(0);
     setRound(0);
     setPhaseIndex(0);
@@ -268,6 +270,10 @@ export function BreathPlayer({ level }: { level: BreathLevel }) {
 
   function endRetention() {
     haptic("tick");
+    maxRetentionRef.current = Math.max(
+      maxRetentionRef.current,
+      Math.round(retention),
+    );
     if (cfg.recoveryHoldSec && cfg.recoveryHoldSec > 0) {
       setStageRemaining(cfg.recoveryHoldSec);
       setStage("recovery");
@@ -292,6 +298,7 @@ export function BreathPlayer({ level }: { level: BreathLevel }) {
       const result = await completeBreathSession(
         level.level,
         Math.round(elapsedRef.current),
+        maxRetentionRef.current > 0 ? maxRetentionRef.current : undefined,
       );
       if (result.error) {
         showMessage(result.error);

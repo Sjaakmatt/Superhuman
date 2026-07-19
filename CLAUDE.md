@@ -278,6 +278,10 @@ media (Engelstalige video/audio mag; app-copy blijft NL). Bouwplan C0-C4.
   `BreathPlayer`: **ademhalings-orb** (paced), **BOLT-tool** (niveau 2),
   **rounds + retentie** (Wim Hof/holds), **follow-embed** (Sandy's video),
   veiligheids-ack vóór de zware niveaus. Nu-motor + Vandaag-taak → `/geest/ademwerk`.
+  **Endgame** (migration `..022`): de journey als 3 ontgrendelende niveaus
+  (12 verdieping → 13 30-min → 14 diepe/begeleide journey, elk na 3 sessies) +
+  retentie-logging; na de top een doorlopende **"gevorderd"-modus** (vrije
+  beoefening + diepte-stats: sessies, minuten, hoogste BOLT, langste retentie).
 - ⬜ **C1 mobiliteit · C2 meditatie · C3 calisthenics-verdieping · C4 generalisatie**
 
 ## Commands

@@ -51,11 +51,13 @@ export async function awardXp(
 export async function completeBreathSession(
   level: number,
   durationSec?: number,
+  maxRetentionSec?: number,
 ): Promise<ActionResult> {
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("complete_breath_session", {
     p_level: level,
     p_duration_sec: durationSec ?? null,
+    p_max_retention_sec: maxRetentionSec ?? null,
   });
   if (error) return fail(error);
   revalidatePath("/geest/ademwerk");

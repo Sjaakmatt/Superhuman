@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { evaluateUnlock, highestUnlocked, type BreathLevel, type BreathProgress } from "./breath";
+import {
+  evaluateUnlock,
+  highestUnlocked,
+  topReached,
+  type BreathLevel,
+  type BreathProgress,
+} from "./breath";
 
 function lvl(level: number, requires: BreathLevel["unlock"]["requires"]): BreathLevel {
   return {
@@ -28,6 +34,9 @@ const progress = (over: Partial<BreathProgress> = {}): BreathProgress => ({
   sessionsByLevel: {},
   boltCount: 0,
   boltMax: 0,
+  totalSessions: 0,
+  totalMinutes: 0,
+  maxRetention: 0,
   ...over,
 });
 
@@ -80,5 +89,15 @@ describe("highestUnlocked", () => {
     ];
     expect(highestUnlocked(levels, progress({ sessionsByLevel: { 1: 5 } }))).toBe(2);
     expect(highestUnlocked(levels, progress())).toBe(1);
+  });
+});
+
+describe("topReached", () => {
+  const levels = [lvl(1, []), lvl(2, [{ type: "sessions", level: 1, count: 1 }])];
+  it("is pas waar als het hoogste niveau ontgrendeld én gedaan is", () => {
+    // 1× niveau 1 → niveau 2 open, maar nog niet gedaan
+    expect(topReached(levels, progress({ sessionsByLevel: { 1: 1 } }))).toBe(false);
+    // niveau 2 ook gedaan → top bereikt
+    expect(topReached(levels, progress({ sessionsByLevel: { 1: 1, 2: 1 } }))).toBe(true);
   });
 });

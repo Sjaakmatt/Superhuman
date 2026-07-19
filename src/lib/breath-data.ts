@@ -55,18 +55,34 @@ export async function loadBreathProgress(
   supabase: Supabase,
 ): Promise<BreathProgress> {
   const [{ data: sessions }, { data: bolts }] = await Promise.all([
-    supabase.from("breath_sessions").select("level"),
+    supabase
+      .from("breath_sessions")
+      .select("level, duration_sec, max_retention_sec"),
     supabase.from("bolt_logs").select("seconds"),
   ]);
+  const rows = (sessions ?? []) as {
+    level: number;
+    duration_sec: number | null;
+    max_retention_sec: number | null;
+  }[];
   const sessionsByLevel: Record<number, number> = {};
-  for (const s of (sessions ?? []) as { level: number }[]) {
+  let totalSec = 0;
+  let maxRetention = 0;
+  for (const s of rows) {
     sessionsByLevel[s.level] = (sessionsByLevel[s.level] ?? 0) + 1;
+    totalSec += s.duration_sec ?? 0;
+    if ((s.max_retention_sec ?? 0) > maxRetention) {
+      maxRetention = s.max_retention_sec ?? 0;
+    }
   }
   const boltSecs = (bolts ?? []).map((b: { seconds: number }) => b.seconds);
   return {
     sessionsByLevel,
     boltCount: boltSecs.length,
     boltMax: boltSecs.length > 0 ? Math.max(...boltSecs) : 0,
+    totalSessions: rows.length,
+    totalMinutes: Math.round(totalSec / 60),
+    maxRetention,
   };
 }
 

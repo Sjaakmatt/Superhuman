@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { evaluateUnlock, type BreathLevel, type BreathProgress } from "@/lib/breath";
+import {
+  evaluateUnlock,
+  topReached,
+  type BreathLevel,
+  type BreathProgress,
+} from "@/lib/breath";
 import { loadBreathCurriculum } from "@/lib/breath-data";
 
 export const metadata = { title: "Ademwerk" };
@@ -70,11 +75,51 @@ export default async function AdemwerkPage() {
         );
       })}
 
+      {topReached(levels, progress) ? (
+        <section
+          className="flex flex-col gap-3 rounded-2xl border p-5"
+          style={{
+            borderColor: GEEST,
+            background: `color-mix(in srgb, ${GEEST} 7%, var(--card))`,
+          }}
+        >
+          <p
+            className="font-mono text-[11px] uppercase tracking-[0.2em]"
+            style={{ color: GEEST }}
+          >
+            Doorlopend · gevorderd
+          </p>
+          <p className="text-sm">
+            Je hebt de hele leerlijn doorlopen. Van hier af zijn er geen nieuwe
+            sloten — het gaat om <span className="font-medium">consistentie en
+            diepte</span>. Kies vrij een sessie hierboven en bouw je praktijk uit.
+          </p>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <Stat label="Sessies" value={`${progress.totalSessions}`} />
+            <Stat label="Minuten" value={`${progress.totalMinutes}`} />
+            <Stat label="Hoogste BOLT" value={`${progress.boltMax}s`} />
+            <Stat
+              label="Langste retentie"
+              value={progress.maxRetention > 0 ? `${progress.maxRetention}s` : "—"}
+            />
+          </div>
+        </section>
+      ) : null}
+
       <p className="rounded-2xl border border-line bg-card p-4 text-xs text-muted">
         Ademwerk is krachtig. De sloten in deze leerlijn bouwen je basis op en zijn
         er voor je veiligheid. Doe krachtige ademhaling nooit in of bij water of
         tijdens autorijden, en lees de contra-indicaties vóór de zware niveaus.
       </p>
+    </div>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-line bg-card px-3 py-2.5 text-center">
+      <p className="font-mono text-lg font-semibold tabular-nums">{value}</p>
+      <p className="text-[10px] uppercase tracking-wide text-muted">{label}</p>
     </div>
   );
 }

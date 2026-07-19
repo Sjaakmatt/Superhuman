@@ -63,6 +63,12 @@ export interface BreathProgress {
   boltCount: number;
   /** Hoogste gemeten BOLT (seconden). */
   boltMax: number;
+  /** Totaal aantal gelogde sessies (alle niveaus). */
+  totalSessions: number;
+  /** Totaal gelogde minuten. */
+  totalMinutes: number;
+  /** Langste retentie ooit (seconden) — diepte-maat. */
+  maxRetention: number;
 }
 
 export interface UnlockPart {
@@ -136,4 +142,18 @@ export function highestUnlocked(
     if (evaluateUnlock(lvl, progress).unlocked) max = Math.max(max, lvl.level);
   }
   return max;
+}
+
+/**
+ * De hele leerlijn doorlopen: het hoogste niveau is ontgrendeld én minstens
+ * één keer gedaan. Vanaf hier telt consistentie & diepte, geen nieuwe sloten.
+ */
+export function topReached(
+  levels: BreathLevel[],
+  progress: BreathProgress,
+): boolean {
+  if (levels.length === 0) return false;
+  const top = levels.reduce((a, b) => (b.level > a.level ? b : a));
+  const done = (progress.sessionsByLevel[top.level] ?? 0) > 0;
+  return evaluateUnlock(top, progress).unlocked && done;
 }
