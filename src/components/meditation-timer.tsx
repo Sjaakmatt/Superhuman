@@ -19,7 +19,38 @@ function fmt(total: number): string {
 
 type Stage = "idle" | "running" | "paused" | "done";
 
+function Coaching({ level }: { level: MeditationLevel }) {
+  return (
+    <div className="rounded-2xl border border-line bg-card p-5">
+      {level.oneLiner ? (
+        <p className="text-sm text-muted">{level.oneLiner}</p>
+      ) : null}
+      <p className="mt-2 font-mono text-xs" style={{ color: GEEST }}>
+        richtduur {level.targetMin} min · +{level.xp} XP
+      </p>
+      <ol className="mt-4 flex flex-col gap-1.5">
+        {level.instruction.map((s, i) => (
+          <li key={i} className="flex gap-2 text-sm">
+            <span className="font-mono text-xs text-muted">{i + 1}</span>
+            <span>{s}</span>
+          </li>
+        ))}
+      </ol>
+      {level.guidance ? (
+        <p className="mt-3 rounded-xl border border-line bg-ink-2 px-3.5 py-2.5 text-xs text-muted">
+          {level.guidance}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 export function MeditationTimer({ level }: { level: MeditationLevel }) {
+  // Begeleide audio is leidend: de sessie ís de opname. Alleen de stille zit
+  // (geen media) gebruikt de ring-timer met duurkeuze.
+  const guided = level.media?.provider === "audio";
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
   const durations = Array.from(
     new Set([level.targetMin, level.targetMin + 5, level.targetMin + 10]),
   );
@@ -27,17 +58,20 @@ export function MeditationTimer({ level }: { level: MeditationLevel }) {
   const [stage, setStage] = useState<Stage>("idle");
   const [remaining, setRemaining] = useState(level.targetMin * 60);
   const [award, setAward] = useState<XpAward | null>(null);
+  const [finalSecs, setFinalSecs] = useState(0);
   const submittedRef = useRef(false);
   const [pending, startTransition] = useTransition();
   const { showAward, showMessage } = useToast();
 
   const total = minutes * 60;
 
+  // Stille-zit-timer (alleen zonder begeleiding).
   useEffect(() => {
-    if (stage !== "running") return;
+    if (guided || stage !== "running") return;
     const t = setInterval(() => {
       setRemaining((r) => {
         if (r <= 1) {
+          setFinalSecs(total);
           setStage("done");
           return 0;
         }
@@ -45,18 +79,16 @@ export function MeditationTimer({ level }: { level: MeditationLevel }) {
       });
     }, 1000);
     return () => clearInterval(t);
-  }, [stage]);
+  }, [guided, stage, total]);
 
+  // Afronden → sessie loggen.
   useEffect(() => {
     if (stage !== "done" || submittedRef.current) return;
     submittedRef.current = true;
     haptic("success");
-    const elapsed = total - remaining;
+    const secs = Math.max(1, Math.round(finalSecs || total - remaining));
     startTransition(async () => {
-      const result = await completeMeditationSession(
-        level.level,
-        Math.max(1, Math.round(elapsed)),
-      );
+      const result = await completeMeditationSession(level.level, secs);
       if (result.error) {
         showMessage(result.error);
         return;
@@ -64,10 +96,18 @@ export function MeditationTimer({ level }: { level: MeditationLevel }) {
       setAward(result.award);
       showAward(result.award);
     });
-  }, [stage, level.level, total, remaining, showAward, showMessage]);
+  }, [stage, level.level, total, remaining, finalSecs, showAward, showMessage]);
 
+  function finishGuided() {
+    setFinalSecs(
+      Math.round(audioRef.current?.currentTime ?? 0) || level.targetMin * 60,
+    );
+    setStage("done");
+  }
+
+  // ── DONE ──────────────────────────────────────────────────────────────────
   if (stage === "done") {
-    const sat = Math.round((total - remaining) / 60);
+    const sat = Math.round((finalSecs || total - remaining) / 60);
     return (
       <div className="flex flex-col items-center gap-4 rounded-2xl border border-line bg-card p-8 text-center">
         <span
@@ -78,7 +118,7 @@ export function MeditationTimer({ level }: { level: MeditationLevel }) {
         <div>
           <h2 className="text-lg font-semibold">Gezeten</h2>
           <p className="mt-1 font-mono text-sm text-muted">
-            {level.name} · {sat} min
+            {level.name} · {Math.max(1, sat)} min
             {award
               ? ` · +${award.amount} XP · Geest`
               : pending
@@ -99,36 +139,47 @@ export function MeditationTimer({ level }: { level: MeditationLevel }) {
     );
   }
 
+  // ── Begeleide audio: de opname leidt ────────────────────────────────────────
+  if (guided && level.media) {
+    return (
+      <div className="flex flex-col gap-5">
+        <Coaching level={level} />
+        <div className="rounded-2xl border border-line bg-card p-4">
+          <p className="mb-2 text-xs text-muted">{level.media.title}</p>
+          <audio
+            ref={audioRef}
+            controls
+            src={level.media.url}
+            onEnded={finishGuided}
+            className="w-full"
+          >
+            <track kind="captions" />
+          </audio>
+        </div>
+        <button
+          type="button"
+          disabled={pending}
+          onClick={finishGuided}
+          className="rounded-lg px-6 py-2.5 text-sm font-semibold text-ink transition-opacity hover:opacity-90 disabled:opacity-50"
+          style={{ background: GEEST }}
+        >
+          Sessie afronden · +{level.xp} XP
+        </button>
+        <p className="text-center text-xs text-muted">
+          Speel de opname af en zit mee; tik daarna om te loggen. Bij het einde
+          gaat dit vanzelf.
+        </p>
+      </div>
+    );
+  }
+
+  // ── Stille zit: ring-timer met duurkeuze ────────────────────────────────────
   const running = stage === "running" || stage === "paused";
   const pct = running ? ((total - remaining) / total) * 100 : 0;
 
   return (
     <div className="flex flex-col gap-5">
-      {!running ? (
-        <div className="rounded-2xl border border-line bg-card p-5">
-          {level.oneLiner ? (
-            <p className="text-sm text-muted">{level.oneLiner}</p>
-          ) : null}
-          <p className="mt-2 font-mono text-xs" style={{ color: GEEST }}>
-            richtduur {level.targetMin} min · +{level.xp} XP
-          </p>
-          <ol className="mt-4 flex flex-col gap-1.5">
-            {level.instruction.map((s, i) => (
-              <li key={i} className="flex gap-2 text-sm">
-                <span className="font-mono text-xs text-muted">{i + 1}</span>
-                <span>{s}</span>
-              </li>
-            ))}
-          </ol>
-          {level.guidance ? (
-            <p className="mt-3 rounded-xl border border-line bg-ink-2 px-3.5 py-2.5 text-xs text-muted">
-              {level.guidance}
-            </p>
-          ) : null}
-        </div>
-      ) : null}
-
-      {level.media ? <MediaEmbed media={level.media} /> : null}
+      {!running ? <Coaching level={level} /> : null}
 
       {running ? (
         <div className="flex flex-col items-center gap-5 py-2">
@@ -162,7 +213,10 @@ export function MeditationTimer({ level }: { level: MeditationLevel }) {
             </button>
             <button
               type="button"
-              onClick={() => setStage("done")}
+              onClick={() => {
+                setFinalSecs(total - remaining);
+                setStage("done");
+              }}
               className="rounded-full border border-line px-4 py-2 text-sm text-muted transition-colors hover:text-text"
             >
               Nu afronden
@@ -171,6 +225,7 @@ export function MeditationTimer({ level }: { level: MeditationLevel }) {
         </div>
       ) : (
         <>
+          {level.media ? <MediaEmbed media={level.media} /> : null}
           <div className="flex items-center justify-center gap-2">
             {durations.map((d) => (
               <button
