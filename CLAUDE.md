@@ -282,6 +282,19 @@ media (Engelstalige video/audio mag; app-copy blijft NL). Bouwplan C0-C4.
   (12 verdieping → 13 30-min → 14 diepe/begeleide journey, elk na 3 sessies) +
   retentie-logging; na de top een doorlopende **"gevorderd"-modus** (vrije
   beoefening + diepte-stats: sessies, minuten, hoogste BOLT, langste retentie).
+- ✅ **C0b — Video-first herstructurering** (migration `..023`): de leerlijn
+  was techniek-eerst (4-7-8/box/coherent/Wim Hof) met los gekoppelde video's die
+  niet pasten → mismatch. Nu is de **video leidend**: alle 14 niveaus zijn
+  geverifieerde Breathe With Sandy-video's (kanaal @BreatheWithSandy) in
+  `follow`-modus (video begeleidt, orb draait niet mee), oplopend in zwaarte
+  zoals haar video's zelf: kalmerend 5 min (box/4-7-8/stress/reset) → brug
+  8-12 min (reset, ochtendregulatie, eerste verbonden-ademhaling-ronden) →
+  zwaar 15-45 min (signatuur release-journeys: 15-min 3-ronden, somatisch,
+  20-min doorlopend, 30-min grief, 40/45-min diepste). Coaching beschrijft per
+  niveau de échte video (met geverifieerde hoofdstuk-tijden). BOLT-poort uit de
+  hoofdlijn (onderbrak de flow); gating puur op beoefening; veiligheids-ack
+  vanaf de verbonden niveaus. Follow-sessies loggen de videoduur; endgame-tegels
+  sessies/minuten/niveaus.
 - ✅ **C2 — Meditatie**: migraties `meditation_curriculum`/`_seed` (`meditation_levels` 11 niveaus + `user_meditation_state` + `meditation_sessions`, RLS; `complete_meditation_session` → geest 30 XP + session_log). `src/lib/meditation.ts` (evaluateUnlock op consistentie, topReached + diepte-stats; 3 vitest-tests) + `meditation-data.ts`. `/geest/meditatie` gated pad + doorlopende gevorderd-modus (zits, minuten, langste zit); `/geest/meditatie/[slug]` met `MeditationTimer` (geleide UCLA-audio in-app + kalme ring-timer + duurkeuze). Gedeelde `MediaEmbed` (audio/youtube/link). /geest-hub + Nu-motor → `/geest/meditatie`.
 - ⬜ **C1 mobiliteit · C3 calisthenics-verdieping · C4 generalisatie**
 
