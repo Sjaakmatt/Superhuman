@@ -87,7 +87,7 @@ function timeToMinutes(time: string): number | null {
   return Number(match[1]) * 60 + Number(match[2]);
 }
 
-Deno.serve(async () => {
+Deno.serve(async (req) => {
   const vapidPublic = Deno.env.get("VAPID_PUBLIC_KEY");
   const vapidPrivate = Deno.env.get("VAPID_PRIVATE_KEY");
   if (!vapidPublic || !vapidPrivate) {
@@ -106,6 +106,62 @@ Deno.serve(async () => {
     Deno.env.get("SUPABASE_URL")!,
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
+
+  // On-demand testmelding: POST {test:true, url}. Stuurt één push naar de
+  // toestellen van de ingelogde gebruiker (uit de JWT), om de deeplink te testen.
+  if (req.method === "POST") {
+    let body: { test?: boolean; url?: string } = {};
+    try {
+      body = await req.json();
+    } catch {
+      /* geen/ongeldige body — dan is dit een cron-run, val door */
+    }
+    if (body?.test) {
+      const jwt = (req.headers.get("Authorization") ?? "").replace(
+        /^Bearer\s+/i,
+        "",
+      );
+      const {
+        data: { user },
+      } = await supabase.auth.getUser(jwt);
+      if (!user) {
+        return new Response(JSON.stringify({ error: "Niet ingelogd" }), {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      const target =
+        typeof body.url === "string" && body.url.startsWith("/")
+          ? body.url
+          : "/geest/journal";
+      const { data: subs } = await supabase
+        .from("push_subscriptions")
+        .select("id, subscription")
+        .eq("user_id", user.id);
+      const payload = JSON.stringify({
+        title: "Testmelding",
+        body: "Tik om te openen — test van de deeplink.",
+        url: target,
+      });
+      let sent = 0;
+      const dead: number[] = [];
+      for (const row of subs ?? []) {
+        try {
+          await webpush.sendNotification(row.subscription, payload);
+          sent += 1;
+        } catch (err) {
+          const status = (err as { statusCode?: number }).statusCode;
+          if (status === 404 || status === 410) dead.push(row.id);
+        }
+      }
+      if (dead.length > 0) {
+        await supabase.from("push_subscriptions").delete().in("id", dead);
+      }
+      return new Response(JSON.stringify({ test: true, sent, cleaned: dead.length }), {
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+  }
 
   const { data: reminders, error } = await supabase
     .from("reminders")

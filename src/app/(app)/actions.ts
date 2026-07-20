@@ -720,6 +720,32 @@ export async function savePushSubscription(
   return {};
 }
 
+/** Stuur een test-notificatie naar de eigen toestellen (om de deeplink te testen). */
+export async function sendTestPush(): Promise<{
+  error?: string;
+  sent?: number;
+}> {
+  const supabase = await createClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session) return { error: "Niet ingelogd" };
+
+  const { data, error } = await supabase.functions.invoke("send-reminders", {
+    body: { test: true, url: "/geest/journal" },
+    headers: { Authorization: `Bearer ${session.access_token}` },
+  });
+  if (error) return { error: "Versturen mislukte — probeer het nog eens." };
+
+  const sent = (data as { sent?: number } | null)?.sent ?? 0;
+  if (sent === 0) {
+    return {
+      error: "Geen toestel gevonden. Staat push aan op dit apparaat?",
+    };
+  }
+  return { sent };
+}
+
 export async function removePushSubscription(
   endpoint: string,
 ): Promise<{ error?: string }> {

@@ -4,6 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 import {
   removePushSubscription,
   savePushSubscription,
+  sendTestPush,
 } from "@/app/(app)/actions";
 import { useToast } from "./toast";
 
@@ -83,6 +84,16 @@ export function PushToggle() {
     });
   }
 
+  function sendTest() {
+    startTransition(async () => {
+      const result = await sendTestPush();
+      showMessage(
+        result.error ??
+          "Testmelding verstuurd — kijk op je vergrendelscherm en tik erop.",
+      );
+    });
+  }
+
   const description: Record<PushState, string> = {
     loading: "Status controleren…",
     unsupported: "Deze browser ondersteunt geen web-push.",
@@ -92,24 +103,36 @@ export function PushToggle() {
   };
 
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-line bg-card p-4">
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium">Push-notificaties</p>
-        <p className="mt-0.5 text-xs text-muted">{description[state]}</p>
+    <div className="flex flex-col gap-3 rounded-2xl border border-line bg-card p-4">
+      <div className="flex items-center gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium">Push-notificaties</p>
+          <p className="mt-0.5 text-xs text-muted">{description[state]}</p>
+        </div>
+        {state === "on" || state === "off" ? (
+          <button
+            type="button"
+            onClick={state === "on" ? disable : enable}
+            disabled={pending}
+            aria-pressed={state === "on"}
+            className={`rounded-lg border px-4 py-2 text-sm transition-colors disabled:opacity-40 ${
+              state === "on"
+                ? "border-vitaliteit bg-vitaliteit/10 text-text"
+                : "border-line text-muted hover:text-text"
+            }`}
+          >
+            {state === "on" ? "Aan" : "Zet aan"}
+          </button>
+        ) : null}
       </div>
-      {state === "on" || state === "off" ? (
+      {state === "on" ? (
         <button
           type="button"
-          onClick={state === "on" ? disable : enable}
+          onClick={sendTest}
           disabled={pending}
-          aria-pressed={state === "on"}
-          className={`rounded-lg border px-4 py-2 text-sm transition-colors disabled:opacity-40 ${
-            state === "on"
-              ? "border-vitaliteit bg-vitaliteit/10 text-text"
-              : "border-line text-muted hover:text-text"
-          }`}
+          className="self-start rounded-lg border border-line px-4 py-2 text-sm text-muted transition-colors hover:text-text disabled:opacity-40"
         >
-          {state === "on" ? "Aan" : "Zet aan"}
+          Stuur testmelding → Journal
         </button>
       ) : null}
     </div>
