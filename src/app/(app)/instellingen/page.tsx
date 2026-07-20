@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { ReminderRow, ScheduleBlockRow } from "@/lib/types";
 import { ProfileForm } from "@/components/profile-form";
 import { PushToggle } from "@/components/push-toggle";
+import { SwStatus } from "@/components/sw-status";
 import { RemindersManager } from "@/components/reminders-manager";
 import { ScheduleManager } from "@/components/schedule-manager";
 
@@ -59,6 +60,7 @@ export default async function InstellingenPage() {
       <section aria-label="Notificaties" className="flex flex-col gap-2">
         <h2 className="text-sm font-medium text-muted">Notificaties</h2>
         <PushToggle />
+        <SwStatus />
         <RemindersManager reminders={(reminders ?? []) as ReminderRow[]} />
       </section>
     </div>

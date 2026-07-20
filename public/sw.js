@@ -1,6 +1,7 @@
 /* Superhuman OS service worker: web-push + notificatie-klik.
    Bewust geen agressieve caching — de app is server-first. */
 
+const SW_VERSION = "2026-07-20-deeplink-2";
 const DEFAULT_URL = "/vandaag";
 const NAV_CACHE = "sh-nav";
 const NAV_KEY = "/__pending_nav";
@@ -93,14 +94,23 @@ self.addEventListener("notificationclick", (event) => {
   event.waitUntil(openTo(url));
 });
 
-// Een pagina kan expliciet naar een klaarstaande navigatie vragen.
 self.addEventListener("message", (event) => {
-  if (event.data?.type === "get-pending-navigation") {
+  const type = event.data?.type;
+  // Een pagina kan expliciet naar een klaarstaande navigatie vragen.
+  if (type === "get-pending-navigation") {
     event.waitUntil(
       (async () => {
         const url = await readPending();
         if (url) event.source?.postMessage({ type: "navigate", url });
       })(),
     );
+  }
+  // Diagnostiek: welke versie draait er?
+  if (type === "ping") {
+    event.source?.postMessage({ type: "pong", version: SW_VERSION });
+  }
+  // Forceer directe activatie van een wachtende nieuwe worker.
+  if (type === "skip-waiting") {
+    self.skipWaiting();
   }
 });
