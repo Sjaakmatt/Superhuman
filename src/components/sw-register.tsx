@@ -29,8 +29,9 @@ export function SwRegister() {
     };
     navigator.serviceWorker.addEventListener("message", onMessage);
 
-    // Robuuste route: lees een klaarstaande navigatie rechtstreeks uit de Cache
-    // (overleeft het afschieten van de service worker; geen timing nodig).
+    // Robuuste route: lees een klaarstaande navigatie rechtstreeks uit de Cache.
+    // Op iOS faalt in de voorgrond zowel clients.matchAll als een
+    // zichtbaarheidswissel, dus we POLLEN de cache — dat werkt in elk scenario.
     let consumed = false;
     const consumePending = async () => {
       if (consumed || !("caches" in window)) return;
@@ -43,6 +44,10 @@ export function SwRegister() {
         if (url && typeof at === "number" && Date.now() - at < 180000) {
           consumed = true;
           router.push(url);
+          // resetten zodat een volgende notificatie later weer werkt
+          setTimeout(() => {
+            consumed = false;
+          }, 1500);
         }
       } catch {
         /* geen cache — dan draagt openWindow de route al */
@@ -50,18 +55,21 @@ export function SwRegister() {
     };
 
     consumePending();
-    const t1 = setTimeout(consumePending, 400);
-    const t2 = setTimeout(consumePending, 1200);
+    const poll = setInterval(consumePending, 1000);
     const onVisible = () => {
       if (document.visibilityState === "visible") consumePending();
     };
+    const onFocus = () => consumePending();
     document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", onFocus);
+    window.addEventListener("pageshow", onFocus);
 
     return () => {
       navigator.serviceWorker.removeEventListener("message", onMessage);
       document.removeEventListener("visibilitychange", onVisible);
-      clearTimeout(t1);
-      clearTimeout(t2);
+      window.removeEventListener("focus", onFocus);
+      window.removeEventListener("pageshow", onFocus);
+      clearInterval(poll);
     };
   }, [router]);
 
