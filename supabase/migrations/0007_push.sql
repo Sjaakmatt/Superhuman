@@ -10,5 +10,6 @@ create table if not exists push_subscription (
 
 alter table push_subscription enable row level security;
 
+drop policy if exists push_subscription_own on push_subscription;
 create policy push_subscription_own on push_subscription
   for all to authenticated using (athlete_id = my_athlete_id()) with check (athlete_id = my_athlete_id());

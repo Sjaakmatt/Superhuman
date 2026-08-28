@@ -19,9 +19,15 @@ Zonder Supabase draait de app gewoon: hij leest het plan uit `supabase/seed/` en
 elk invoerscherm dat er niets bewaard wordt. Met Supabase:
 
 ```bash
-# draai supabase/migrations/*.sql in volgorde (SQL editor of supabase db push)
+# 1. Migraties: plak supabase/migrations/*.sql in volgorde in de SQL-editor,
+#    of draai ze met de Supabase CLI. Opnieuw draaien mag — alles is idempotent.
+# 2. Seed:
 npm run db:seed                # zet 57 weken, 399 dagen, oefeningen en referentie klaar
 ```
+
+Vergeet in het dashboard niet **Auth → URL Configuration**: zet Site URL op waar de
+app draait en voeg `<site>/**` plus `http://localhost:3000/**` toe aan de redirect
+URLs. Zonder die twee komt de inloglink uit je mail op de verkeerde plek terecht.
 
 De seed weigert te draaien als het plan niet klopt — hij draait eerst dezelfde
 controles als `test/seed.test.ts`.
