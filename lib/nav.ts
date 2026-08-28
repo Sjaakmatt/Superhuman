@@ -13,3 +13,10 @@ export const NAV: NavItem[] = [
   { href: '/analyse', label: 'Analyse', title: 'Analyse', icon: 'M4 19V5M4 19h16M8 16V9M12 16v-4M16 16v-8' },
   { href: '/seizoen', label: 'Seizoen', title: 'Seizoen', icon: 'M4 6h16M4 12h16M4 18h16M9 3v18M15 3v18' },
 ];
+
+/** Schermen buiten de hoofdnavigatie hebben ook een titel nodig in de kop. */
+export const EXTRA_TITLES: Record<string, string> = {
+  '/instellingen': 'Instellingen',
+  '/login': 'Inloggen',
+  '/offline': 'Geen verbinding',
+};

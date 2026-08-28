@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import ThemeToggle from '@/components/ThemeToggle';
 import PlanSearch from '@/components/PlanSearch';
-import { NAV, type NavItem } from '@/lib/nav';
+import { EXTRA_TITLES, NAV, type NavItem } from '@/lib/nav';
 
 const TAB_HREFS = ['/', '/loggen', '/kracht', '/analyse'];
 
@@ -92,7 +92,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           <div className="min-w-0 flex-1">
             <p className="truncate text-[13px]" style={{ color: 'var(--ink3)' }}>{hello}, Sjaak</p>
             <h1 className="truncate text-[19px] font-bold tracking-tight side:text-[22px]">
-              {NAV.find((n) => isActive(n.href))?.title ?? 'Ultra100'}
+              {NAV.find((n) => isActive(n.href))?.title ?? EXTRA_TITLES[pathname] ?? 'Ultra100'}
             </h1>
           </div>
           <PlanSearch />

@@ -43,7 +43,7 @@ export default function ThemeToggle({ compact = false }: { compact?: boolean }) 
   }
 
   return (
-    <div role="group" aria-label="Weergave" className="grid grid-cols-3 gap-1 rounded-[var(--r-btn)] p-1"
+    <div role="group" aria-label="Weergave" className="grid max-w-[320px] grid-cols-3 gap-1 rounded-[var(--r-btn)] p-1"
       style={{ background: 'var(--card2)' }}>
       {(['light', 'dark', 'systeem'] as Choice[]).map((c) => (
         <button key={c} type="button" onClick={() => pick(c)} aria-pressed={choice === c}
