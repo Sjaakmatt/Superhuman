@@ -32,9 +32,10 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      # 53 tests: seed-integriteit (57 weken, 399 dagen, weektotaal = som van de
+      # 63 tests: seed-integriteit (57 weken, 399 dagen, weektotaal = som van de
       # dagen), de afgeleide getallen, elk van de twaalf regels met een geval dat
-      # wel en een dat niet vuurt, de krachtparser en de VAPID-handtekening.
+      # wel en een dat niet vuurt, de krachtparser, de VAPID-handtekening en de
+      # cron-configuratie (wrangler.jsonc en worker.ts gelijk, weekdagen voluit).
       - name: Tests
         run: npm test
 

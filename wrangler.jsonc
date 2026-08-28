@@ -15,19 +15,23 @@
     "enabled": true
   },
   // Cron Triggers. De mapping van expressie naar route staat in worker.ts;
-  // laat die twee lijsten gelijk lopen, anders logt scheduled() "onbekende
-  // expressie" en gebeurt er niets.
+  // test/cron.test.ts bewaakt dat die twee lijsten gelijk blijven.
+  //
+  // WEEKDAGEN: Cloudflare telt 1 = zondag tot 7 = zaterdag, anders dan de
+  // meeste cron-systemen (waar 0 = zondag). Daarom de drieletterafkortingen —
+  // die zijn niet mis te verstaan. Een 0 wordt geweigerd bij het deployen,
+  // maar "5" zou stilzwijgend donderdag betekenen in plaats van vrijdag.
   //
   // Alle tijden in UTC, gezet op wintertijd (UTC+1). In de zomer vuren ze een
   // uur later op de klok — bewust: liever een uur te laat dan een melding om
   // vijf uur 's ochtends.
-  //   10 2    03:10  Strava-sync
-  //   0 5     06:00  ochtendmelding
-  //   5 5     06:05  dagelijkse analyse
-  //   0 17 5  vrijdag 18:00  longrun-briefing
-  //   0 19 0  zondag 20:00   weekanalyse
+  //   10 2      03:10  Strava-sync
+  //   0 5       06:00  ochtendmelding
+  //   5 5       06:05  dagelijkse analyse
+  //   0 17 FRI  vrijdag 18:00  longrun-briefing
+  //   0 19 SUN  zondag 20:00   weekanalyse
   "triggers": {
-    "crons": ["10 2 * * *", "0 5 * * *", "5 5 * * *", "0 17 * * 5", "0 19 * * 0"]
+    "crons": ["10 2 * * *", "0 5 * * *", "5 5 * * *", "0 17 * * FRI", "0 19 * * SUN"]
   },
   // Niet-geheime runtime-configuratie. Wordt bij elke deploy toegepast.
   //

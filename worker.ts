@@ -13,7 +13,8 @@ import openNextWorker from './.open-next/worker.js';
 export { DOQueueHandler, DOShardedTagCache, BucketCachePurge } from './.open-next/worker.js';
 
 // Cron-expressie → interne route. De routes controleren zelf CRON_SECRET,
-// dus die gaat hier mee.
+// dus die gaat hier mee. Deze lijst moet gelijk lopen met "triggers.crons" in
+// wrangler.jsonc; test/cron.test.ts bewaakt dat.
 //
 // Cloudflare-crons draaien in UTC. De tijden staan op wintertijd; in de zomer
 // vuren ze een uur later op de klok. Zie README.
@@ -21,9 +22,18 @@ const CRON_ROUTES = {
   '10 2 * * *': '/api/strava/sync', // 03:10 — nachtelijke sync
   '0 5 * * *': '/api/push/daily', // 06:00 — melding met de sessie van vandaag
   '5 5 * * *': '/api/insight/daily', // 06:05 — de dagelijkse analyse
-  '0 17 * * 5': '/api/insight/longrun', // vrijdag 18:00 — briefing voor de longrun
-  '0 19 * * 0': '/api/insight/weekly', // zondag 20:00 — de weekanalyse
+  '0 17 * * FRI': '/api/insight/longrun', // vrijdag 18:00 — briefing voor de longrun
+  '0 19 * * SUN': '/api/insight/weekly', // zondag 20:00 — de weekanalyse
 };
+
+// Cloudflare geeft de expressie terug zoals hij geconfigureerd is, maar we
+// vertrouwen niet op de exacte schrijfwijze: hoofdletters en dubbele spaties
+// mogen het opzoeken niet breken.
+const normaliseer = (cron) => cron.trim().replace(/\s+/g, ' ').toUpperCase();
+
+const ROUTE_OP_CRON = new Map(
+  Object.entries(CRON_ROUTES).map(([cron, route]) => [normaliseer(cron), route]),
+);
 
 const handler = {
   fetch(request, env, ctx) {
@@ -31,7 +41,7 @@ const handler = {
   },
 
   async scheduled(event, env, ctx) {
-    const path = CRON_ROUTES[event.cron];
+    const path = ROUTE_OP_CRON.get(normaliseer(event.cron));
     if (!path) {
       console.warn(`[cron] onbekende expressie: ${event.cron}`);
       return;

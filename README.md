@@ -42,7 +42,7 @@ controles als `test/seed.test.ts`.
 ```bash
 npm run typecheck
 npm run lint
-npm test          # 58 tests: seed-integriteit, afgeleide getallen, twaalf regels, krachtparser, VAPID
+npm test          # 63 tests: seed-integriteit, afgeleide getallen, twaalf regels, krachtparser, VAPID, cron-configuratie
 npm run build
 ```
 
@@ -134,7 +134,16 @@ npx wrangler secret put VAPID_PRIVATE_KEY
 
 **Eigen domein** koppel je via het dashboard (Worker → Settings → Domains &
 Routes → Add Custom Domain), niet via wrangler: de deploy-token heeft geen
-rechten op zone-routes.
+rechten op zone-routes. De app draait op **https://ultra100.factumai.nl**.
+
+Drie plekken willen datzelfde adres kennen:
+
+| Waar | Waarde |
+|---|---|
+| GitHub repo-Variable `NEXT_PUBLIC_SITE_URL` | `https://ultra100.factumai.nl` |
+| Strava → API → Authorization Callback Domain | `ultra100.factumai.nl` |
+| Supabase → Auth → URL Configuration → Site URL | `https://ultra100.factumai.nl` |
+| Supabase → Auth → Redirect URLs | `https://ultra100.factumai.nl/**` en `http://localhost:3000/**` |
 
 ## Crons
 
@@ -147,12 +156,17 @@ liever een uur te laat dan een melding om vijf uur 's ochtends.
 | `/api/strava/sync` | `10 2 * * *` | 03:10 |
 | `/api/push/daily` | `0 5 * * *` | 06:00 |
 | `/api/insight/daily` | `5 5 * * *` | 06:05 |
-| `/api/insight/longrun` | `0 17 * * 5` | vrijdag 18:00 |
-| `/api/insight/weekly` | `0 19 * * 0` | zondag 20:00 |
+| `/api/insight/longrun` | `0 17 * * FRI` | vrijdag 18:00 |
+| `/api/insight/weekly` | `0 19 * * SUN` | zondag 20:00 |
+
+**Weekdagen schrijf je voluit.** Cloudflare telt `1 = zondag` tot `7 = zaterdag`,
+waar de meeste cron-systemen bij `0 = zondag` beginnen. Een `0` weigert Cloudflare
+bij het deployen, maar een `5` zou stilzwijgend donderdag betekenen in plaats van
+vrijdag — en dat merk je pas als een briefing een week uitblijft.
 
 De expressies staan op twee plekken: in `wrangler.jsonc` (welke crons bestaan) en
-in `worker.ts` (welke route erbij hoort). Laat die lijsten gelijk lopen — anders
-logt `scheduled()` "onbekende expressie" en gebeurt er niets.
+in `worker.ts` (welke route erbij hoort). `test/cron.test.ts` bewaakt dat die twee
+gelijk blijven, dat elke route bestaat, en dat er geen cijfer als weekdag staat.
 
 Alle cron-routes eisen `Authorization: Bearer $CRON_SECRET`; `scheduled()` stuurt
 die mee. Buiten productie mag het zonder, zodat je ze lokaal kunt aanroepen:
@@ -165,7 +179,7 @@ curl -X POST localhost:3000/api/insight/weekly
 
 `.github/workflows/ci.yml` draait op elke push en pull request:
 
-- **checks** — typecheck, lint, 58 tests en `next build`. De build draait bewust
+- **checks** — typecheck, lint, 63 tests en `next build`. De build draait bewust
   zonder Supabase-variabelen: de app moet ook zonder database bouwen.
 - **worker** — `opennextjs-cloudflare build` plus een wrangler dry-run. Dat vangt
   fouten in `worker.ts` en `wrangler.jsonc` die `next build` niet ziet.
