@@ -25,6 +25,11 @@ elk invoerscherm dat er niets bewaard wordt. Met Supabase:
 npm run db:seed                # zet 57 weken, 399 dagen, oefeningen en referentie klaar
 ```
 
+Twee dingen die de linter terecht meldt en die zo horen: `strava_token` heeft RLS
+aan zonder policy (alleen server routes met de service-role-sleutel komen erbij),
+en `my_athlete_id()` is aanroepbaar door ingelogde gebruikers (de RLS-policies
+hebben dat nodig; hij geeft alleen je eigen id terug).
+
 Vergeet in het dashboard niet **Auth → URL Configuration**: zet Site URL op waar de
 app draait en voeg `<site>/**` plus `http://localhost:3000/**` toe aan de redirect
 URLs. Zonder die twee komt de inloglink uit je mail op de verkeerde plek terecht.
