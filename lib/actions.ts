@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { admin, db } from '@/lib/db';
-import { getAthlete } from '@/lib/data';
+import { getAthlete, type Athlete } from '@/lib/data';
 import type { IsoDate } from '@/lib/date';
 import type { Proposal } from '@/lib/types';
 
@@ -12,17 +12,27 @@ import type { Proposal } from '@/lib/types';
 
 export type Result = { ok: true } | { ok: false; error: string };
 
-const NO_DB: Result = {
+const GEEN_DATABASE: Result = {
   ok: false,
   error: 'Geen database verbonden. Zet NEXT_PUBLIC_SUPABASE_URL en de sleutels in .env.local.',
 };
 
-async function context() {
+const NIET_INGELOGD: Result = {
+  ok: false,
+  error: 'Je bent niet ingelogd, dus er is niets om aan te hangen. Log opnieuw in.',
+};
+
+type Context = { client: NonNullable<Awaited<ReturnType<typeof db>>>; athlete: Athlete };
+
+/** Levert de client plus de atleet, of het probleem dat je moet weten. De twee
+ *  gevallen scheiden we bewust: "geen database" en "niet ingelogd" vragen om
+ *  heel verschillende dingen van je. */
+async function context(): Promise<{ ok: true; ctx: Context } | { ok: false; fout: Result }> {
   const client = await db();
-  if (!client) return null;
+  if (!client) return { ok: false, fout: GEEN_DATABASE };
   const athlete = await getAthlete();
-  if (!athlete) return null;
-  return { client, athlete };
+  if (!athlete) return { ok: false, fout: NIET_INGELOGD };
+  return { ok: true, ctx: { client, athlete } };
 }
 
 export type WellnessInput = {
@@ -38,8 +48,9 @@ export type WellnessInput = {
 };
 
 export async function saveWellness(input: WellnessInput): Promise<Result> {
-  const ctx = await context();
-  if (!ctx) return NO_DB;
+  const resultaat = await context();
+  if (!resultaat.ok) return resultaat.fout;
+  const ctx = resultaat.ctx;
   const { error } = await ctx.client.from('wellness').upsert(
     { ...input, athlete_id: ctx.athlete.id },
     { onConflict: 'date' },
@@ -64,8 +75,9 @@ export type SessionLogInput = {
 };
 
 export async function saveSessionLog(input: SessionLogInput): Promise<Result> {
-  const ctx = await context();
-  if (!ctx) return NO_DB;
+  const resultaat = await context();
+  if (!resultaat.ok) return resultaat.fout;
+  const ctx = resultaat.ctx;
   const { client, athlete } = ctx;
 
   const { data: previous } = await client
@@ -111,8 +123,9 @@ export async function saveStrengthSet(input: {
   reps: number | null;
   done: boolean;
 }): Promise<Result> {
-  const ctx = await context();
-  if (!ctx) return NO_DB;
+  const resultaat = await context();
+  if (!resultaat.ok) return resultaat.fout;
+  const ctx = resultaat.ctx;
   const { client, athlete } = ctx;
 
   const { data: session, error: sessionError } = await client
@@ -139,8 +152,9 @@ export async function saveStrengthSet(input: {
 }
 
 export async function completeStrengthSession(date: IsoDate, done: boolean): Promise<Result> {
-  const ctx = await context();
-  if (!ctx) return NO_DB;
+  const resultaat = await context();
+  if (!resultaat.ok) return resultaat.fout;
+  const ctx = resultaat.ctx;
   const { error } = await ctx.client
     .from('strength_session')
     .update({ completed_at: done ? new Date().toISOString() : null })
@@ -153,8 +167,9 @@ export async function completeStrengthSession(date: IsoDate, done: boolean): Pro
 
 /** Een voorstel overnemen: het plan verandert, en de oude waarde blijft staan. */
 export async function acceptProposal(insightId: string, proposal: Proposal): Promise<Result> {
-  const ctx = await context();
-  if (!ctx) return NO_DB;
+  const resultaat = await context();
+  if (!resultaat.ok) return resultaat.fout;
+  const ctx = resultaat.ctx;
   const { client, athlete } = ctx;
 
   const { data: day } = await client.from('plan_day').select('*').eq('date', proposal.date).maybeSingle();
@@ -200,8 +215,9 @@ function coerce(field: string, value: string): string | number {
 }
 
 export async function dismissInsight(insightId: string): Promise<Result> {
-  const ctx = await context();
-  if (!ctx) return NO_DB;
+  const resultaat = await context();
+  if (!resultaat.ok) return resultaat.fout;
+  const ctx = resultaat.ctx;
   const { error } = await ctx.client.from('insight').update({ status: 'dismissed' }).eq('id', insightId);
   if (error) return { ok: false, error: error.message };
   revalidatePath('/analyse');
@@ -209,8 +225,9 @@ export async function dismissInsight(insightId: string): Promise<Result> {
 }
 
 export async function addShoe(input: { name: string; drop_mm: number | null }): Promise<Result> {
-  const ctx = await context();
-  if (!ctx) return NO_DB;
+  const resultaat = await context();
+  if (!resultaat.ok) return resultaat.fout;
+  const ctx = resultaat.ctx;
   const { error } = await ctx.client.from('shoe').insert(input);
   if (error) return { ok: false, error: error.message };
   revalidatePath('/instellingen');
@@ -218,8 +235,9 @@ export async function addShoe(input: { name: string; drop_mm: number | null }): 
 }
 
 export async function retireShoe(id: string, retired: boolean): Promise<Result> {
-  const ctx = await context();
-  if (!ctx) return NO_DB;
+  const resultaat = await context();
+  if (!resultaat.ok) return resultaat.fout;
+  const ctx = resultaat.ctx;
   const { error } = await ctx.client.from('shoe').update({ retired }).eq('id', id);
   if (error) return { ok: false, error: error.message };
   revalidatePath('/instellingen');
