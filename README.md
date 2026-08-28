@@ -110,11 +110,16 @@ npm run deploy    # handmatig deployen (vereist wrangler-login)
 **Repo-variables** (zelfde scherm, tabblad Variables). Next bakt `NEXT_PUBLIC_*`
 bij de build in de client-bundel, dus die kúnnen niet op de Worker staan:
 
-`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
-`NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_VAPID_PUBLIC_KEY`.
+| Variable | |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | vereist |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | vereist |
+| `NEXT_PUBLIC_SITE_URL` | optioneel — de Strava-callback valt anders terug op de URL van het verzoek |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | optioneel — leeg betekent geen ochtendmelding |
 
-De deploy weigert te draaien als er één leeg is of een placeholder bevat — beter
-luid falen dan een kapotte bundel uitrollen.
+De deploy weigert te draaien als een vereiste waarde leeg is of een placeholder
+bevat — beter luid falen dan een kapotte bundel uitrollen. Voor de optionele
+geeft hij een waarschuwing en gaat door.
 
 **Worker-secrets** (server-side, nooit in de repo):
 

@@ -8,10 +8,12 @@ name: Deploy Ultra100 (Cloudflare)
 #   CLOUDFLARE_ACCOUNT_ID
 #
 # En repo-Variables (Settings → Secrets and variables → Actions → Variables):
-#   NEXT_PUBLIC_SUPABASE_URL
-#   NEXT_PUBLIC_SUPABASE_ANON_KEY
-#   NEXT_PUBLIC_SITE_URL
-#   NEXT_PUBLIC_VAPID_PUBLIC_KEY   (leeg mag: dan staat de ochtendmelding uit)
+#   NEXT_PUBLIC_SUPABASE_URL       vereist
+#   NEXT_PUBLIC_SUPABASE_ANON_KEY  vereist
+#   NEXT_PUBLIC_SITE_URL           optioneel — de Strava-callback valt terug op
+#                                  de URL van het verzoek. Zet hem zodra je weet
+#                                  waar de app draait; dan is de callback stabiel.
+#   NEXT_PUBLIC_VAPID_PUBLIC_KEY   optioneel — leeg = geen ochtendmelding
 #
 # Waarom die vier als Variable en niet als Worker-secret: Next bakt NEXT_PUBLIC_*
 # bij de build in de client-bundel. Ze zijn publiek by design — de anon key komt
@@ -54,31 +56,54 @@ jobs:
           npm run lint
           npm test
 
-      - name: Controleer de build-time configuratie
+      - name: Controleer de configuratie
         env:
           SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          VAPID_PUBLIC_KEY: ${{ vars.NEXT_PUBLIC_VAPID_PUBLIC_KEY }}
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           fout=0
-          controleer() {
+
+          # Zonder deze twee bakt Next een onbruikbare client-bundel.
+          vereist() {
             naam="$1"; waarde="$2"
             if [ -z "$waarde" ]; then
-              echo "::error::repo-Variable $naam ontbreekt."
+              echo "::error::$naam ontbreekt."
               fout=1
             elif printf '%s' "$waarde" | grep -qE '^<|REPLACE_ME|voorbeeld|changeme'; then
-              echo "::error::repo-Variable $naam bevat een placeholder ($waarde)."
+              echo "::error::$naam bevat een placeholder."
               fout=1
             fi
           }
-          controleer NEXT_PUBLIC_SUPABASE_URL "$SUPABASE_URL"
-          controleer NEXT_PUBLIC_SUPABASE_ANON_KEY "$SUPABASE_ANON_KEY"
-          controleer NEXT_PUBLIC_SITE_URL "$SITE_URL"
+          # Deze kan de app missen; hij zegt het alleen even.
+          optioneel() {
+            [ -n "$2" ] || echo "::warning::$1 is niet gezet — $3"
+          }
+
+          vereist "repo-Variable NEXT_PUBLIC_SUPABASE_URL" "$SUPABASE_URL"
+          vereist "repo-Variable NEXT_PUBLIC_SUPABASE_ANON_KEY" "$SUPABASE_ANON_KEY"
+          vereist "repo-secret CLOUDFLARE_API_TOKEN" "$CF_TOKEN"
+          vereist "repo-secret CLOUDFLARE_ACCOUNT_ID" "$CF_ACCOUNT"
+
+          optioneel "NEXT_PUBLIC_SITE_URL" "$SITE_URL" \
+            "de Strava-callback valt terug op de URL van het verzoek. Zet hem zodra je weet waar de app draait."
+          optioneel "NEXT_PUBLIC_VAPID_PUBLIC_KEY" "$VAPID_PUBLIC_KEY" \
+            "de ochtendmelding blijft uit."
+
           if [ "$fout" = 1 ]; then
-            echo "Zet ze onder Settings → Secrets and variables → Actions → Variables."
+            echo "Zet ze onder Settings → Secrets and variables → Actions."
             exit 1
           fi
-          echo "Build-time configuratie compleet."
+
+          # Een afsluitende slash in de project-URL levert //rest/v1/... op.
+          schoon="${SUPABASE_URL%/}"
+          [ "$schoon" = "$SUPABASE_URL" ] || echo "::warning::Afsluitende slash uit NEXT_PUBLIC_SUPABASE_URL gehaald."
+          echo "NEXT_PUBLIC_SUPABASE_URL=$schoon" >> "$GITHUB_ENV"
+
+          echo "Configuratie in orde."
 
       # Draait `opennextjs-cloudflare build && opennextjs-cloudflare deploy`.
       # Runtime-secrets (SUPABASE_SERVICE_ROLE_KEY, STRAVA_*, ANTHROPIC_API_KEY,
@@ -89,7 +114,8 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+          # NEXT_PUBLIC_SUPABASE_URL komt uit de controlestap hierboven, zonder
+          # afsluitende slash — anders wordt het //rest/v1/... in elk verzoek.
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
           NEXT_PUBLIC_VAPID_PUBLIC_KEY: ${{ vars.NEXT_PUBLIC_VAPID_PUBLIC_KEY }}
