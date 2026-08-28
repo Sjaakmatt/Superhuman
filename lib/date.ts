@@ -1,6 +1,6 @@
 /** Een trainingsdag is een kalenderdag in Europe/Amsterdam, geen moment.
  *  Alles in deze app rekent met `YYYY-MM-DD`-strings; nooit met Date-objecten
- *  waarvan de tijdzone per omgeving verschilt (Vercel draait op UTC). */
+ *  waarvan de tijdzone per omgeving verschilt (de Worker draait op UTC). */
 
 export const TZ = 'Europe/Amsterdam';
 

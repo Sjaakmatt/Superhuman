@@ -18,5 +18,7 @@
     "paths": { "@/*": ["./*"] }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  // worker.ts importeert .open-next/worker.js, dat pas na de OpenNext-build
+  // bestaat; tsc zou daar terecht over vallen.
+  "exclude": ["node_modules", "worker.ts", ".open-next", ".wrangler"]
 }

@@ -1,0 +1,95 @@
+name: Deploy Ultra100 (Cloudflare)
+
+# Auto-deploy naar Cloudflare Workers bij een merge naar main — gespiegeld op
+# pavo-leadscanner/.github/workflows/deploy.yml.
+#
+# Vereist repo-secrets:
+#   CLOUDFLARE_API_TOKEN    scope: Workers Scripts Edit
+#   CLOUDFLARE_ACCOUNT_ID
+#
+# En repo-Variables (Settings → Secrets and variables → Actions → Variables):
+#   NEXT_PUBLIC_SUPABASE_URL
+#   NEXT_PUBLIC_SUPABASE_ANON_KEY
+#   NEXT_PUBLIC_SITE_URL
+#   NEXT_PUBLIC_VAPID_PUBLIC_KEY   (leeg mag: dan staat de ochtendmelding uit)
+#
+# Waarom die vier als Variable en niet als Worker-secret: Next bakt NEXT_PUBLIC_*
+# bij de build in de client-bundel. Ze zijn publiek by design — de anon key komt
+# sowieso in de browser en RLS beschermt de data. Op de Worker-runtime zetten
+# werkt dus níét; ze moeten hier staan.
+#
+# De guard hieronder is er met reden: in pavo-leadscanner stond ooit de
+# placeholder `<anon>` in een Variable, die Next letterlijk in de bundel bakte,
+# waarna Supabase "Invalid API key" gaf bij het inloggen. Beter luid falen dan
+# een kapotte bundel uitrollen.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-ultra100
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22' # wrangler 4 vereist Node >= 22
+          cache: 'npm'
+
+      - run: npm ci
+
+      # Dezelfde controles als CI. Een rode test hoort niet live te komen,
+      # ook niet als iemand rechtstreeks naar main duwt.
+      - name: Typecheck, lint en tests
+        run: |
+          npm run typecheck
+          npm run lint
+          npm test
+
+      - name: Controleer de build-time configuratie
+        env:
+          SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+        run: |
+          fout=0
+          controleer() {
+            naam="$1"; waarde="$2"
+            if [ -z "$waarde" ]; then
+              echo "::error::repo-Variable $naam ontbreekt."
+              fout=1
+            elif printf '%s' "$waarde" | grep -qE '^<|REPLACE_ME|voorbeeld|changeme'; then
+              echo "::error::repo-Variable $naam bevat een placeholder ($waarde)."
+              fout=1
+            fi
+          }
+          controleer NEXT_PUBLIC_SUPABASE_URL "$SUPABASE_URL"
+          controleer NEXT_PUBLIC_SUPABASE_ANON_KEY "$SUPABASE_ANON_KEY"
+          controleer NEXT_PUBLIC_SITE_URL "$SITE_URL"
+          if [ "$fout" = 1 ]; then
+            echo "Zet ze onder Settings → Secrets and variables → Actions → Variables."
+            exit 1
+          fi
+          echo "Build-time configuratie compleet."
+
+      # Draait `opennextjs-cloudflare build && opennextjs-cloudflare deploy`.
+      # Runtime-secrets (SUPABASE_SERVICE_ROLE_KEY, STRAVA_*, ANTHROPIC_API_KEY,
+      # CRON_SECRET, VAPID_PRIVATE_KEY) staan los op de Worker, gezet met
+      # `npx wrangler secret put <NAAM>`. Die horen hier niet.
+      - name: Build en deploy naar Cloudflare
+        run: npm run deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_VAPID_PUBLIC_KEY: ${{ vars.NEXT_PUBLIC_VAPID_PUBLIC_KEY }}

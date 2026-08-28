@@ -21,23 +21,22 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(fetch(event.request).catch(() => caches.match(OFFLINE)));
 });
 
-/* De ochtendmelding komt van de server; hier zetten we hem alleen op het scherm. */
+/* De push komt zonder inhoud binnen — dat scheelt de payloadversleuteling en
+   houdt de melding actueel. We halen de tekst hier op. */
 self.addEventListener('push', (event) => {
-  const data = (() => {
-    try {
-      return event.data ? event.data.json() : {};
-    } catch {
-      return {};
-    }
-  })();
   event.waitUntil(
-    self.registration.showNotification(data.title || 'Vandaag', {
-      body: data.body || '',
-      icon: '/icon.svg',
-      badge: '/icon.svg',
-      data: { url: data.url || '/' },
-      tag: 'vandaag',
-    }),
+    fetch('/api/push/today', { credentials: 'same-origin' })
+      .then((res) => (res.ok ? res.json() : null))
+      .catch(() => null)
+      .then((data) =>
+        self.registration.showNotification((data && data.title) || 'Vandaag', {
+          body: (data && data.body) || 'Open de app voor de sessie van vandaag.',
+          icon: '/icon.svg',
+          badge: '/icon.svg',
+          data: { url: (data && data.url) || '/' },
+          tag: 'vandaag',
+        }),
+      ),
   );
 });
 

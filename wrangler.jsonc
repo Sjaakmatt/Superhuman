@@ -1,0 +1,48 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ultra100",
+  // Eigen entry (worker.ts) in plaats van .open-next/worker.js, zodat we er een
+  // scheduled()-handler aan kunnen hangen voor de crons. worker.ts importeert
+  // de gegenereerde worker, die na `opennextjs-cloudflare build` bestaat.
+  "main": "worker.ts",
+  "compatibility_date": "2025-09-23",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  },
+  // Cron Triggers. De mapping van expressie naar route staat in worker.ts;
+  // laat die twee lijsten gelijk lopen, anders logt scheduled() "onbekende
+  // expressie" en gebeurt er niets.
+  //
+  // Alle tijden in UTC, gezet op wintertijd (UTC+1). In de zomer vuren ze een
+  // uur later op de klok — bewust: liever een uur te laat dan een melding om
+  // vijf uur 's ochtends.
+  //   10 2    03:10  Strava-sync
+  //   0 5     06:00  ochtendmelding
+  //   5 5     06:05  dagelijkse analyse
+  //   0 17 5  vrijdag 18:00  longrun-briefing
+  //   0 19 0  zondag 20:00   weekanalyse
+  "triggers": {
+    "crons": ["10 2 * * *", "0 5 * * *", "5 5 * * *", "0 17 * * 5", "0 19 * * 0"]
+  },
+  // Niet-geheime runtime-configuratie. Wordt bij elke deploy toegepast.
+  //
+  // GEHEIMEN staan hier NIET — die zet je met `npx wrangler secret put <NAAM>`:
+  //   SUPABASE_SERVICE_ROLE_KEY   seed, cron-routes en de Strava-sync
+  //   STRAVA_CLIENT_ID            OAuth-app
+  //   STRAVA_CLIENT_SECRET
+  //   ANTHROPIC_API_KEY           de analyses
+  //   CRON_SECRET                 beschermt de cron-routes
+  //   VAPID_PRIVATE_KEY           web push
+  //
+  // Build-time NEXT_PUBLIC_* horen hier ook niet: Next bakt die bij de build in
+  // de client-bundel, dus die gaan mee als GitHub repo-Variables. Zie
+  // .github/workflows/deploy.yml.
+  "vars": {
+    "VAPID_SUBJECT": "mailto:sjaakterveld@gmail.com"
+  }
+}

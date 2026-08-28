@@ -5,7 +5,9 @@ build/
 .env
 .env.local
 .env*.local
-.vercel
+.open-next/
+.wrangler/
+cloudflare-env.d.ts
 *.tsbuildinfo
 next-env.d.ts
 .DS_Store

@@ -8,7 +8,7 @@ Het trainingsplan is 57 weken, 399 dagen, en staat vast in de database — de ap
 - **Next.js 15**, App Router, TypeScript strict. Server Components waar het kan.
 - **Supabase** — Postgres, Auth, RLS. Eén gebruiker, maar RLS staat aan.
 - **Tailwind v4**, met `tokens.css` als bron van waarheid.
-- **Vercel** — hosting en Cron.
+- **Cloudflare Workers** — hosting via OpenNext, en Cron Triggers. Deploy vanaf GitHub Actions.
 - **Anthropic API** voor de analyses.
 - **Grafieken: met de hand geschreven SVG.** Geen chartbibliotheek. De vormen zijn eenvoudig (staven, één gladde lijn, een ring, een 57×7 raster) en een bibliotheek kost meer dan hij oplevert, zowel in kilobytes als in ontwerpafwijking.
 
@@ -37,7 +37,7 @@ Het trainingsplan is 57 weken, 399 dagen, en staat vast in de database — de ap
 
 ```
 app/                 routes (vandaag, loggen, kracht, analyse, seizoen)
-  api/strava/sync    dagelijkse sync, aangeroepen door Vercel Cron
+  api/strava/sync    dagelijkse sync, aangeroepen door de Cron Trigger
   api/insight/[kind] daily | weekly | debrief
 components/          UI, dun, zonder datalogica
 components/charts/   handgeschreven SVG-componenten

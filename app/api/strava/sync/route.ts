@@ -15,9 +15,7 @@ import {
   withBackoff,
 } from '@/lib/strava';
 
-export const maxDuration = 120;
-
-/** Dagelijkse sync, om 03:10 aangeroepen door Vercel Cron.
+/** Dagelijkse sync, om 03:10 aangeroepen door de Cloudflare Cron Trigger.
  *  Twee keer achter elkaar draaien mag: alles gaat via upsert op de Strava-id,
  *  dus er ontstaan geen duplicaten. */
 export async function GET(request: Request) {

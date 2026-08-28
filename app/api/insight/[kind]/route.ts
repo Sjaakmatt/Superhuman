@@ -74,7 +74,8 @@ export async function POST(request: Request, context: { params: Promise<{ kind: 
   return NextResponse.json({ id: data.id, rule_hits: hits.map((h) => h.id), proposals: answer.proposals.length });
 }
 
-/** Vercel Cron doet een GET. Zelfde werk, zelfde controle. */
+/** De cron doet een GET (zie scheduled() in worker.ts). Zelfde werk,
+ *  zelfde controle. */
 export async function GET(request: Request, context: { params: Promise<{ kind: string }> }) {
   return POST(request, context);
 }

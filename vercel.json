@@ -1,9 +1,0 @@
-{
-  "crons": [
-    { "path": "/api/strava/sync", "schedule": "10 2 * * *" },
-    { "path": "/api/push/daily", "schedule": "0 5 * * *" },
-    { "path": "/api/insight/daily", "schedule": "5 5 * * *" },
-    { "path": "/api/insight/longrun", "schedule": "0 17 * * 5" },
-    { "path": "/api/insight/weekly", "schedule": "0 19 * * 0" }
-  ]
-}

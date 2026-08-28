@@ -1,0 +1,67 @@
+name: CI
+
+# Draait op elke push en elke pull request. Wat hier groen is, kan deployen.
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Typecheck, lint, tests en build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22' # wrangler 4 vereist Node >= 22
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      # 53 tests: seed-integriteit (57 weken, 399 dagen, weektotaal = som van de
+      # dagen), de afgeleide getallen, elk van de twaalf regels met een geval dat
+      # wel en een dat niet vuurt, de krachtparser en de VAPID-handtekening.
+      - name: Tests
+        run: npm test
+
+      # Bewust zonder NEXT_PUBLIC_SUPABASE_*: de app moet ook zonder database
+      # bouwen en draaien, dan leest hij het plan uit supabase/seed.
+      - name: Build
+        run: npm run build
+
+  worker:
+    name: Cloudflare-bundel
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+
+      # Bouwt de OpenNext-worker en laat wrangler hem bundelen zonder te
+      # deployen. Vangt fouten in worker.ts en wrangler.jsonc vóór de merge —
+      # die zie je niet in `next build`.
+      - name: OpenNext-build
+        run: npx opennextjs-cloudflare build
+
+      - name: Wrangler dry-run
+        run: npx wrangler deploy --dry-run --outdir /tmp/worker-bundle
