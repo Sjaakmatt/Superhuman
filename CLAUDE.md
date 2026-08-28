@@ -1,0 +1,62 @@
+# Ultra100 — repo-instructies
+
+Persoonlijke trainingsapp voor één gebruiker (Sjaak) die op 2 oktober 2027 een 100 km ultratrail loopt.
+Het trainingsplan is 57 weken, 399 dagen, en staat vast in de database — de app voert het uit, hij verzint het niet.
+
+## Stack
+
+- **Next.js 15**, App Router, TypeScript strict. Server Components waar het kan.
+- **Supabase** — Postgres, Auth, RLS. Eén gebruiker, maar RLS staat aan.
+- **Tailwind v4**, met `tokens.css` als bron van waarheid.
+- **Vercel** — hosting en Cron.
+- **Anthropic API** voor de analyses.
+- **Grafieken: met de hand geschreven SVG.** Geen chartbibliotheek. De vormen zijn eenvoudig (staven, één gladde lijn, een ring, een 57×7 raster) en een bibliotheek kost meer dan hij oplevert, zowel in kilobytes als in ontwerpafwijking.
+
+## Harde regels
+
+1. **Nooit trainingsinhoud verzinnen in code.** Elke sessie, elk gewicht, elk voedingsgetal komt uit `plan_day`, `plan_week` of `reference`. Klopt er iets niet, dan wijzig je de seed en seed je opnieuw — niet de component.
+2. **Geen hex-waarden buiten `tokens.css`.** Ook niet in SVG: lees CSS-variabelen uit met `getComputedStyle`.
+3. **Alle interfacetekst is Nederlands**, in de tweede persoon, zonder uitroeptekens en zonder aanmoediging die niet verdiend is. Termen als "welzijnsscore" en "RPE" worden in de interface gewone woorden ("Hoe voel je je?", "Hoe zwaar voelde het?").
+4. **Alarmen komen uit SQL, niet uit het taalmodel.** De escalatieregels zijn deterministisch (zie `lib/rules.ts`). Het model schrijft de toelichting en stelt aanpassingen voor; het beslist nooit zelf of er een alarm afgaat.
+5. **Datums zijn `date`, geen `timestamptz`.** Tijdzone is `Europe/Amsterdam`. Een trainingsdag is een kalenderdag, geen moment.
+6. **Geen secrets client-side.** Strava-tokens en de Anthropic-sleutel leven alleen in server routes en Edge Functions.
+7. **Beide themas zijn ontworpen, niet omgeklapt.** Definieer een kleur nooit alleen binnen een `@media` of `[data-theme]` blok.
+8. **Afgeleide getallen berekenen we zelf en documenteren we.** "Afdaalminuten" is onze eigen definitie (zie hieronder) — geen Strava-veld. Zet de definitie in een comment bij de query.
+
+## Definities die je niet mag improviseren
+
+| Begrip | Definitie |
+|---|---|
+| **Afdaalminuten** | Seconden uit de `grade_smooth`-stream waarin het verhang < −4% is, gesommeerd per activiteit. Dit is onze maat, geen Strava-veld. |
+| **Z2-drift** | Gemiddelde hartslag op geplande Z2-sessies min het Z2-plafond (152). Alleen sessies met `planned_zone = 'Z2'` en ≥ 20 min. |
+| **Weeksprong** | Weekvolume gedeeld door het maximum van de twee voorgaande weken. Vlag boven 1,30. Niet vergelijken met alleen de vorige week: een deloadweek verlaagt de chronische belasting niet. |
+| **Welzijn** | Som van vijf items van 1–7 (geslapen, fris, benen, rust in je hoofd, zin om te gaan) = 5–35. Vergelijk met het 14-daags gemiddelde, nooit met een populatienorm. |
+| **Pijnmodel** | Pijn ≤5/10 tijdens is toegestaan, moet de volgende ochtend 0 zijn, en mag niet week op week stijgen. Alle drie moeten kloppen. |
+
+## Mappen
+
+```
+app/                 routes (vandaag, loggen, kracht, analyse, seizoen)
+  api/strava/sync    dagelijkse sync, aangeroepen door Vercel Cron
+  api/insight/[kind] daily | weekly | debrief
+components/          UI, dun, zonder datalogica
+components/charts/   handgeschreven SVG-componenten
+lib/db.ts            Supabase client
+lib/metrics.ts       afgeleide getallen (één plek, getest)
+lib/rules.ts         deterministische escalatieregels
+lib/strava.ts        OAuth, sync, streams
+lib/insight.ts       promptopbouw + Anthropic-aanroep
+supabase/migrations/ SQL
+supabase/seed/       plan-seed.json, reference-seed.json
+styles/tokens.css    kleuren en typografie — bron van waarheid
+```
+
+## Tests die er echt toe doen
+
+- `lib/metrics.ts` — afdaalminuten uit een echte stream, zoneverdeling, weeksprong over een deloadweek heen.
+- `lib/rules.ts` — elke escalatieregel met een geval dat wel en een dat niet vuurt.
+- Seed-integriteit: 399 dagen, 57 weken, elke dag hoort bij een bestaande week, weektotaal = som van de dagen.
+
+## Wat je niet moet bouwen
+
+Geen social feed, geen badges, geen streak-vuurtjes, geen pushmelding die je aanmoedigt. Dit is een stuurinstrument voor één persoon. Als een functie hem harder laat trainen dan het plan zegt, is het de verkeerde functie.

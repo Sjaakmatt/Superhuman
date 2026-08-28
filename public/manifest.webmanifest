@@ -1,0 +1,16 @@
+{
+  "name": "Ultra100",
+  "short_name": "Ultra100",
+  "description": "Trainingsapp voor de 100 km op 2 oktober 2027.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#EFEEE8",
+  "theme_color": "#EFEEE8",
+  "lang": "nl",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

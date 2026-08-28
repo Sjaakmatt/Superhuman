@@ -1,0 +1,37 @@
+/* Alle kleur en typografie komt uit styles/tokens.css. Schrijf hier geen hex-waarden. */
+@import "../styles/tokens.css";
+@import "tailwindcss";
+
+/* Eigen breekpunt: de zijbalk verschijnt vanaf 1040px, zoals in het ontwerp. */
+@theme { --breakpoint-side: 1040px; }
+
+/* De schil zelf: alleen vorm en ritme, geen kleurdefinities. */
+html { -webkit-tap-highlight-color: transparent; }
+body { margin: 0; min-height: 100dvh; }
+
+::selection { background: var(--acc-soft); color: var(--ink); }
+
+/* Zichtbare focus overal, ook buiten .interactive */
+:focus-visible { outline: 2px solid var(--acc); outline-offset: 3px; }
+
+/* Schuifjes voor de ochtendcheck. Kleuren via tokens. */
+input[type="range"] { -webkit-appearance: none; appearance: none; background: transparent; }
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px; border-radius: var(--r-pill); background: var(--sunk);
+}
+input[type="range"]::-moz-range-track {
+  height: 6px; border-radius: var(--r-pill); background: var(--sunk);
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 22px; height: 22px; margin-top: -8px;
+  border-radius: var(--r-pill); background: var(--acc);
+  border: 3px solid var(--card); box-shadow: var(--sh);
+  cursor: grab;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 22px; height: 22px;
+  border-radius: var(--r-pill); background: var(--acc);
+  border: 3px solid var(--card); box-shadow: var(--sh);
+  cursor: grab;
+}

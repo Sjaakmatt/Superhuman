@@ -1,0 +1,397 @@
+{
+ "zones": {
+  "source": "HRmax 188 (leeftijdsformule) — hertest in week 6 en week 30 en werk deze waarden bij",
+  "hr_max": 188,
+  "bands": [
+   {
+    "key": "Z1",
+    "name": "Herstel",
+    "hr_min": 0,
+    "hr_max": 122,
+    "pace": "7:15-8:00"
+   },
+   {
+    "key": "Z2",
+    "name": "Duurloop",
+    "hr_min": 123,
+    "hr_max": 152,
+    "pace": "6:30-7:10"
+   },
+   {
+    "key": "Z3",
+    "name": "Steady",
+    "hr_min": 153,
+    "hr_max": 167,
+    "pace": "5:50-6:20"
+   },
+   {
+    "key": "Z4",
+    "name": "Drempel",
+    "hr_min": 168,
+    "hr_max": 182,
+    "pace": "5:15-5:40"
+   },
+   {
+    "key": "Z5",
+    "name": "VO2max",
+    "hr_min": 183,
+    "hr_max": 220,
+    "pace": "<5:00"
+   }
+  ],
+  "distribution_target": {
+   "z1_z2": 0.78,
+   "z3": 0.15,
+   "z4_z5": 0.07
+  }
+ },
+ "exercises": [
+  {
+   "slug": "trapbar-deadlift",
+   "name": "Trap-bar deadlift",
+   "block": "B",
+   "unit": "kg",
+   "default_sets": 3
+  },
+  {
+   "slug": "back-squat",
+   "name": "Back squat",
+   "block": "A",
+   "unit": "kg",
+   "default_sets": 4
+  },
+  {
+   "slug": "rdl",
+   "name": "Roemeense deadlift",
+   "block": "A",
+   "unit": "kg",
+   "default_sets": 3
+  },
+  {
+   "slug": "bulgarian-split-squat",
+   "name": "Bulgarian split squat",
+   "block": "A",
+   "unit": "kg",
+   "default_sets": 3
+  },
+  {
+   "slug": "standing-calf",
+   "name": "Staande kuitheffing",
+   "block": "A",
+   "unit": "kg",
+   "default_sets": 4
+  },
+  {
+   "slug": "pallof",
+   "name": "Pallof press",
+   "block": "A",
+   "unit": "kg",
+   "default_sets": 3
+  },
+  {
+   "slug": "deadbug",
+   "name": "Dead bug",
+   "block": "A",
+   "unit": "lichaam",
+   "default_sets": 3
+  },
+  {
+   "slug": "bench",
+   "name": "Bankdrukken",
+   "block": "C",
+   "unit": "kg",
+   "default_sets": 4
+  },
+  {
+   "slug": "pullup",
+   "name": "Pull-up of lat pulldown",
+   "block": "C",
+   "unit": "kg",
+   "default_sets": 4
+  },
+  {
+   "slug": "ohp",
+   "name": "Militaire press",
+   "block": "C",
+   "unit": "kg",
+   "default_sets": 3
+  },
+  {
+   "slug": "row",
+   "name": "Roeien",
+   "block": "C",
+   "unit": "kg",
+   "default_sets": 3
+  },
+  {
+   "slug": "sideplank",
+   "name": "Side plank",
+   "block": "C",
+   "unit": "sec",
+   "default_sets": 3
+  },
+  {
+   "slug": "step-up",
+   "name": "Hoge step-up",
+   "block": "B",
+   "unit": "kg",
+   "default_sets": 3
+  },
+  {
+   "slug": "step-down",
+   "name": "Step-down excentrisch",
+   "block": "B",
+   "unit": "lichaam",
+   "default_sets": 3,
+   "note": "Telt mee als afdaalvoorbereiding"
+  },
+  {
+   "slug": "seated-calf",
+   "name": "Zittende kuitheffing (soleus)",
+   "block": "B",
+   "unit": "kg",
+   "default_sets": 3
+  },
+  {
+   "slug": "iso-calf",
+   "name": "Isometrische kuitheffing",
+   "block": "B",
+   "unit": "kg",
+   "default_sets": 5,
+   "note": "5x4 x 3s @ ~90% MVC"
+  },
+  {
+   "slug": "tibialis",
+   "name": "Tibialis raise",
+   "block": "B",
+   "unit": "lichaam",
+   "default_sets": 3
+  },
+  {
+   "slug": "hip-abduction",
+   "name": "Heupabductie band",
+   "block": "B",
+   "unit": "band",
+   "default_sets": 3
+  },
+  {
+   "slug": "plyo",
+   "name": "Plyometrie",
+   "block": "B",
+   "unit": "contacten",
+   "default_sets": 1
+  }
+ ],
+ "strength_phases": [
+  {
+   "weeks": [
+    1,
+    14
+   ],
+   "name": "hypertrofie",
+   "scheme": "3-4x8-12 @65-75%",
+   "freq": 3,
+   "plyo_contacts": 0
+  },
+  {
+   "weeks": [
+    15,
+    28
+   ],
+   "name": "maximaalkracht",
+   "scheme": "4-5x4-6 @80-87%",
+   "freq": 3,
+   "plyo_contacts": 30
+  },
+  {
+   "weeks": [
+    29,
+    44
+   ],
+   "name": "zwaar onderhoud",
+   "scheme": "3x3-5 @85-90%",
+   "freq": 2,
+   "plyo_contacts": 50
+  },
+  {
+   "weeks": [
+    45,
+    53
+   ],
+   "name": "onderhoud",
+   "scheme": "2-3x4 @85%",
+   "freq": 2,
+   "plyo_contacts": 50
+  },
+  {
+   "weeks": [
+    54,
+    56
+   ],
+   "name": "afbouw",
+   "scheme": "2x4 @80%",
+   "freq": 1,
+   "plyo_contacts": 0
+  },
+  {
+   "weeks": [
+    57,
+    57
+   ],
+   "name": "geen",
+   "scheme": "-",
+   "freq": 0,
+   "plyo_contacts": 0
+  }
+ ],
+ "fueling_by_week": [
+  {
+   "weeks": [
+    1,
+    16
+   ],
+   "carbs_g_per_h": [
+    30,
+    45
+   ],
+   "sodium_mg_per_h": [
+    300,
+    300
+   ]
+  },
+  {
+   "weeks": [
+    17,
+    36
+   ],
+   "carbs_g_per_h": [
+    55,
+    70
+   ],
+   "sodium_mg_per_h": [
+    400,
+    500
+   ]
+  },
+  {
+   "weeks": [
+    37,
+    52
+   ],
+   "carbs_g_per_h": [
+    75,
+    90
+   ],
+   "sodium_mg_per_h": [
+    500,
+    700
+   ]
+  },
+  {
+   "weeks": [
+    53,
+    57
+   ],
+   "carbs_g_per_h": [
+    60,
+    80
+   ],
+   "sodium_mg_per_h": [
+    500,
+    700
+   ]
+  }
+ ],
+ "milestones": [
+  {
+   "week": 1,
+   "date": "2026-08-31",
+   "kind": "meting",
+   "title": "Bloedpanel T0 + sportkeuring"
+  },
+  {
+   "week": 6,
+   "date": "2026-10-05",
+   "kind": "test",
+   "title": "HRmax-test"
+  },
+  {
+   "week": 12,
+   "date": "2026-11-16",
+   "kind": "meting",
+   "title": "Bloedpanel kort"
+  },
+  {
+   "week": 14,
+   "date": "2026-11-28",
+   "kind": "test",
+   "title": "25 km trailtest"
+  },
+  {
+   "week": 21,
+   "date": "2027-01-18",
+   "kind": "fase",
+   "title": "Start afdaalblok"
+  },
+  {
+   "week": 24,
+   "date": "2027-02-08",
+   "kind": "meting",
+   "title": "Bloedpanel + vitamine D"
+  },
+  {
+   "week": 27,
+   "date": "2027-03-06",
+   "kind": "wedstrijd",
+   "title": "50 km trailwedstrijd"
+  },
+  {
+   "week": 30,
+   "date": "2027-03-22",
+   "kind": "beslissing",
+   "title": "Definitieve wedstrijdkeuze + inschrijving"
+  },
+  {
+   "week": 36,
+   "date": "2027-05-03",
+   "kind": "meting",
+   "title": "Bloedpanel kort"
+  },
+  {
+   "week": 39,
+   "date": "2027-05-29",
+   "kind": "wedstrijd",
+   "title": "65 km trailwedstrijd"
+  },
+  {
+   "week": 52,
+   "date": "2027-08-23",
+   "kind": "meting",
+   "title": "Bloedpanel volledig"
+  },
+  {
+   "week": 53,
+   "date": "2027-09-04",
+   "kind": "simulatie",
+   "title": "Race-simulatie 55 km"
+  },
+  {
+   "week": 54,
+   "date": "2027-09-11",
+   "kind": "grens",
+   "title": "Laatste zware afdaalsessie"
+  },
+  {
+   "week": 56,
+   "date": "2027-09-20",
+   "kind": "fase",
+   "title": "Taper start + slaapbanking"
+  },
+  {
+   "week": 57,
+   "date": "2027-10-02",
+   "kind": "wedstrijd",
+   "title": "DOELWEDSTRIJD 100 KM"
+  }
+ ]
+}

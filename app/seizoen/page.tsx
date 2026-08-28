@@ -1,0 +1,97 @@
+import Link from 'next/link';
+import Ring from '@/components/charts/Ring';
+import SeasonGrid from '@/components/charts/SeasonGrid';
+import Trend from '@/components/charts/Trend';
+import { Card, CardTitle, Grid, Note, Pill, Stat } from '@/components/ui';
+import { getDays, getReference, getWeeks, planBounds } from '@/lib/plan';
+import { getWeekActuals } from '@/lib/data';
+import { addDays, daysBetween, formatShort, today as todayIn } from '@/lib/date';
+
+const KIND: Record<string, 'acc' | 'warn' | 'neutral'> = {
+  wedstrijd: 'warn',
+  test: 'acc',
+  simulatie: 'acc',
+  meting: 'neutral',
+  fase: 'neutral',
+  beslissing: 'neutral',
+  grens: 'warn',
+};
+
+/* Dit scherm gaat over vandaag, dus nooit vooraf renderen: anders bevriest
+ * "vandaag" op de bouwdatum. */
+export const dynamic = 'force-dynamic';
+
+export default async function Seizoen() {
+  const now = todayIn();
+  const bounds = planBounds();
+  const [weeks, days, milestones, actuals] = await Promise.all([
+    getWeeks(),
+    getDays(bounds.first, bounds.last),
+    getReference('milestones'),
+    getWeekActuals(),
+  ]);
+
+  const current = weeks.find((w) => w.start_date <= now && addDays(w.start_date, 6) >= now);
+  const currentIndex = current ? weeks.findIndex((w) => w.week === current.week) : -1;
+  const done = Math.max(0, daysBetween(bounds.first, now));
+  const totalDays = daysBetween(bounds.first, bounds.last) + 1;
+
+  const volumeLine = weeks.map((w) => ({ label: `week ${w.week}`, value: Number(w.target_km) }));
+  const totalKm = weeks.reduce((t, w) => t + Number(w.target_km), 0);
+  const ranKm = actuals.reduce((t, a) => t + Number(a.actual_km), 0);
+
+  return (
+    <div className="mx-auto flex max-w-[1080px] flex-col gap-4 pt-2">
+      <Card>
+        <CardTitle aside={current ? <Pill tone="acc">week {current.week} van 57</Pill> : null}>Het seizoen</CardTitle>
+        <div className="flex flex-wrap items-center justify-between gap-6">
+          <Ring value={totalDays ? done / totalDays : 0} label="Van het plan afgelegd"
+            sub={`${done} van ${totalDays} dagen · nog ${Math.max(0, daysBetween(now, bounds.race))} tot de wedstrijd`} />
+          <Grid min={120}>
+            <Stat value={Math.round(totalKm)} unit="km" label="gepland in totaal" />
+            <Stat value={Math.round(ranKm)} unit="km" label="tot nu toe gelopen" />
+            <Stat value={weeks.filter((w) => w.status === 'DELOAD').length} label="deloadweken" />
+            <Stat value={(current ?? weeks[0]!).phase.replace(/^\d+\.\s*/, '')}
+              label={current ? 'fase' : 'eerste fase'} />
+          </Grid>
+        </div>
+      </Card>
+
+      <Card>
+        <CardTitle aside="doel per week">Volumeprofiel</CardTitle>
+        <Trend points={volumeLine} markIndex={currentIndex >= 0 ? currentIndex : undefined} height={150}
+          ariaLabel="Geplande weekkilometers over 57 weken" />
+        <div className="mt-2 flex justify-between text-[11px]" style={{ color: 'var(--ink3)' }}>
+          <span>week 1 · {formatShort(bounds.first)} 2026</span>
+          <span>week 57 · {formatShort(bounds.race)} 2027</span>
+        </div>
+        <Note>De dip elke vierde week is de deloadweek. Zonder die dip stijgt de chronische belasting door en werkt de weeksprong niet meer als maat.</Note>
+      </Card>
+
+      <Card>
+        <CardTitle aside="57 weken × 7 dagen">Elke dag</CardTitle>
+        <SeasonGrid days={days} today={now} />
+      </Card>
+
+      <Card>
+        <CardTitle aside={`${milestones.length} mijlpalen`}>Wat er aankomt</CardTitle>
+        <ol className="flex flex-col">
+          {milestones.map((m) => {
+            const past = m.date < now;
+            return (
+              <li key={`${m.week}-${m.title}`} className="flex items-center gap-3 border-b py-3 last:border-0"
+                style={{ borderColor: 'var(--hair)', opacity: past ? 0.5 : 1 }}>
+                <span className="num w-12 shrink-0 text-[12px]" style={{ color: 'var(--ink3)' }}>wk {m.week}</span>
+                <Link href={`/?d=${m.date}`} className="num w-20 shrink-0 text-[12px]" style={{ color: 'var(--ink2)' }}>
+                  {formatShort(m.date, now)}
+                </Link>
+                <span className="flex-1 text-[14px] font-medium">{m.title}</span>
+                <Pill tone={KIND[m.kind] ?? 'neutral'}>{m.kind}</Pill>
+              </li>
+            );
+          })}
+        </ol>
+      </Card>
+    </div>
+  );
+}
