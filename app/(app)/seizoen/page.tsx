@@ -5,7 +5,8 @@ import VolumeProfile from '@/components/charts/VolumeProfile';
 import { Card, CardTitle, Grid, Note, Pill, Stat } from '@/components/ui';
 import { getDays, getReference, getWeeks, planBounds } from '@/lib/plan';
 import Metingen from '@/components/Metingen';
-import { getBloodPanels, getHrTests, getIjkPunten, getMilestoneResults, getWeekActuals } from '@/lib/data';
+import { getAthlete, getBloodPanels, getHrTests, getIjkPunten, getMilestoneResults, getWeekActuals, getZones } from '@/lib/data';
+import { dbConfigured } from '@/lib/db';
 import { addDays, daysBetween, formatShort, today as todayIn } from '@/lib/date';
 
 const KIND: Record<string, 'acc' | 'warn' | 'neutral'> = {
@@ -35,10 +36,12 @@ export default async function Seizoen() {
 
   // De ijkpunten komen uit Strava; alleen de dagen die al geweest zijn.
   const loopdagen = milestones.filter((m) => m.logs === 'loop' && m.date <= now).map((m) => m.date);
-  const [ijkpunten, hrTests, panels] = await Promise.all([
+  const [ijkpunten, hrTests, panels, athlete, zones] = await Promise.all([
     getIjkPunten(loopdagen),
     getHrTests(),
     getBloodPanels(),
+    getAthlete(),
+    getZones(),
   ]);
 
   const current = weeks.find((w) => w.start_date <= now && addDays(w.start_date, 6) >= now);
@@ -91,7 +94,9 @@ export default async function Seizoen() {
         <SeasonGrid days={days} today={now} />
       </Card>
 
-      <Metingen milestones={milestones} ijkpunten={ijkpunten} hrTests={hrTests} panels={panels} today={now} />
+      <Metingen milestones={milestones} ijkpunten={ijkpunten} hrTests={hrTests} panels={panels} today={now}
+        hrMax={zones.hr_max} hrMeasuredOn={athlete?.hr_max_measured_on ?? null}
+        writable={dbConfigured() && Boolean(athlete)} />
 
       <Card>
         <CardTitle aside={`${milestones.length} mijlpalen`}>Wat er aankomt</CardTitle>

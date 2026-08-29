@@ -63,8 +63,21 @@ export default function MijlpaalUitslag({
     });
   }
 
-  // Vóór de dag zelf valt er niets in te vullen; dan telt alleen de voorbereiding.
-  if (!verleden && !saved) return null;
+  // Vóór de dag zelf valt er niets in te vullen. Wél zeggen waar het straks
+  // heen gaat: anders zoek je op de dag zelf naar het formulier.
+  if (!verleden && !saved) {
+    if (!logs) return null;
+    return (
+      <p className="mt-4 border-t pt-4 text-[13px]" style={{ borderColor: 'var(--hair)', color: 'var(--ink3)' }}>
+        {logs === 'loop'
+          ? 'Wat je die dag loopt komt vanzelf uit Strava: afstand, tijd, hoogtemeters, hartslag en afdaalminuten. Ze staan daarna hier en bij '
+          : logs === 'hrmax'
+            ? 'De gemeten waarde vul je op deze kaart in, op de dag zelf. Je ziet hem daarna terug bij '
+            : 'De uitslag vul je in bij '}
+        <Link href="/seizoen" style={{ color: 'var(--acc)' }}>Seizoen, onder Metingen</Link>.
+      </p>
+    );
+  }
 
   return (
     <div className="mt-4 border-t pt-4" style={{ borderColor: 'var(--hair)' }}>
@@ -217,8 +230,8 @@ function NaarBloedwaarden({ ingevuld }: { ingevuld: boolean }) {
   return (
     <p className="mt-2 text-[13px]" style={{ color: 'var(--ink2)' }}>
       {ingevuld ? 'De uitslag staat erin. ' : 'De waarden vul je in bij '}
-      <Link href="/instellingen" style={{ color: 'var(--acc)' }}>
-        {ingevuld ? 'Bekijk of wijzig hem bij Instellingen' : 'Instellingen, onder Bloedwaarden'}
+      <Link href="/seizoen" style={{ color: 'var(--acc)' }}>
+        {ingevuld ? 'Bekijk of wijzig hem bij Seizoen, onder Metingen' : 'Seizoen, onder Metingen'}
       </Link>
       . Daar staan ze naast je nulmeting.
     </p>

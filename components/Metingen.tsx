@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import Bloedwaarden from '@/components/Bloedwaarden';
+import HartslagMax from '@/components/HartslagMax';
 import { Card, CardTitle, Empty, Note } from '@/components/ui';
 import { formatShort, type IsoDate } from '@/lib/date';
 import type { BloodPanel, HrTest, Milestone } from '@/lib/types';
@@ -15,25 +17,33 @@ export default function Metingen({
   hrTests,
   panels,
   today,
+  hrMax,
+  hrMeasuredOn,
+  writable,
 }: {
   milestones: Milestone[];
   ijkpunten: Map<IsoDate, IjkPunt>;
   hrTests: HrTest[];
   panels: BloodPanel[];
   today: IsoDate;
+  hrMax: number;
+  hrMeasuredOn: IsoDate | null;
+  /** Zonder database kun je kijken maar niet invullen. */
+  writable: boolean;
 }) {
   const loopdagen = milestones.filter((m) => m.logs === 'loop' && m.date <= today);
   const nulmeting = panels[0] ?? null;
   const leeg = !loopdagen.length && !hrTests.length && !panels.length;
 
   return (
-    <Card>
+    <div className="flex flex-col gap-4">
+      <Card>
       <CardTitle aside="wat je gemeten hebt">Metingen</CardTitle>
 
       {leeg ? (
         <Empty title="Nog niets gemeten">
-          Zodra je eerste test achter de rug is staat hier wat eruit kwam: de looppunten uit Strava, je bloedwaarden en
-          je gemeten maximumhartslag, in de volgorde waarin je ze deed.
+          Hier komt wat je tests opleveren: de looppunten uit Strava, je bloedwaarden en je gemeten maximumhartslag.
+          De eerste twee vul je hieronder in; de looppunten komen vanzelf binnen.
         </Empty>
       ) : null}
 
@@ -160,13 +170,27 @@ export default function Metingen({
               </tbody>
             </table>
           </div>
-          <Note>
-            Vergelijk met je eigen nulmeting, niet met de ondergrens van het lab. Invoeren doe je bij{' '}
-            <Link href="/instellingen" style={{ color: 'var(--acc)' }}>Instellingen</Link>.
-          </Note>
+          <Note>Vergelijk met je eigen nulmeting, niet met de ondergrens van het lab.</Note>
         </section>
       ) : null}
-    </Card>
+      </Card>
+
+      {/* Invoeren gebeurt hier, bij de cijfers zelf. Metingen zijn gegevens,
+          geen instelling — daarom staan ze niet meer onder Instellingen. */}
+      {writable ? (
+        <>
+          <Bloedwaarden panels={panels} today={today} />
+          <Card>
+            <CardTitle aside={`nu ${hrMax} bpm`}>Maximumhartslag</CardTitle>
+            <p className="text-[13px] leading-relaxed" style={{ color: 'var(--ink2)' }}>
+              De uitslag van de HRmax-test. Je zonegrenzen schalen mee, en de vorige metingen blijven staan zodat je
+              ziet welke kant je maximum op gaat.
+            </p>
+            <HartslagMax hrMax={hrMax} measuredOn={hrMeasuredOn} today={today} />
+          </Card>
+        </>
+      ) : null}
+    </div>
   );
 }
 

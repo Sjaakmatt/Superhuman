@@ -313,7 +313,7 @@
         "Vraag deze bepalingen aan: ferritine, transferrinesaturatie, Hb, CRP, vitamine B12, vitamine D en TSH. Dat zijn precies de velden die je hier straks invult.",
         "Dit is je nulmeting. Alles wat later afwijkt vergelijk je hiermee, niet met de referentiewaarden van het lab.",
         "Sportkeuring: bloeddruk en rust-ECG bij de sportarts. Zitten er hartklachten in de familie, vraag dan om een inspannings-ECG.",
-        "Zet de uitslag daarna bij Instellingen onder bloedwaarden."
+        "Zet de uitslag daarna bij Seizoen, onder Metingen."
       ],
       "logs": "bloed"
     },
@@ -327,7 +327,7 @@
         "Doe hem uitgerust: geen zware sessie in de twee dagen ervoor, en niet in de hitte.",
         "Twintig minuten inlopen. Dan een klim van drie tot vier minuten hard maar beheerst, twee minuten dribbelen, en daarna dezelfde klim alles eruit tot boven.",
         "Je HRmax is de hoogste waarde in de laatste dertig seconden. Een losse piek van een seconde is meestal ruis van de band, geen hartslag.",
-        "Zet de nieuwe waarde daarna in Instellingen. Al je zones, de zoneverdeling en de Z2-drift rekenen daarmee verder.",
+        "Zet de nieuwe waarde daarna in op deze kaart of bij Seizoen, onder Metingen. Al je zones, de zoneverdeling en de Z2-drift rekenen daarmee verder.",
         "Voel je je niet goed, dan stop je. Een test is geen wedstrijd."
       ],
       "logs": "hrmax"
