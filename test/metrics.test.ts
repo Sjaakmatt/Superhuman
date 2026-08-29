@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   adherence,
   aerobicEfficiency,
+  countsAsBase,
+  isIntensief,
   rollingMean,
   schaalZones,
   descentMeters,
@@ -224,5 +226,47 @@ describe('rollingMean', () => {
 
   it('laat een lege reeks leeg', () => {
     expect(rollingMean([], 5)).toEqual([]);
+  });
+});
+
+describe('countsAsBase', () => {
+  const z2 = { hr_min: 123, hr_max: 152 };
+  const duurloop = { sport_type: 'Run', moving_s: 3600, avg_hr: 140 };
+
+  it('telt een duurloop mee die gemiddeld in Z2 uitkwam', () => {
+    expect(countsAsBase(duurloop, 'Z2', z2)).toBe(true);
+  });
+
+  it('telt hem ook mee zonder plandag, zodat de lijn vóór het plan begint', () => {
+    expect(countsAsBase(duurloop, null, z2)).toBe(true);
+    expect(countsAsBase(duurloop, undefined, z2)).toBe(true);
+    expect(countsAsBase(duurloop, '-', z2)).toBe(true);
+  });
+
+  it('laat een sessie buiten de Z2-band vallen', () => {
+    expect(countsAsBase({ ...duurloop, avg_hr: 160 }, null, z2)).toBe(false);
+    expect(countsAsBase({ ...duurloop, avg_hr: 110 }, null, z2)).toBe(false);
+    expect(countsAsBase({ ...duurloop, avg_hr: null }, null, z2)).toBe(false);
+  });
+
+  it('laat korte sessies vallen', () => {
+    expect(countsAsBase({ ...duurloop, moving_s: 900 }, null, z2)).toBe(false);
+  });
+
+  it('telt alleen hardlopen', () => {
+    expect(countsAsBase({ ...duurloop, sport_type: 'Ride' }, null, z2)).toBe(false);
+    expect(countsAsBase({ ...duurloop, sport_type: 'TrailRun' }, null, z2)).toBe(true);
+  });
+
+  it('laat een geplande intensieve dag vallen, ook als het gemiddelde in Z2 viel', () => {
+    expect(countsAsBase(duurloop, 'Z4', z2)).toBe(false);
+    expect(countsAsBase(duurloop, 'Z2/Z3', z2)).toBe(false);
+  });
+
+  it('herkent de zones aan het plan en niet aan losse letters', () => {
+    expect(isIntensief('Z1')).toBe(false);
+    expect(isIntensief('Z2')).toBe(false);
+    expect(isIntensief('Z3')).toBe(true);
+    expect(isIntensief(null)).toBe(false);
   });
 });

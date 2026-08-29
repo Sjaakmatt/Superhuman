@@ -209,3 +209,35 @@ export function rollingMean(values: number[], venster: number): number[] {
     return stuk.reduce((t, v) => t + v, 0) / stuk.length;
   });
 }
+
+/** Telt deze activiteit mee voor de aerobe-efficiëntielijn?
+ *
+ *  De maat is alleen vergelijkbaar binnen dezelfde intensiteit. We kijken naar
+ *  de uitkomst en niet naar de bedoeling: een loop telt mee als de gemiddelde
+ *  hartslag in je Z2-band viel, ook als het plan iets anders zei of als er nog
+ *  helemaal geen plan was. Zo begint de lijn bij je eerste gelogde duurloop en
+ *  niet pas op de eerste plandag.
+ *
+ *  Eén uitzondering: stond er die dag een intensieve sessie gepland, dan telt
+ *  hij niet mee. Een intervaltraining kan gemiddeld in Z2 uitkomen — hard met
+ *  lange pauzes — en dat is geen duurloop. */
+export function countsAsBase(
+  activity: { sport_type: string; moving_s: number | null; avg_hr: number | null },
+  planZone: string | null | undefined,
+  z2: { hr_min: number; hr_max: number },
+): boolean {
+  if (activity.sport_type !== 'Run' && activity.sport_type !== 'TrailRun') return false;
+  if (Number(activity.moving_s ?? 0) < 1200) return false;
+
+  const hr = Number(activity.avg_hr ?? 0);
+  if (hr < z2.hr_min || hr > z2.hr_max) return false;
+
+  return !isIntensief(planZone);
+}
+
+/** Een plandag is intensief zodra er een zone boven Z2 in staat. Geen plandag
+ *  (of een streepje) is geen bezwaar: dan is er niets dat het tegenspreekt. */
+export function isIntensief(planZone: string | null | undefined): boolean {
+  if (!planZone) return false;
+  return /Z[345]/i.test(planZone);
+}

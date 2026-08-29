@@ -1,8 +1,8 @@
 import { cache } from 'react';
 import { admin, currentUserId, db, reader, type Reader } from '@/lib/db';
-import { getReference, getWeeks } from '@/lib/plan';
+import { getDays, getReference, getWeeks } from '@/lib/plan';
 import { addDays, type IsoDate } from '@/lib/date';
-import { aerobicEfficiency, km, minutes } from '@/lib/metrics';
+import { aerobicEfficiency, countsAsBase, km, minutes } from '@/lib/metrics';
 import type { RuleInput } from '@/lib/rules';
 import type { Activity, BloodPanel, HrTest, Insight, MilestoneResult, Shoe, StrengthSet, Wellness, Zones } from '@/lib/types';
 
@@ -491,32 +491,41 @@ export type AeroobPunt = {
   ef: number;
 };
 
-/** De geplande Z2-sessies met een gemeten hartslag, voor de efficiëntielijn.
+/** De duurlopen die meetellen voor de aerobe-efficiëntielijn.
  *
- *  Zelfde afbakening als de Z2-drift: alleen dagen waar het plan `Z2` zegt en
- *  minstens twintig minuten beweging. Buiten die afbakening is de maat niet
- *  vergelijkbaar — een intervalsessie levert per definitie een lagere waarde. */
-export async function getAerobicSessions(from: IsoDate, to: IsoDate, r?: Reader): Promise<AeroobPunt[]> {
+ *  Niet "wat het plan Z2 noemde" maar "wat gemiddeld in Z2 uitkwam" — zie
+ *  countsAsBase in lib/metrics.ts. Daarmee begint de lijn bij je eerste gelogde
+ *  duurloop en niet pas op de eerste plandag, en telt een Z2-sessie die je te
+ *  hard liep niet mee. */
+export const getAerobicSessions = cache(async (from: IsoDate, to: IsoDate, r?: Reader): Promise<AeroobPunt[]> => {
   const l = await reader(r);
   if (!l) return [];
 
   let q = l.client
     .from('activity')
-    .select('date, distance_m, moving_s, elev_gain_m, avg_hr, plan_day!inner(zone)')
-    .eq('plan_day.zone', 'Z2')
+    .select('date, sport_type, distance_m, moving_s, elev_gain_m, avg_hr')
     .gte('date', from)
     .lte('date', to)
+    .in('sport_type', ['Run', 'TrailRun'])
     .not('avg_hr', 'is', null)
     .gte('moving_s', 1200)
     .order('date');
   if (l.athleteId) q = q.eq('athlete_id', l.athleteId);
-  const { data } = await q;
+
+  // Het plan kan zeggen dat een dag intensief was; buiten het plan is er niets
+  // dat het tegenspreekt. Beide vragen lopen naast elkaar.
+  const [{ data }, zones, planDagen] = await Promise.all([q, getZones(l), getDays(from, to, l)]);
+
+  const band = zones.bands.find((b) => b.key === 'Z2');
+  if (!band) return [];
+  const zonePerDag = new Map(planDagen.map((d) => [d.date, d.zone]));
 
   const rijen = (data as
-    | { date: IsoDate; distance_m: number | null; moving_s: number | null; elev_gain_m: number | null; avg_hr: number }[]
+    | { date: IsoDate; sport_type: string; distance_m: number | null; moving_s: number | null; elev_gain_m: number | null; avg_hr: number }[]
     | null) ?? [];
 
   return rijen
+    .filter((a) => countsAsBase(a, zonePerDag.get(a.date), band))
     .map((a) => {
       const ef = aerobicEfficiency(a.distance_m, a.moving_s, a.avg_hr);
       if (ef === null) return null;
@@ -530,4 +539,4 @@ export async function getAerobicSessions(from: IsoDate, to: IsoDate, r?: Reader)
       };
     })
     .filter((p): p is AeroobPunt => p !== null);
-}
+});

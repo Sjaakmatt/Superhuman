@@ -309,7 +309,7 @@ curl -X POST localhost:3000/api/insight/weekly
 
 Je hebt een **eigen** OAuth-app nodig (strava.com/settings/api), scope
 `activity:read_all,profile:read_all`, callback `https://<domein>/api/strava/callback`.
-De sync haalt bij de eerste keer alles op vanaf 1 augustus 2026 en daarna alleen wat
+De sync haalt bij de eerste keer alles op vanaf 1 juni 2026 en daarna alleen wat
 erbij kwam. Streams gaan per activiteit, dus hoogstens veertig per keer — dat past binnen
 de honderd verzoeken per kwartier.
 

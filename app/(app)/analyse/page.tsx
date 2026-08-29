@@ -9,6 +9,7 @@ import { Card, CardTitle, Empty, Grid, Note, Stat } from '@/components/ui';
 import { getWeeks } from '@/lib/plan';
 import { getAerobicSessions, getInsights, getWeekActuals, getWellness, getZoneSeconds, getZones, loadRuleInput } from '@/lib/data';
 import { dbConfigured } from '@/lib/db';
+import { BACKFILL_FROM } from '@/lib/strava';
 import { evaluate } from '@/lib/rules';
 import { distribution, weekJump, wellnessTrend, z2Drift } from '@/lib/metrics';
 import { addDays, today as todayIn, weekStart } from '@/lib/date';
@@ -29,8 +30,9 @@ export default async function Analyse() {
     getInsights(6),
   ]);
 
-  // De hele opbouw, niet de laatste vier weken: een basis bouw je over maanden.
-  const aeroob = await getAerobicSessions(addDays(now, -365), now);
+  // Alles wat we hebben, niet een venster: een basis bouw je over maanden, en
+  // de lopen van vóór het plan horen er net zo goed bij.
+  const aeroob = await getAerobicSessions(BACKFILL_FROM, now);
 
   const ruleInput = await loadRuleInput(now, current.week, current.status);
   const hits = ruleInput ? evaluate(ruleInput) : [];
@@ -122,14 +124,16 @@ export default async function Analyse() {
             <AerobicTrend points={aeroob} />
             <Note>
               Hoe verder je afstand aflegt per hartslag, hoe beter je basis. Een stijgende lijn betekent dat je bij
-              dezelfde hartslag sneller loopt — precies waar dit blok op stuurt. Alleen geplande Z2-sessies van
-              minstens twintig minuten met een gemeten hartslag tellen mee; anders vergelijk je een intervaltraining
-              met een duurloop. Heuvels drukken de waarde, dus de hoogtemeters staan bij elk punt.
+              dezelfde hartslag sneller loopt — precies waar dit blok op stuurt. Meetellen doen hardloopsessies van
+              minstens twintig minuten waarvan de gemiddelde hartslag in je Z2-band viel; een geplande intensieve dag
+              telt niet mee, ook niet als het gemiddelde toevallig in Z2 uitkwam. Heuvels drukken de waarde, dus de
+              hoogtemeters staan bij elk punt.
             </Note>
           </>
         ) : (
-          <Empty title="Nog te weinig Z2-sessies">
-            Vanaf drie geplande Z2-sessies van twintig minuten of langer, met hartslag, verschijnt hier de lijn.
+          <Empty title="Nog te weinig duurlopen">
+            Vanaf drie hardloopsessies van twintig minuten of langer waarvan de gemiddelde hartslag in Z2 viel,
+            verschijnt hier de lijn. Ook lopen van vóór het plan tellen mee.
           </Empty>
         )}
       </Card>

@@ -12,7 +12,7 @@ const OAUTH = 'https://www.strava.com/oauth';
 export const SCOPE = 'activity:read_all,profile:read_all';
 
 /** De eerste keer halen we alles op vanaf deze datum, daarna incrementeel. */
-export const BACKFILL_FROM = '2026-08-01';
+export const BACKFILL_FROM = '2026-06-01';
 
 /** Streams zijn één verzoek per activiteit. Strava staat 200 verzoeken per
  *  kwartier en 2.000 per dag toe; veertig per sync laat ruimte over voor de

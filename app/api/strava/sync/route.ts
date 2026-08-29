@@ -87,6 +87,7 @@ type StravaToken = {
   refresh_token: string;
   expires_at: string;
   synced_at: string | null;
+  backfilled_from: string | null;
 };
 
 async function syncAtleet(sb: SupabaseClient, token: StravaToken) {
@@ -109,8 +110,12 @@ async function syncAtleet(sb: SupabaseClient, token: StravaToken) {
     }).eq('athlete_id', athleteId);
   }
 
-  // Eerste keer: alles vanaf 1 augustus 2026. Daarna vanaf de laatste activiteit
-  // min één dag, zodat een late upload niet gemist wordt.
+  // Normaal vanaf de laatste opgeslagen activiteit min één dag, zodat een late
+  // upload niet gemist wordt. Maar zolang we nog nooit tot BACKFILL_FROM terug
+  // zijn geweest doen we eerst één volle haal — anders komt een periode die je
+  // achteraf wilt meenemen er nooit meer bij.
+  const moetTerug = !token.backfilled_from || token.backfilled_from > BACKFILL_FROM;
+
   const { data: last } = await sb
     .from('activity')
     .select('start_local')
@@ -119,9 +124,10 @@ async function syncAtleet(sb: SupabaseClient, token: StravaToken) {
     .limit(1)
     .maybeSingle();
 
-  const after = last
-    ? new Date(Date.parse(last.start_local as string) - 86_400_000)
-    : new Date(`${BACKFILL_FROM}T00:00:00Z`);
+  const after =
+    moetTerug || !last
+      ? new Date(`${BACKFILL_FROM}T00:00:00Z`)
+      : new Date(Date.parse(last.start_local as string) - 86_400_000);
 
   const activities = await withBackoff(() => listActivities(accessToken, after));
   if (activities.length) {
@@ -197,7 +203,10 @@ async function syncAtleet(sb: SupabaseClient, token: StravaToken) {
     if (match) await sb.from('session_log').update({ activity_id: match.id }).eq('id', log.id);
   }
 
-  await sb.from('strava_token').update({ synced_at: new Date().toISOString() }).eq('athlete_id', athleteId);
+  await sb
+    .from('strava_token')
+    .update({ synced_at: new Date().toISOString(), backfilled_from: BACKFILL_FROM })
+    .eq('athlete_id', athleteId);
 
   return {
     athlete_id: athleteId,
@@ -205,6 +214,7 @@ async function syncAtleet(sb: SupabaseClient, token: StravaToken) {
     streams: withStreams,
     wachtrij_over: Math.max(0, queue.length - withStreams),
     vanaf: after.toISOString(),
+    volledige_haal: moetTerug,
   };
 }
 

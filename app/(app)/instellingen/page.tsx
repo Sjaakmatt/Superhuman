@@ -44,7 +44,7 @@ export default async function Instellingen({ searchParams }: { searchParams: Pro
         </CardTitle>
         {params.strava ? (
           <p className="mb-3 text-[13px]" style={{ color: params.strava === 'verbonden' ? 'var(--acc)' : 'var(--crit)' }}>
-            {params.strava === 'verbonden' ? 'Gelukt. De eerste sync haalt alles vanaf 1 augustus 2026 op.' : `Mislukt: ${params.strava}`}
+            {params.strava === 'verbonden' ? 'Gelukt. De eerste sync haalt alles vanaf 1 juni 2026 op.' : `Mislukt: ${params.strava}`}
           </p>
         ) : null}
         {stravaConfigured() ? (
