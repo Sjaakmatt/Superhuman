@@ -309,10 +309,15 @@
       "kind": "meting",
       "title": "Bloedpanel T0 + sportkeuring",
       "prep": [
-        "Nuchter, 's ochtends, en minstens 48 uur na een zware sessie: inspanning drukt ferritine en CRP allebei de verkeerde kant op.",
-        "Vraag deze bepalingen aan: ferritine, transferrinesaturatie, Hb, CRP, vitamine B12, vitamine D en TSH. Dat zijn precies de velden die je hier straks invult.",
+        "Twee dingen op één dag, met verschillende adressen: het bloedpanel en het sportmedisch onderzoek.",
+        "Bloed: nuchter, 's ochtends, en minstens 48 uur na een zware sessie — inspanning drukt ferritine en CRP allebei de verkeerde kant op.",
+        "Vraag deze bepalingen aan: ferritine, transferrinesaturatie, Hb, CRP, vitamine B12, vitamine D en TSH. Dat zijn precies de velden die je hier straks invult. Aanvragen kan via je huisarts, of als aanvulling bij de sportarts.",
         "Dit is je nulmeting. Alles wat later afwijkt vergelijk je hiermee, niet met de referentiewaarden van het lab.",
-        "Sportkeuring: bloeddruk en rust-ECG bij de sportarts. Zitten er hartklachten in de familie, vraag dan om een inspannings-ECG.",
+        "De sportkeuring doe je bij een sportarts, meestal bij een sportmedische instelling. Zoeken kan via sportzorg.nl; een verwijzing heb je er doorgaans niet voor nodig.",
+        "Vraag om het uitgebreide onderzoek mét maximaaltest: vragenlijst, lichamelijk onderzoek, rust-ECG, longfunctie, en een test tot je maximum op loopband of fiets met ECG erbij. Het basisonderzoek zonder maximaaltest is voor honderd kilometer te mager.",
+        "Die maximaaltest levert meteen je gemeten HRmax. Krijg je die hier al, dan is de test in week 6 een bevestiging in plaats van je eerste meting — en die van week 30 blijft staan om te zien of je maximum zakt.",
+        "Neem mee: dat je op 2 oktober 2027 honderd kilometer loopt, hoeveel je nu per week loopt, je medicijnen, je eerdere blessures, en of er hartklachten in de familie zitten.",
+        "Kosten lopen uiteen en hangen af van de omvang van het onderzoek. Je basisverzekering vergoedt een keuring niet; sommige aanvullende pakketten wel. Vraag het vooraf na.",
         "Zet de uitslag daarna bij Seizoen, onder Metingen."
       ],
       "logs": "bloed"
