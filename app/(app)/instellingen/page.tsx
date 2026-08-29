@@ -1,9 +1,10 @@
-import Link from 'next/link';
 import ThemeToggle from '@/components/ThemeToggle';
 import ShoeList from '@/components/ShoeList';
 import PushToggle from '@/components/PushToggle';
+import Uitloggen from '@/components/Uitloggen';
 import { Card, CardTitle, Empty, Note, Pill } from '@/components/ui';
 import { getAthlete, getShoes } from '@/lib/data';
+import { currentUser } from '@/lib/db';
 import { getReference } from '@/lib/plan';
 import { dbConfigured } from '@/lib/db';
 import { insightConfigured } from '@/lib/insight';
@@ -12,7 +13,12 @@ import { planSource } from '@/lib/plan';
 
 export default async function Instellingen({ searchParams }: { searchParams: Promise<{ strava?: string }> }) {
   const params = await searchParams;
-  const [athlete, shoes, zones] = await Promise.all([getAthlete(), getShoes(), getReference('zones')]);
+  const [athlete, shoes, zones, user] = await Promise.all([
+    getAthlete(),
+    getShoes(),
+    getReference('zones'),
+    currentUser(),
+  ]);
 
   return (
     <div className="mx-auto flex max-w-[720px] flex-col gap-4 pt-2">
@@ -66,6 +72,8 @@ export default async function Instellingen({ searchParams }: { searchParams: Pro
 
       <ShoeList shoes={shoes} writable={dbConfigured()} />
 
+      <Uitloggen email={user?.email ?? null} />
+
       <Card sunk>
         <CardTitle>Verbindingen</CardTitle>
         <ul className="flex flex-col gap-2 text-[13px]">
@@ -75,7 +83,6 @@ export default async function Instellingen({ searchParams }: { searchParams: Pro
         </ul>
         <Note>
           Ontbreekt er iets, kijk dan in <code>.env.example</code>. Zonder database toont de app het plan maar bewaart hij niets.
-          {' '}<Link href="/login" style={{ color: 'var(--acc)' }}>Inloggen</Link>
         </Note>
       </Card>
     </div>

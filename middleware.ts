@@ -6,7 +6,10 @@ const ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 // Routes zonder inlogplicht. De api-routes regelen hun eigen toegang: de
 // cron-routes met CRON_SECRET, /api/strava/connect met de sessie zelf.
-const PUBLIC = ['/login', '/offline', '/api'];
+//
+// /wachtwoord-herstellen staat er bewust NIET bij: daar hoort de sessie te
+// staan die /auth/bevestig uit de herstel-link heeft gezet.
+const PUBLIC = ['/login', '/wachtwoord-vergeten', '/auth', '/offline', '/api'];
 
 /** Ververst de Supabase-sessie bij elk verzoek en stuurt uitgelogde bezoekers
  *  naar /login. Zonder database blijft alles open: de app toont dan alleen het

@@ -30,9 +30,68 @@ aan zonder policy (alleen server routes met de service-role-sleutel komen erbij)
 en `my_athlete_id()` is aanroepbaar door ingelogde gebruikers (de RLS-policies
 hebben dat nodig; hij geeft alleen je eigen id terug).
 
-Vergeet in het dashboard niet **Auth → URL Configuration**: zet Site URL op waar de
-app draait en voeg `<site>/**` plus `http://localhost:3000/**` toe aan de redirect
-URLs. Zonder die twee komt de inloglink uit je mail op de verkeerde plek terecht.
+## Inloggen
+
+Supabase Auth met **e-mailadres en wachtwoord**. Geen magic link, geen registratie:
+deze app heeft één gebruiker. De inlogschermen staan buiten de app-schil — vóór je
+bent ingelogd zie je geen navigatie en geen gegevens.
+
+| Scherm | |
+|---|---|
+| `/login` | inloggen |
+| `/wachtwoord-vergeten` | herstel-link aanvragen |
+| `/wachtwoord-herstellen` | nieuw wachtwoord kiezen; vereist de sessie uit de link |
+| `/auth/bevestig` | wisselt het token uit de mail in voor een sessie, op de server |
+
+Uitloggen zit onder Instellingen.
+
+### Eenmalig instellen in Supabase
+
+**Authentication → Sign In / Providers → Email**
+
+- **Confirm email**: aan
+- **Enable email provider**: aan
+- **Allow new users to sign up**: **uit** — één gebruiker, dus niemand meldt zich aan
+- **Minimum password length**: 10 of hoger (de app keurt zelf ook op 10)
+
+**Authentication → URL Configuration**
+
+- Site URL: `https://ultra100.factumai.nl` — de sjablonen bouwen hun links hierop
+- Redirect URLs: `https://ultra100.factumai.nl/**` en `http://localhost:3000/**`
+
+**Project Settings → Authentication → SMTP Settings**
+
+Zet je eigen SMTP aan. Zonder eigen SMTP verstuurt Supabase hoogstens een paar
+mails per uur en komt de afzender niet van jouw domein. Vul host, poort, gebruiker,
+wachtwoord, en een afzender op een geverifieerd domein.
+
+**Authentication → Emails → Templates**
+
+Plak de vier sjablonen uit `supabase/templates/`:
+
+| Bestand | Template in het dashboard |
+|---|---|
+| `wachtwoord-herstellen.html` | Reset Password |
+| `uitnodiging.html` | Invite user |
+| `bevestig-aanmelding.html` | Confirm signup |
+| `wijzig-emailadres.html` | Change Email Address |
+
+Ze verwijzen naar `{{ .SiteURL }}/auth/bevestig?token_hash={{ .TokenHash }}&type=…`
+in plaats van naar `{{ .ConfirmationURL }}`. Dat is bewust: zo wisselt de server het
+token in voor een sessie vóór het eerste scherm rendert, wat betrouwbaarder is dan
+het in de browser afhandelen.
+
+**Let op de kleuren.** E-mailclients kennen geen CSS-variabelen, dus in die vier
+bestanden staan de kleuren uit `styles/tokens.css` letterlijk. Dat is de enige
+plek in dit project waar een hex-waarde buiten `tokens.css` mag staan — pas je de
+tokens aan, loop dan ook de sjablonen na.
+
+### Je account aanmaken
+
+Authentication → Users → Add user, met e-mailadres en wachtwoord. De `athlete`-rij
+komt er automatisch bij (zie de trigger in `0009_athlete_bootstrap.sql`). Wil je in
+plaats daarvan een uitnodiging per mail, gebruik dan Invite — dan komt de gebruiker
+via het `uitnodiging.html`-sjabloon binnen en kiest hij zelf een wachtwoord.
 
 De seed weigert te draaien als het plan niet klopt — hij draait eerst dezelfde
 controles als `test/seed.test.ts`.
@@ -42,7 +101,7 @@ controles als `test/seed.test.ts`.
 ```bash
 npm run typecheck
 npm run lint
-npm test          # 63 tests: seed-integriteit, afgeleide getallen, twaalf regels, krachtparser, VAPID, cron-configuratie
+npm test          # 70 tests: seed-integriteit, afgeleide getallen, twaalf regels, krachtparser, VAPID, crons, foutmeldingen
 npm run build
 ```
 
@@ -74,7 +133,10 @@ toont de regel-id waar hij vandaan komt.
 
 | Pad | Wat er staat |
 |---|---|
-| `app/` | de vijf schermen, plus instellingen, inloggen en de api-routes |
+| `app/(app)/` | de vijf schermen plus instellingen, binnen de schil |
+| `app/login/`, `app/wachtwoord-*/` | de inlogschermen, bewust buiten de schil |
+| `app/api/` | sync, analyses, push |
+| `supabase/templates/` | de e-mailsjablonen voor Supabase Auth |
 | `components/` | interface, dun, zonder datalogica |
 | `components/charts/` | handgeschreven SVG — geen grafiekbibliotheek |
 | `lib/metrics.ts` | afgeleide getallen: afdaalminuten, zoneverdeling, weeksprong, welzijnstrend |
@@ -179,7 +241,7 @@ curl -X POST localhost:3000/api/insight/weekly
 
 `.github/workflows/ci.yml` draait op elke push en pull request:
 
-- **checks** — typecheck, lint, 63 tests en `next build`. De build draait bewust
+- **checks** — typecheck, lint, 70 tests en `next build`. De build draait bewust
   zonder Supabase-variabelen: de app moet ook zonder database bouwen.
 - **worker** — `opennextjs-cloudflare build` plus een wrangler dry-run. Dat vangt
   fouten in `worker.ts` en `wrangler.jsonc` die `next build` niet ziet.

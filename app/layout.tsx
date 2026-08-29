@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from 'next';
-import Shell from '@/components/Shell';
 import ServiceWorker from '@/components/ServiceWorker';
 import './globals.css';
 
@@ -33,7 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
-        <Shell>{children}</Shell>
+        {children}
         <ServiceWorker />
       </body>
     </html>

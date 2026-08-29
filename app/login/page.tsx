@@ -1,58 +1,71 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
+import AuthCard from '@/components/AuthCard';
+import { Fout, Knop, Veld } from '@/components/auth-form';
 import { browserDb } from '@/lib/supabase-browser';
-import { Card, CardTitle, Empty } from '@/components/ui';
+import { inHetNederlands } from '@/lib/auth';
 
-/** Eén gebruiker, dus geen registratie: een inloglink per e-mail volstaat.
- *  RLS hangt aan deze sessie, dus zonder inloggen zie je geen eigen gegevens. */
-export default function Login() {
+/** Inloggen met e-mailadres en wachtwoord. Geen registratie: deze app heeft
+ *  één gebruiker, en aanmelden staat uit in Supabase. */
+function Formulier() {
+  const router = useRouter();
+  const params = useSearchParams();
   const [email, setEmail] = useState('');
-  const [state, setState] = useState<'leeg' | 'bezig' | 'verstuurd' | 'fout'>('leeg');
-  const [error, setError] = useState<string | null>(null);
+  const [wachtwoord, setWachtwoord] = useState('');
+  const [bezig, setBezig] = useState(false);
+  const [fout, setFout] = useState<string | null>(params.get('fout'));
 
-  async function send(e: React.FormEvent) {
+  async function inloggen(e: React.FormEvent) {
     e.preventDefault();
     const client = browserDb();
     if (!client) {
-      setState('fout');
-      setError('Geen database verbonden.');
+      setFout('Geen database verbonden.');
       return;
     }
-    setState('bezig');
-    const { error: authError } = await client.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: `${window.location.origin}/` },
-    });
-    if (authError) {
-      setState('fout');
-      setError(authError.message);
-    } else {
-      setState('verstuurd');
+    setBezig(true);
+    setFout(null);
+
+    const { error } = await client.auth.signInWithPassword({ email, password: wachtwoord });
+    if (error) {
+      setFout(inHetNederlands(error.message));
+      setBezig(false);
+      return;
     }
+    // Volledige navigatie, zodat de server de nieuwe sessiecookie meteen ziet.
+    router.replace('/');
+    router.refresh();
   }
 
   return (
-    <div className="mx-auto flex max-w-[460px] flex-col gap-4 pt-8">
-      <Card>
-        <CardTitle>Inloggen</CardTitle>
-        {state === 'verstuurd' ? (
-          <Empty title="Kijk in je mail">Er staat een link klaar. Die logt je in op dit apparaat.</Empty>
-        ) : (
-          <form onSubmit={send} className="flex flex-col gap-3">
-            <label htmlFor="email" className="text-[14px]">Je e-mailadres</label>
-            <input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-              className="rounded-[var(--r-btn)] px-3 py-2.5 text-[14px] outline-none"
-              style={{ background: 'var(--card2)', color: 'var(--ink)' }} />
-            <button type="submit" disabled={state === 'bezig'}
-              className="interactive rounded-[var(--r-btn)] px-4 py-3 text-[14px] font-bold"
-              style={{ background: 'var(--acc)', color: 'var(--acc-ink)' }}>
-              {state === 'bezig' ? 'versturen…' : 'Stuur me een link'}
-            </button>
-            {error ? <p className="text-[12px]" style={{ color: 'var(--crit)' }}>{error}</p> : null}
-          </form>
-        )}
-      </Card>
-    </div>
+    <AuthCard
+      title="Inloggen"
+      onder={
+        <>
+          Wachtwoord kwijt?{' '}
+          <Link href="/wachtwoord-vergeten" style={{ color: 'var(--acc)' }}>Stuur me een herstel-link</Link>
+        </>
+      }
+    >
+      <form onSubmit={inloggen} className="flex flex-col gap-4">
+        <Veld label="E-mailadres" type="email" name="email" autoComplete="username" required
+          value={email} onChange={(e) => setEmail(e.target.value)} />
+        <Veld label="Wachtwoord" type="password" name="password" autoComplete="current-password" required
+          value={wachtwoord} onChange={(e) => setWachtwoord(e.target.value)} />
+        <Fout>{fout}</Fout>
+        <Knop bezig={bezig}>Inloggen</Knop>
+      </form>
+    </AuthCard>
+  );
+}
+
+export default function Login() {
+  return (
+    <Suspense>
+      <Formulier />
+    </Suspense>
   );
 }

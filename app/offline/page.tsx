@@ -4,7 +4,7 @@ export const metadata = { title: 'Geen verbinding — Ultra100' };
 
 export default function Offline() {
   return (
-    <div className="mx-auto max-w-[460px] pt-8">
+    <div className="mx-auto max-w-[440px] px-4 pt-14">
       <Card>
         <CardTitle>Geen verbinding</CardTitle>
         <p className="text-[14px] leading-relaxed">
