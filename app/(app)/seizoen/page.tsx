@@ -2,8 +2,8 @@ import Link from 'next/link';
 import Ring from '@/components/charts/Ring';
 import SeasonGrid from '@/components/charts/SeasonGrid';
 import VolumeProfile from '@/components/charts/VolumeProfile';
-import { Card, CardTitle, Grid, Note, Pill, Stat } from '@/components/ui';
-import { getDays, getReference, getWeeks, planBounds } from '@/lib/plan';
+import { Card, CardTitle, Empty, Grid, Note, Pill, Stat } from '@/components/ui';
+import { getDays, getPlanBounds, getReference, getWeeks } from '@/lib/plan';
 import Metingen from '@/components/Metingen';
 import { getAthlete, getBloodPanels, getHrTests, getIjkPunten, getMilestoneResults, getWeekActuals, getZones } from '@/lib/data';
 import { dbConfigured } from '@/lib/db';
@@ -25,7 +25,20 @@ export const dynamic = 'force-dynamic';
 
 export default async function Seizoen() {
   const now = todayIn();
-  const bounds = planBounds();
+  const bounds = await getPlanBounds();
+  if (!bounds) {
+    return (
+      <div className="mx-auto flex max-w-[1080px] flex-col gap-4 pt-2">
+        <Card>
+          <Empty title="Je hebt nog geen plan">
+            Het seizoensoverzicht laat een schema van begin tot eind zien. Zodra er een plan voor je klaarstaat, staat
+            het hier.
+          </Empty>
+        </Card>
+      </div>
+    );
+  }
+
   const [weeks, days, milestones, actuals, uitslagen] = await Promise.all([
     getWeeks(),
     getDays(bounds.first, bounds.last),

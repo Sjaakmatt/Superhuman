@@ -4,9 +4,13 @@ import { planSeed, referenceSeed } from '@/lib/seed-files';
 import { addDays, weekStart, type IsoDate } from '@/lib/date';
 import type { BloodMarker, Exercise, Fueling, Milestone, PlanDay, PlanWeek, StrengthPhase, Zones } from '@/lib/types';
 
-/** Het plan is read-only na de seed. Staat er geen database klaar, dan lezen we
- *  dezelfde bestanden die de seed inleest — nooit een tweede, verzonnen bron.
- *  `source` maakt in de interface zichtbaar waar de getallen vandaan komen. */
+/** Het plan is read-only na de seed.
+ *
+ *  Staat er geen database klaar, dan lezen we dezelfde bestanden die de seed
+ *  inleest — nooit een tweede, verzonnen bron. Is er wél een database maar heb
+ *  jij geen planrijen, dan krijg je niets. Dat is het verschil tussen "de app
+ *  draait zonder database" en "jij hebt nog geen plan", en dat verschil is hier
+ *  het belangrijkst: terugvallen op de seed zou iemand anders zijn plan tonen. */
 export type PlanSource = 'database' | 'seed';
 
 export function planSource(): PlanSource {
@@ -15,38 +19,30 @@ export function planSource(): PlanSource {
 
 async function leesDay(date: IsoDate, r?: Reader): Promise<PlanDay | null> {
   const client = (await reader(r))?.client;
-  if (client) {
-    const { data } = await client.from('plan_day').select('*').eq('date', date).maybeSingle();
-    if (data) return data as PlanDay;
-  }
-  return planSeed().days.find((d) => d.date === date) ?? null;
+  if (!client) return planSeed().days.find((d) => d.date === date) ?? null;
+  const { data } = await client.from('plan_day').select('*').eq('date', date).maybeSingle();
+  return (data as PlanDay | null) ?? null;
 }
 
 async function leesDays(from: IsoDate, to: IsoDate, r?: Reader): Promise<PlanDay[]> {
   const client = (await reader(r))?.client;
-  if (client) {
-    const { data } = await client.from('plan_day').select('*').gte('date', from).lte('date', to).order('date');
-    if (data && data.length) return data as PlanDay[];
-  }
-  return planSeed().days.filter((d) => d.date >= from && d.date <= to);
+  if (!client) return planSeed().days.filter((d) => d.date >= from && d.date <= to);
+  const { data } = await client.from('plan_day').select('*').gte('date', from).lte('date', to).order('date');
+  return (data as PlanDay[] | null) ?? [];
 }
 
 async function leesWeek(week: number, r?: Reader): Promise<PlanWeek | null> {
   const client = (await reader(r))?.client;
-  if (client) {
-    const { data } = await client.from('plan_week').select('*').eq('week', week).maybeSingle();
-    if (data) return data as PlanWeek;
-  }
-  return planSeed().weeks.find((w) => w.week === week) ?? null;
+  if (!client) return planSeed().weeks.find((w) => w.week === week) ?? null;
+  const { data } = await client.from('plan_week').select('*').eq('week', week).maybeSingle();
+  return (data as PlanWeek | null) ?? null;
 }
 
 async function leesWeeks(r?: Reader): Promise<PlanWeek[]> {
   const client = (await reader(r))?.client;
-  if (client) {
-    const { data } = await client.from('plan_week').select('*').order('week');
-    if (data && data.length) return data as PlanWeek[];
-  }
-  return planSeed().weeks;
+  if (!client) return planSeed().weeks;
+  const { data } = await client.from('plan_week').select('*').order('week');
+  return (data as PlanWeek[] | null) ?? [];
 }
 
 
@@ -68,11 +64,16 @@ export async function getWeekDays(date: IsoDate, r?: Reader): Promise<PlanDay[]>
 
 async function leesReference<K extends keyof Reference>(key: K, r?: Reader): Promise<Reference[K]> {
   const client = (await reader(r))?.client;
-  if (client) {
-    const { data } = await client.from('reference').select('value').eq('key', key).maybeSingle();
-    if (data?.value) return data.value as Reference[K];
-  }
-  return referenceSeed()[key] as Reference[K];
+  if (!client) return referenceSeed()[key] as Reference[K];
+
+  const { data } = await client.from('reference').select('value').eq('key', key).maybeSingle();
+  if (data?.value) return data.value as Reference[K];
+
+  // Wel een database, geen rij: dan heb jij die naslag niet. Leeg teruggeven,
+  // niet die van een ander. Zones zijn de uitzondering — dat zijn percentages
+  // van een maximumhartslag en zonder banden kan geen enkel scherm rekenen.
+  if (key === 'zones') return referenceSeed().zones as Reference[K];
+  return [] as unknown as Reference[K];
 }
 
 export type Reference = {
@@ -97,15 +98,32 @@ export function phaseForWeek<T extends { weeks: [number, number] }>(list: T[], w
   return list.find((p) => week >= p.weeks[0] && week <= p.weeks[1]) ?? null;
 }
 
-/** De eerste en laatste dag van het plan. */
-export function planBounds(): { first: IsoDate; last: IsoDate; race: IsoDate } {
-  const { days, meta } = planSeed();
-  return {
-    first: days[0]?.date ?? meta.start,
-    last: days[days.length - 1]?.date ?? meta.race,
-    race: meta.race,
-  };
-}
+export type PlanBounds = { first: IsoDate; last: IsoDate; race: IsoDate };
+
+/** De eerste en laatste dag van jóuw plan, of null als je er geen hebt.
+ *
+ *  Stond eerst in de seed, en dat werkte zolang er één plan was. Met meer dan
+ *  één atleet moet dit uit de database komen: anders krijgt iemand zonder plan
+ *  de datums van een ander te zien. */
+export const getPlanBounds = cache(async (r?: Reader): Promise<PlanBounds | null> => {
+  const client = (await reader(r))?.client;
+  if (!client) {
+    const { days, meta } = planSeed();
+    const eerste = days[0]?.date ?? meta.start;
+    return { first: eerste, last: days[days.length - 1]?.date ?? meta.race, race: meta.race };
+  }
+
+  const [{ data: eerste }, { data: laatste }] = await Promise.all([
+    client.from('plan_day').select('date').order('date').limit(1).maybeSingle(),
+    client.from('plan_day').select('date').order('date', { ascending: false }).limit(1).maybeSingle(),
+  ]);
+  const van = (eerste as { date: IsoDate } | null)?.date;
+  const tot = (laatste as { date: IsoDate } | null)?.date;
+  if (!van || !tot) return null;
+
+  // De wedstrijd is de laatste dag van het plan; die staat niet apart opgeslagen.
+  return { first: van, last: tot, race: tot };
+});
 
 export type SearchHit = { date: IsoDate; week: number; weekday: string; session_type: string; session_text: string };
 
@@ -119,6 +137,9 @@ export async function searchDays(query: string, limit = 8): Promise<SearchHit[]>
   const weekNo = /^(week\s*)?(\d{1,2})$/i.exec(q);
   const client = (await reader())?.client;
 
+  // Zonder database zoeken we in de seed; mét database zoek je alleen in je
+  // eigen plan. Terugvallen op de seed zou hier het plan van een ander
+  // doorzoekbaar maken vanuit de zoekbalk die op elk scherm staat.
   if (client) {
     let rows: SearchHit[] | null = null;
     if (weekNo) {
@@ -137,7 +158,7 @@ export async function searchDays(query: string, limit = 8): Promise<SearchHit[]>
         .limit(limit);
       rows = data as SearchHit[] | null;
     }
-    if (rows?.length) return rows;
+    return rows ?? [];
   }
 
   const needle = q.toLowerCase();

@@ -14,6 +14,7 @@ Het trainingsplan is 57 weken, 399 dagen, en staat vast in de database — de ap
 
 ## Harde regels
 
+0. **Een plan heeft een eigenaar.** `plan_week`, `plan_day` en `reference` hangen aan `athlete_id` en zijn onder RLS alleen zichtbaar voor die atleet. Wie geen plan heeft, ziet er geen — nooit terugvallen op de seed wanneer er wél een database is, want dan toon je het plan van een ander. De seed is er voor "geen database", niet voor "geen plan". `exercise` is bewust gedeeld: dat is een lijstje bewegingen, geen trainingsinhoud.
 1. **Nooit trainingsinhoud verzinnen in code.** Elke sessie, elk gewicht, elk voedingsgetal komt uit `plan_day`, `plan_week` of `reference`. Klopt er iets niet, dan wijzig je de seed en seed je opnieuw — niet de component.
 2. **Geen hex-waarden buiten `tokens.css`.** Ook niet in SVG: lees CSS-variabelen uit met `getComputedStyle`.
 3. **Alle interfacetekst is Nederlands**, in de tweede persoon, zonder uitroeptekens en zonder aanmoediging die niet verdiend is. Termen als "welzijnsscore" en "RPE" worden in de interface gewone woorden ("Hoe voel je je?", "Hoe zwaar voelde het?").

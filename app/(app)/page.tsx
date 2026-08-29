@@ -7,7 +7,7 @@ import MorningCheck from '@/components/MorningCheck';
 import SessionCard from '@/components/SessionCard';
 import WeekStrip from '@/components/WeekStrip';
 import { Card, CardTitle, Empty, Note, Pill } from '@/components/ui';
-import { getDay, getDays, getReference, getWeek, getWeekDays, phaseForWeek, planBounds, planSource } from '@/lib/plan';
+import { getDay, getDays, getPlanBounds, getReference, getWeek, getWeekDays, phaseForWeek, planSource } from '@/lib/plan';
 import { getBloodPanels, getDayMeasurements, getLogs, getMilestoneResults, getRunKmByDay, getWellness, getZones, loadRuleInput } from '@/lib/data';
 import { evaluate } from '@/lib/rules';
 import { meanOver } from '@/lib/metrics';
@@ -25,7 +25,6 @@ export default async function Vandaag({
   searchParams: Promise<{ d?: string; m?: string; v?: string }>;
 }) {
   const params = await searchParams;
-  const bounds = planBounds();
   const now = todayIn();
   const date = params.d && /^\d{4}-\d{2}-\d{2}$/.test(params.d) ? params.d : now;
   const month = params.m && /^\d{4}-\d{2}$/.test(params.m) ? params.m : monthOf(date);
@@ -38,8 +37,9 @@ export default async function Vandaag({
   const gisteren = addDays(now, -1);
   const weekBegin = weekStart(date);
 
-  const [day, weekDays, milestones, zones, uitslagen, agendaDagen, weekGelopen, wellness, gisterenLogs] =
+  const [bounds, day, weekDays, milestones, zones, uitslagen, agendaDagen, weekGelopen, wellness, gisterenLogs] =
     await Promise.all([
+      getPlanBounds(),
       getDay(date),
       getWeekDays(date),
       getReference('milestones'),
@@ -50,6 +50,19 @@ export default async function Vandaag({
       getWellness(addDays(date, -13), date),
       date === now ? getLogs(gisteren, gisteren) : Promise.resolve([]),
     ]);
+
+  // Zonder plan is er niets om een dag uit te lezen. Dat is geen fout: je kunt
+  // je trainingen loggen en je cijfers zien, er staat alleen niets voorgeschreven.
+  if (!bounds) {
+    return (
+      <div className="mx-auto flex max-w-[860px] flex-col gap-4 pt-2">
+        <Empty title="Je hebt nog geen plan">
+          Er staat voor jou geen trainingsschema klaar. Wat je loopt komt gewoon binnen en je kunt het loggen; onder
+          Analyse zie je je eigen cijfers terug.
+        </Empty>
+      </div>
+    );
+  }
 
   // De mijlpaal van de dag die je bekijkt, en anders de eerstvolgende binnen de
   // aanloop — gerekend vanaf díe dag, niet vanaf vandaag. Anders zie je op
