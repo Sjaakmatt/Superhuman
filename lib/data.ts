@@ -12,6 +12,9 @@ import type { Activity, BloodPanel, HrTest, Insight, MilestoneResult, Shoe, Stre
 
 export type Athlete = {
   id: string;
+  /** Hoe je aangesproken wilt worden. Leeg tot je het zelf invult: een naam
+   *  raden uit het mailadres levert "sjaakterveld" op, en zo heet niemand. */
+  name: string | null;
   /** Alleen de eerste gebruiker mag anderen uitnodigen. */
   can_invite: boolean;
   strava_athlete_id: number | null;

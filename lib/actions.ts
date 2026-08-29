@@ -490,6 +490,28 @@ export async function saveHrMax(hrMax: number, measuredOn: IsoDate, note?: strin
   return { ok: true };
 }
 
+/** Je naam, zoals de schil je begroet. Meer dan dit hoeft er niet van je in
+ *  de database te staan: het adres waarmee je inlogt weet Supabase al. */
+export async function saveNaam(naam: string): Promise<Result> {
+  const resultaat = await context();
+  if (!resultaat.ok) return resultaat.fout;
+  const ctx = resultaat.ctx;
+
+  const schoon = naam.trim().replace(/\s+/g, ' ');
+  if (schoon.length > 40) {
+    return { ok: false, error: 'Houd het bij veertig tekens; dit is een aanhef, geen biografie.' };
+  }
+
+  const { error } = await ctx.client
+    .from('athlete')
+    .update({ name: schoon || null })
+    .eq('id', ctx.athlete.id);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath('/', 'layout');
+  return { ok: true };
+}
+
 /** Wat er van een mijlpaal terecht kwam. Afvinken mag zonder tekst; een
  *  notitie zonder vinkje bestaat niet — je schrijft het op omdat het gebeurd is. */
 export async function saveMilestoneResult(

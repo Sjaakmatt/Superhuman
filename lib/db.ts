@@ -50,6 +50,17 @@ export async function currentUser() {
   return data.user ?? null;
 }
 
+/** Het mailadres uit het token. Staat er geen naam ingevuld, dan is dit alles
+ *  wat de schil heeft om een letter van te maken — en dat mag geen netwerkcall
+ *  kosten bij elk scherm. */
+export const currentEmail = cache(async (): Promise<string | null> => {
+  const client = await db();
+  if (!client) return null;
+  const { data } = await client.auth.getClaims();
+  const email = (data?.claims as { email?: unknown } | undefined)?.email;
+  return typeof email === 'string' ? email : null;
+});
+
 /** Het id van de ingelogde gebruiker, uit het token zelf.
  *
  *  Dit project ondertekent zijn tokens asymmetrisch, dus getClaims controleert

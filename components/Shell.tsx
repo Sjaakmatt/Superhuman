@@ -26,7 +26,18 @@ function greeting(hour: number) {
   return 'Goedenavond';
 }
 
-export default function Shell({ children }: { children: React.ReactNode }) {
+/** De naam komt uit de database, niet uit de code: er is meer dan één atleet.
+ *  Zolang iemand hem niet heeft ingevuld groeten we zonder naam — beter dan de
+ *  verkeerde naam, en beter dan een naam die uit een mailadres is geraden. */
+export default function Shell({
+  naam,
+  initiaal,
+  children,
+}: {
+  naam: string | null;
+  initiaal: string;
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
   const [hello, setHello] = useState('Dag');
 
@@ -78,9 +89,9 @@ export default function Shell({ children }: { children: React.ReactNode }) {
             className="interactive flex items-center gap-3 rounded-[var(--r-btn)] px-3 py-2.5"
             style={{ background: 'var(--card2)' }}>
             <span aria-hidden className="grid h-8 w-8 shrink-0 place-items-center rounded-[var(--r-pill)] text-[13px] font-bold"
-              style={{ background: 'var(--acc)', color: 'var(--acc-ink)' }}>S</span>
+              style={{ background: 'var(--acc)', color: 'var(--acc-ink)' }}>{initiaal}</span>
             <span className="min-w-0">
-              <span className="block truncate text-[13px] font-semibold">Sjaak</span>
+              <span className="block truncate text-[13px] font-semibold">{naam ?? 'Je account'}</span>
               <span className="block truncate text-[11px]" style={{ color: 'var(--ink3)' }}>Instellingen</span>
             </span>
           </Link>
@@ -91,7 +102,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         <header className="sticky top-0 z-20 flex flex-wrap items-center gap-3 px-4 py-3 side:px-8 side:py-5"
           style={{ background: 'color-mix(in srgb, var(--ground) 88%, transparent)', backdropFilter: 'blur(12px)' }}>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-[13px]" style={{ color: 'var(--ink3)' }}>{hello}, Sjaak</p>
+            <p className="truncate text-[13px]" style={{ color: 'var(--ink3)' }}>{naam ? `${hello}, ${naam}` : hello}</p>
             <h1 className="truncate text-[19px] font-bold tracking-tight side:text-[22px]">
               {NAV.find((n) => isActive(n.href))?.title ?? EXTRA_TITLES[pathname] ?? 'Ultra100'}
             </h1>
@@ -108,7 +119,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
               color: pathname.startsWith('/instellingen') ? 'var(--acc-ink)' : 'var(--ink2)',
               border: '1px solid var(--hair)',
             }}>
-            S
+            {initiaal}
           </Link>
         </header>
 

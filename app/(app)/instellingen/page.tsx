@@ -1,4 +1,5 @@
 import Bronnen from '@/components/Bronnen';
+import Naam from '@/components/Naam';
 import HartslagMax from '@/components/HartslagMax';
 import StravaOphalen from '@/components/StravaOphalen';
 import Link from 'next/link';
@@ -34,6 +35,8 @@ export default async function Instellingen({ searchParams }: { searchParams: Pro
 
   return (
     <div className="mx-auto flex max-w-[720px] flex-col gap-4 pt-2">
+      {dbConfigured() && athlete ? <Naam naam={athlete.name} /> : null}
+
       <Card>
         <CardTitle>Weergave</CardTitle>
         <ThemeToggle />
