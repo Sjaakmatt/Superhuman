@@ -59,11 +59,29 @@ Uitloggen zit onder Instellingen.
 - Site URL: `https://ultra100.factumai.nl` — de sjablonen bouwen hun links hierop
 - Redirect URLs: `https://ultra100.factumai.nl/**` en `http://localhost:3000/**`
 
-**Project Settings → Authentication → SMTP Settings**
+**Project Settings → Authentication → SMTP Settings** — via Resend
 
-Zet je eigen SMTP aan. Zonder eigen SMTP verstuurt Supabase hoogstens een paar
-mails per uur en komt de afzender niet van jouw domein. Vul host, poort, gebruiker,
-wachtwoord, en een afzender op een geverifieerd domein.
+| Veld | Waarde |
+|---|---|
+| Host | `smtp.resend.com` |
+| Port | `587` (STARTTLS) — 465 kan ook, dat is meteen SSL |
+| Username | `resend` — letterlijk dat woord, niet je e-mailadres |
+| Password | je Resend API-sleutel (`re_…`) |
+| Sender email | een adres op een in Resend geverifieerd domein, bijvoorbeeld `ultra100@factumai.nl` |
+| Sender name | `Ultra100` |
+
+De API-sleutel hoort alleen hier thuis. De app verstuurt zelf geen mail — dat doet
+Supabase — dus er is geen `RESEND_API_KEY` in deze repo en die hoeft ook niet op de
+Worker te staan.
+
+Twee dingen die je anders pas merkt als er geen mail aankomt:
+
+- **Verifieer het afzenderdomein in Resend** (Domains → Add Domain) en zet de
+  SPF-, DKIM- en DMARC-records klaar. Zonder die records belandt de herstel-link
+  in de map met ongewenste post, of nergens.
+- **Supabase zet na het aanzetten van eigen SMTP een limiet van 30 mails per uur.**
+  Voor één gebruiker ruim voldoende, maar hij staat er, en je vindt hem onder
+  Authentication → Rate Limits.
 
 **Authentication → Emails → Templates**
 
