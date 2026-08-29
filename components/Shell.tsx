@@ -98,6 +98,18 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           </div>
           <PlanSearch />
           <div className="side:hidden"><ThemeToggle compact /></div>
+          {/* De zijbalk verschijnt pas vanaf 1040px, en daarin staan de
+              instellingen. Zonder deze knop is er op de telefoon geen ingang. */}
+          <Link href="/instellingen" aria-label="Instellingen"
+            aria-current={pathname.startsWith('/instellingen') ? 'page' : undefined}
+            className="interactive grid h-9 w-9 shrink-0 place-items-center rounded-[var(--r-pill)] text-[13px] font-bold side:hidden"
+            style={{
+              background: pathname.startsWith('/instellingen') ? 'var(--acc)' : 'var(--card2)',
+              color: pathname.startsWith('/instellingen') ? 'var(--acc-ink)' : 'var(--ink2)',
+              border: '1px solid var(--hair)',
+            }}>
+            S
+          </Link>
         </header>
 
         <main className="min-w-0 flex-1 px-4 pb-28 side:px-8 side:pb-12">{children}</main>
