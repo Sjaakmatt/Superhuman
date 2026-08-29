@@ -367,18 +367,14 @@ async function stuurUitnodiging(adres: string): Promise<Result> {
 
 export type BloodPanelInput = {
   date: IsoDate;
-  ferritin: number | null;
-  tsat: number | null;
-  hb: number | null;
-  crp: number | null;
-  b12: number | null;
-  vit_d: number | null;
-  tsh: number | null;
   note: string | null;
+  /** Alleen de bepalingen die je liet doen. Wat ontbreekt, ontbreekt. */
+  values: Record<string, number>;
 };
 
-/** Een uitslag opslaan. Upsert op (atleet, datum): dezelfde dag nog eens
- *  invoeren corrigeert de vorige in plaats van er een tweede naast te zetten. */
+/** Een prikdag opslaan. De kop en de waarden gaan samen: wat je uit het
+ *  formulier weghaalt, verdwijnt ook uit de database — anders blijft een
+ *  verkeerd ingetypte waarde staan die je niet meer ziet. */
 export async function saveBloodPanel(input: BloodPanelInput): Promise<Result> {
   const resultaat = await context();
   if (!resultaat.ok) return resultaat.fout;
@@ -387,26 +383,51 @@ export async function saveBloodPanel(input: BloodPanelInput): Promise<Result> {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(input.date)) {
     return { ok: false, error: 'Die datum begrijp ik niet.' };
   }
-  const waarden = [input.ferritin, input.tsat, input.hb, input.crp, input.b12, input.vit_d, input.tsh];
-  if (waarden.every((w) => w === null) && !input.note) {
+
+  const codes = await toegestaneCodes();
+  const rijen = Object.entries(input.values)
+    .filter(([code, waarde]) => codes.has(code) && Number.isFinite(waarde))
+    .map(([code, waarde]) => ({ athlete_id: ctx.athlete.id, date: input.date, code, value: waarde }));
+
+  if (!rijen.length && !input.note) {
     return { ok: false, error: 'Vul minstens één waarde in.' };
   }
 
-  const { error } = await ctx.client
+  const kop = await ctx.client
     .from('blood_panel')
-    .upsert({ ...input, athlete_id: ctx.athlete.id }, { onConflict: 'athlete_id,date' });
-  if (error) return { ok: false, error: error.message };
-  revalidatePath('/instellingen');
+    .upsert({ athlete_id: ctx.athlete.id, date: input.date, note: input.note }, { onConflict: 'athlete_id,date' });
+  if (kop.error) return { ok: false, error: kop.error.message };
+
+  const opgeruimd = await ctx.client.from('blood_value').delete().eq('date', input.date);
+  if (opgeruimd.error) return { ok: false, error: opgeruimd.error.message };
+
+  if (rijen.length) {
+    const { error } = await ctx.client.from('blood_value').insert(rijen);
+    if (error) return { ok: false, error: error.message };
+  }
+
+  revalidatePath('/seizoen');
   revalidatePath('/analyse');
   return { ok: true };
+}
+
+/** Alleen codes uit de naslag mogen de database in. Zo kan een aangepast
+ *  formulier er geen verzonnen bepaling in schrijven. */
+async function toegestaneCodes(): Promise<Set<string>> {
+  const markers = await getReference('blood_markers');
+  return new Set(markers.map((m) => m.code));
 }
 
 export async function deleteBloodPanel(date: IsoDate): Promise<Result> {
   const resultaat = await context();
   if (!resultaat.ok) return resultaat.fout;
+  // blood_value hangt niet met een foreign key aan blood_panel, dus die ruimen
+  // we zelf op.
+  const waarden = await resultaat.ctx.client.from('blood_value').delete().eq('date', date);
+  if (waarden.error) return { ok: false, error: waarden.error.message };
   const { error } = await resultaat.ctx.client.from('blood_panel').delete().eq('date', date);
   if (error) return { ok: false, error: error.message };
-  revalidatePath('/instellingen');
+  revalidatePath('/seizoen');
   revalidatePath('/analyse');
   return { ok: true };
 }

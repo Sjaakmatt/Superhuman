@@ -317,8 +317,7 @@
         "Vraag om het uitgebreide onderzoek mét maximaaltest: vragenlijst, lichamelijk onderzoek, rust-ECG, longfunctie, en een test tot je maximum op loopband of fiets met ECG erbij. Het basisonderzoek zonder maximaaltest is voor honderd kilometer te mager.",
         "Die maximaaltest levert meteen je gemeten HRmax. Krijg je die hier al, dan is de test in week 6 een bevestiging in plaats van je eerste meting — en die van week 30 blijft staan om te zien of je maximum zakt.",
         "Neem mee: dat je op 2 oktober 2027 honderd kilometer loopt, hoeveel je nu per week loopt, je medicijnen, je eerdere blessures, en of er hartklachten in de familie zitten.",
-        "Kosten lopen uiteen en hangen af van de omvang van het onderzoek. Je basisverzekering vergoedt een keuring niet; sommige aanvullende pakketten wel. Vraag het vooraf na.",
-        "Zet de uitslag daarna bij Seizoen, onder Metingen."
+        "Kosten lopen uiteen en hangen af van de omvang van het onderzoek. Je basisverzekering vergoedt een keuring niet; sommige aanvullende pakketten wel. Vraag het vooraf na."
       ],
       "logs": "bloed"
     },
@@ -492,6 +491,71 @@
         "Verplicht materiaal en dropbags: leg ze de avond ervoor klaar, niet 's ochtends."
       ],
       "logs": "loop"
+    }
+  ],
+  "blood_markers": [
+    {
+      "code": "ferritin",
+      "label": "Ferritine",
+      "unit": "µg/L",
+      "group": "IJzer",
+      "why": "Je ijzervoorraad. Zakt hij terwijl je volume stijgt, dan verklaart dat meer moeheid dan welke trainingsaanpassing ook."
+    },
+    {
+      "code": "tsat",
+      "label": "Transferrinesaturatie",
+      "unit": "%",
+      "group": "IJzer",
+      "why": "Hoeveel ijzer er beschikbaar is, niet alleen opgeslagen. Vraag hem apart aan; niet elk panel geeft hem."
+    },
+    {
+      "code": "iron",
+      "label": "IJzer",
+      "unit": "µmol/L",
+      "group": "IJzer",
+      "why": "Los sterk wisselend over de dag. Alleen te duiden naast ferritine en transferrinesaturatie."
+    },
+    {
+      "code": "hb",
+      "label": "Hemoglobine",
+      "unit": "mmol/L",
+      "group": "Zuurstoftransport",
+      "why": "Wat je zuurstof vervoert. Laag met lage ferritine is bloedarmoede door ijzertekort."
+    },
+    {
+      "code": "ht",
+      "label": "Hematocriet",
+      "unit": "L/L",
+      "group": "Zuurstoftransport",
+      "why": "Nodig om Hb te duiden: duurtraining verdunt je bloed, dus een lagere Hb hoeft geen tekort te zijn."
+    },
+    {
+      "code": "crp",
+      "label": "CRP",
+      "unit": "mg/L",
+      "group": "Ontsteking",
+      "why": "Ontsteking. Verhoogd zonder verkoudheid is een reden om terug te schakelen, niet om door te duwen."
+    },
+    {
+      "code": "vit_d",
+      "label": "Vitamine D",
+      "unit": "nmol/L",
+      "group": "Vitamines",
+      "why": "Bot, spier en afweer. In de winter je laagste punt, en dat is precies het zwaarste blok."
+    },
+    {
+      "code": "b12",
+      "label": "Vitamine B12",
+      "unit": "pmol/L",
+      "group": "Vitamines",
+      "why": "Nodig voor de aanmaak van rode bloedcellen."
+    },
+    {
+      "code": "tsh",
+      "label": "TSH",
+      "unit": "mU/L",
+      "group": "Stofwisseling",
+      "why": "Schildklier. Hoort bij onverklaarde moeheid die niet uit je training komt."
     }
   ]
 }

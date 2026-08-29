@@ -43,6 +43,7 @@ export default async function Seizoen() {
     getAthlete(),
     getZones(),
   ]);
+  const markers = await getReference('blood_markers');
 
   const current = weeks.find((w) => w.start_date <= now && addDays(w.start_date, 6) >= now);
   const done = Math.max(0, daysBetween(bounds.first, now));
@@ -94,7 +95,8 @@ export default async function Seizoen() {
         <SeasonGrid days={days} today={now} />
       </Card>
 
-      <Metingen milestones={milestones} ijkpunten={ijkpunten} hrTests={hrTests} panels={panels} today={now}
+      <Metingen milestones={milestones} ijkpunten={ijkpunten} hrTests={hrTests} panels={panels}
+        markers={markers} today={now}
         hrMax={zones.hr_max} hrMeasuredOn={athlete?.hr_max_measured_on ?? null}
         writable={dbConfigured() && Boolean(athlete)} />
 

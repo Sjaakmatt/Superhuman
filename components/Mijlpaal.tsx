@@ -108,14 +108,21 @@ export default function Mijlpaal({
         </div>
       ) : null}
 
+      {/* Dichtgeklapt: de kaart gaat over wat er staat en wat je invult. Wie de
+          details wil, klapt ze open — of vraagt het de coach. */}
       {milestone.prep?.length ? (
-        <ul className="mt-3 flex flex-col gap-1.5 pl-4">
-          {milestone.prep.map((regel) => (
-            <li key={regel} className="list-disc text-[13px] leading-relaxed" style={{ color: 'var(--ink2)' }}>
-              {regel}
-            </li>
-          ))}
-        </ul>
+        <details className="mt-3">
+          <summary className="cursor-pointer list-none text-[13px] font-semibold" style={{ color: 'var(--acc)' }}>
+            Voorbereiding · {milestone.prep.length} punten
+          </summary>
+          <ul className="mt-2 flex flex-col gap-1.5 pl-4">
+            {milestone.prep.map((regel) => (
+              <li key={regel} className="list-disc text-[13px] leading-relaxed" style={{ color: 'var(--ink2)' }}>
+                {regel}
+              </li>
+            ))}
+          </ul>
+        </details>
       ) : null}
 
       <VraagDeCoach vraag={vraag}>Vraag de coach om een briefing</VraagDeCoach>

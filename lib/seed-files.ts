@@ -1,6 +1,6 @@
 import planJson from '@/supabase/seed/plan-seed.json';
 import referenceJson from '@/supabase/seed/reference-seed.json';
-import type { Exercise, Fueling, Milestone, PlanDay, PlanWeek, StrengthPhase, Zones } from '@/lib/types';
+import type { Exercise, Fueling, Milestone, PlanDay, PlanWeek, StrengthPhase, Zones, BloodMarker } from '@/lib/types';
 
 /* De seed wordt statisch geïmporteerd, niet van schijf gelezen: op Cloudflare
  * Workers bestaat er geen bestandssysteem. Dat kost ~40 kB in de bundel en
@@ -28,6 +28,7 @@ export type ReferenceSeed = {
   strength_phases: StrengthPhase[];
   fueling_by_week: Fueling[];
   milestones: Milestone[];
+  blood_markers: BloodMarker[];
 };
 
 export function planSeed(): PlanSeed {

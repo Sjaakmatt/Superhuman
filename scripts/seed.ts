@@ -46,6 +46,7 @@ async function main() {
       { key: 'strength_phases', value: ref.strength_phases },
       { key: 'fueling_by_week', value: ref.fueling_by_week },
       { key: 'milestones', value: ref.milestones },
+      { key: 'blood_markers', value: ref.blood_markers },
     ],
     { onConflict: 'key' },
   );

@@ -169,18 +169,24 @@ export type Insight = {
   created_at: string;
 };
 
-/** Een bloedpanel. Alle waarden mogen leeg zijn: je laat niet elke keer alles
- *  prikken, en een leeg veld is iets anders dan een nul. */
+/** Welke bepalingen deze app bewaart. De lijst staat in reference-seed.json,
+ *  niet in code: een lab geeft er twintig terug en welke daarvan iets aan je
+ *  training veranderen is een keuze, geen technisch gegeven. */
+export type BloodMarker = {
+  code: string;
+  label: string;
+  unit: string;
+  group: string;
+  /** Waarom deze bepaling er staat, in één zin. */
+  why: string;
+};
+
+/** Een prikdag. Wat je niet liet bepalen ontbreekt gewoon — dat is iets anders
+ *  dan een nul. */
 export type BloodPanel = {
   date: IsoDate;
-  ferritin: number | null;
-  crp: number | null;
-  tsat: number | null;
-  hb: number | null;
-  b12: number | null;
-  vit_d: number | null;
-  tsh: number | null;
   note: string | null;
+  values: Record<string, number>;
 };
 
 /** Wat er van een mijlpaal terecht is gekomen. De mijlpaal zelf staat vast in

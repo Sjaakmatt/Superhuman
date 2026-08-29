@@ -1,7 +1,7 @@
 import { dbConfigured, reader, type Reader } from '@/lib/db';
 import { planSeed, referenceSeed } from '@/lib/seed-files';
 import { addDays, weekStart, type IsoDate } from '@/lib/date';
-import type { Exercise, Fueling, Milestone, PlanDay, PlanWeek, StrengthPhase, Zones } from '@/lib/types';
+import type { BloodMarker, Exercise, Fueling, Milestone, PlanDay, PlanWeek, StrengthPhase, Zones } from '@/lib/types';
 
 /** Het plan is read-only na de seed. Staat er geen database klaar, dan lezen we
  *  dezelfde bestanden die de seed inleest — nooit een tweede, verzonnen bron.
@@ -68,6 +68,7 @@ export type Reference = {
   strength_phases: StrengthPhase[];
   fueling_by_week: Fueling[];
   milestones: Milestone[];
+  blood_markers: BloodMarker[];
 };
 
 export async function getExercises(r?: Reader): Promise<Exercise[]> {

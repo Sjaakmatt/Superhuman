@@ -297,17 +297,34 @@ export async function getZones(r?: Reader): Promise<Zones> {
 }
 
 /** Je bloedpanels, oudste eerst. De eerste is je nulmeting; daar vergelijk je
- *  de rest mee, niet met de referentiewaarden van een lab. */
+ *  de rest mee, niet met de referentiewaarden van een lab.
+ *
+ *  De waarden staan als rijen in blood_value, want welke bepalingen een lab
+ *  teruggeeft verschilt per keer. Hier vouwen we ze per prikdag samen. */
 export async function getBloodPanels(r?: Reader): Promise<BloodPanel[]> {
   const l = await reader(r);
   if (!l) return [];
-  let q = l.client
-    .from('blood_panel')
-    .select('date, ferritin, tsat, hb, crp, b12, vit_d, tsh, note')
-    .order('date');
-  if (l.athleteId) q = q.eq('athlete_id', l.athleteId);
-  const { data } = await q;
-  return (data as BloodPanel[] | null) ?? [];
+
+  let kop = l.client.from('blood_panel').select('date, note').order('date');
+  let waarden = l.client.from('blood_value').select('date, code, value').order('date');
+  if (l.athleteId) {
+    kop = kop.eq('athlete_id', l.athleteId);
+    waarden = waarden.eq('athlete_id', l.athleteId);
+  }
+  const [{ data: koppen }, { data: rijen }] = await Promise.all([kop, waarden]);
+
+  const perDag = new Map<IsoDate, Record<string, number>>();
+  for (const rij of ((rijen as { date: IsoDate; code: string; value: number }[] | null) ?? [])) {
+    const bestaand = perDag.get(rij.date) ?? {};
+    bestaand[rij.code] = Number(rij.value);
+    perDag.set(rij.date, bestaand);
+  }
+
+  return ((koppen as { date: IsoDate; note: string | null }[] | null) ?? []).map((k) => ({
+    date: k.date,
+    note: k.note,
+    values: perDag.get(k.date) ?? {},
+  }));
 }
 
 /** Wat je van je mijlpalen hebt genoteerd, op datum. */

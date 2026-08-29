@@ -297,15 +297,15 @@ export async function runTool(
 
     case 'metingen': {
       const [bloed, hartslag, uitslagen] = await Promise.all([
-        sb.from('blood_panel').select('date, ferritin, tsat, hb, crp, b12, vit_d, tsh, note').order('date'),
+        sb.from('blood_value').select('date, code, value').order('date'),
         sb.from('hr_test').select('date, hr_max, note').order('date'),
         sb.from('milestone_result').select('date, done, outcome').order('date'),
       ]);
       return {
-        bloedpanels: bloed.data ?? [],
+        bloedwaarden: bloed.data ?? [],
         maximumhartslag: hartslag.data ?? [],
         mijlpalen: uitslagen.data ?? [],
-        let_op: 'Vergelijk bloedwaarden met de eerste meting van deze loper, niet met een populatienorm.',
+        let_op: 'Bloedwaarden staan als losse metingen met een code (ferritin, tsat, iron, hb, ht, crp, vit_d, b12, tsh). Vergelijk met de eerste meting van deze loper, niet met een populatienorm.',
       };
     }
 

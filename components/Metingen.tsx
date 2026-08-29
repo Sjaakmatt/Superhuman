@@ -3,7 +3,7 @@ import Bloedwaarden from '@/components/Bloedwaarden';
 import HartslagMax from '@/components/HartslagMax';
 import { Card, CardTitle, Empty, Note } from '@/components/ui';
 import { formatShort, type IsoDate } from '@/lib/date';
-import type { BloodPanel, HrTest, Milestone } from '@/lib/types';
+import type { BloodMarker, BloodPanel, HrTest, Milestone } from '@/lib/types';
 import type { IjkPunt } from '@/lib/data';
 
 /* Alles wat je gemeten hebt, naast elkaar. Het plan zegt in week 14 "die drie
@@ -16,6 +16,7 @@ export default function Metingen({
   ijkpunten,
   hrTests,
   panels,
+  markers,
   today,
   hrMax,
   hrMeasuredOn,
@@ -25,6 +26,7 @@ export default function Metingen({
   ijkpunten: Map<IsoDate, IjkPunt>;
   hrTests: HrTest[];
   panels: BloodPanel[];
+  markers: BloodMarker[];
   today: IsoDate;
   hrMax: number;
   hrMeasuredOn: IsoDate | null;
@@ -136,37 +138,37 @@ export default function Metingen({
         <section>
           <h3 className="mb-2 text-[13px] font-semibold">Bloedwaarden</h3>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[480px] border-collapse text-[13px]">
+            <table className="w-full border-collapse text-[13px]">
               <thead>
                 <tr style={{ color: 'var(--ink3)' }}>
-                  <Kop>dag</Kop>
-                  <Kop rechts>ferritine</Kop>
-                  <Kop rechts>TSAT</Kop>
-                  <Kop rechts>Hb</Kop>
-                  <Kop rechts>CRP</Kop>
-                  <Kop rechts>vit D</Kop>
-                  <Kop rechts>B12</Kop>
-                  <Kop rechts>TSH</Kop>
+                  <Kop>bepaling</Kop>
+                  {panels.map((p) => (
+                    <Kop key={p.date} rechts>
+                      {formatShort(p.date, today)}
+                      {p.date === nulmeting?.date ? <span className="ml-1">T0</span> : null}
+                    </Kop>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                {[...panels].reverse().map((p) => (
-                  <tr key={p.date} className="border-t" style={{ borderColor: 'var(--hair)' }}>
-                    <Cel>
-                      <span className="num" style={{ color: 'var(--ink2)' }}>{formatShort(p.date, today)}</span>
-                      {p.date === nulmeting?.date ? (
-                        <span className="ml-1 text-[11px]" style={{ color: 'var(--ink3)' }}>T0</span>
-                      ) : null}
-                    </Cel>
-                    <Cel rechts num>{p.ferritin ?? '—'}</Cel>
-                    <Cel rechts num>{p.tsat ?? '—'}</Cel>
-                    <Cel rechts num>{p.hb ?? '—'}</Cel>
-                    <Cel rechts num>{p.crp ?? '—'}</Cel>
-                    <Cel rechts num>{p.vit_d ?? '—'}</Cel>
-                    <Cel rechts num>{p.b12 ?? '—'}</Cel>
-                    <Cel rechts num>{p.tsh ?? '—'}</Cel>
-                  </tr>
-                ))}
+                {markers
+                  .filter((m) => panels.some((p) => p.values[m.code] !== undefined))
+                  .map((m) => (
+                    <tr key={m.code} className="border-t" style={{ borderColor: 'var(--hair)' }}>
+                      <Cel>
+                        {m.label}
+                        <span className="ml-1 text-[11px]" style={{ color: 'var(--ink3)' }}>{m.unit}</span>
+                      </Cel>
+                      {panels.map((p) => {
+                        const waarde = p.values[m.code];
+                        return (
+                          <Cel key={p.date} rechts num>
+                            {waarde === undefined ? '—' : String(waarde).replace('.', ',')}
+                          </Cel>
+                        );
+                      })}
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
@@ -179,7 +181,7 @@ export default function Metingen({
           geen instelling — daarom staan ze niet meer onder Instellingen. */}
       {writable ? (
         <>
-          <Bloedwaarden panels={panels} today={today} />
+          <Bloedwaarden panels={panels} markers={markers} today={today} />
           <Card>
             <CardTitle aside={`nu ${hrMax} bpm`}>Maximumhartslag</CardTitle>
             <p className="text-[13px] leading-relaxed" style={{ color: 'var(--ink2)' }}>
