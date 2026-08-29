@@ -1,3 +1,4 @@
+import Bronnen from '@/components/Bronnen';
 import HartslagMax from '@/components/HartslagMax';
 import StravaOphalen from '@/components/StravaOphalen';
 import Link from 'next/link';
@@ -7,7 +8,7 @@ import PushToggle from '@/components/PushToggle';
 import Uitloggen from '@/components/Uitloggen';
 import Uitnodigingen from '@/components/Uitnodigingen';
 import { Card, CardTitle, Empty, Note, Pill } from '@/components/ui';
-import { getAthlete, getInvitations, getLastSync, getShoes, getZones } from '@/lib/data';
+import { getApparaten, getAthlete, getInvitations, getLastSync, getShoes, getZones } from '@/lib/data';
 import { currentUser } from '@/lib/db';
 import { dbConfigured } from '@/lib/db';
 import { insightConfigured } from '@/lib/insight';
@@ -24,7 +25,10 @@ export default async function Instellingen({ searchParams }: { searchParams: Pro
     getZones(),
     currentUser(),
   ]);
-  const laatsteSync = athlete?.strava_athlete_id ? await getLastSync() : null;
+  const [laatsteSync, apparaten] = await Promise.all([
+    athlete?.strava_athlete_id ? getLastSync() : Promise.resolve(null),
+    dbConfigured() ? getApparaten() : Promise.resolve([]),
+  ]);
   // De lijst is alleen zichtbaar voor wie hem mag beheren.
   const uitnodigingen = athlete?.can_invite ? await getInvitations() : [];
 
@@ -86,6 +90,8 @@ export default async function Instellingen({ searchParams }: { searchParams: Pro
           <Link href="/seizoen" style={{ color: 'var(--acc)' }}>Seizoen, onder Metingen</Link>.
         </Note>
       </Card>
+
+      {dbConfigured() ? <Bronnen apparaten={apparaten} /> : null}
 
       <PushToggle vapidPublicKey={process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? null} />
 

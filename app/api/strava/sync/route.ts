@@ -131,7 +131,9 @@ async function syncAtleet(sb: SupabaseClient, token: StravaToken) {
 
   const activities = await withBackoff(() => listActivities(accessToken, after));
   if (activities.length) {
-    const { error } = await sb.from('activity').upsert(activities.map((a) => toRow(a, athleteId)), { onConflict: 'id' });
+    const { error } = await sb
+      .from('activity')
+      .upsert(activities.map((a) => toRow(a, athleteId)), { onConflict: 'athlete_id,source,external_id' });
     if (error) throw new Error(error.message);
   }
 

@@ -560,3 +560,13 @@ export const getAerobicSessions = cache(async (from: IsoDate, to: IsoDate, r?: R
     })
     .filter((p): p is AeroobPunt => p !== null);
 });
+
+/** De telefoons die aan jou gekoppeld zijn. */
+export async function getApparaten(r?: Reader): Promise<{ id: string; naam: string; laatste_sync: string | null; laatste_fout: string | null }[]> {
+  const l = await reader(r);
+  if (!l) return [];
+  let q = l.client.from('device').select('id, naam, laatste_sync, laatste_fout').order('created_at');
+  if (l.athleteId) q = q.eq('athlete_id', l.athleteId);
+  const { data } = await q;
+  return (data as { id: string; naam: string; laatste_sync: string | null; laatste_fout: string | null }[] | null) ?? [];
+}

@@ -159,8 +159,11 @@ export function derive(streams: Streams, bands: Zone[]): DerivedStreams | null {
 
 export function toRow(activity: StravaActivity, athleteId: string) {
   return {
-    id: activity.id,
+    // Geen id: die kent de database zelf toe. Wie deze activiteit is bepaalt
+    // (athlete_id, source, external_id) — zo kan er een tweede bron naast.
     athlete_id: athleteId,
+    source: 'strava' as const,
+    external_id: String(activity.id),
     // start_date_local is al lokaal; we knippen de kalenderdag eruit zodat een
     // loop van 23:40 bij die dag blijft horen.
     date: localDayOf(activity.start_date_local) as IsoDate,
