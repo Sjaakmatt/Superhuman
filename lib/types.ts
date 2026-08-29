@@ -73,6 +73,10 @@ export type Milestone = {
    *  trainingsinhoud komt uit de seed. Leeg is prima — de kaart toont dan wat
    *  het plan en de naslag al weten. */
   prep?: string[];
+  /** Wat deze dag aan gegevens oplevert, en dus welk invoerveld erbij hoort:
+   *  "hrmax" een gemeten maximumhartslag, "bloed" een bloedpanel, "loop" een
+   *  activiteit die uit Strava komt. Leeg = alleen een notitie. */
+  logs?: 'hrmax' | 'bloed' | 'loop';
 };
 
 export type Wellness = {
@@ -185,4 +189,13 @@ export type MilestoneResult = {
   date: IsoDate;
   done: boolean;
   outcome: string | null;
+};
+
+/** Een gemeten maximumhartslag. De laatste staat ook op `athlete`, want daar
+ *  rekenen de zones mee; hier staat de reeks, zodat je ziet welke kant hij op
+ *  gaat. */
+export type HrTest = {
+  date: IsoDate;
+  hr_max: number;
+  note: string | null;
 };

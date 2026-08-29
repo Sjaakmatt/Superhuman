@@ -2,7 +2,7 @@ import { admin, db, reader, type Reader } from '@/lib/db';
 import { getReference, getWeeks } from '@/lib/plan';
 import { addDays, type IsoDate } from '@/lib/date';
 import type { RuleInput } from '@/lib/rules';
-import type { Activity, BloodPanel, Insight, MilestoneResult, Shoe, StrengthSet, Wellness, Zones } from '@/lib/types';
+import type { Activity, BloodPanel, HrTest, Insight, MilestoneResult, Shoe, StrengthSet, Wellness, Zones } from '@/lib/types';
 
 /* Alles wat uit de database komt loopt via dit bestand. Zonder database
  * leveren de functies null of een lege lijst — de schermen zeggen dat dan
@@ -318,4 +318,113 @@ export async function getMilestoneResults(r?: Reader): Promise<Map<IsoDate, Mile
   if (l.athleteId) q = q.eq('athlete_id', l.athleteId);
   const { data } = await q;
   return new Map(((data as MilestoneResult[] | null) ?? []).map((m) => [m.date, m]));
+}
+
+/** Je HRmax-metingen, oudste eerst. */
+export async function getHrTests(r?: Reader): Promise<HrTest[]> {
+  const l = await reader(r);
+  if (!l) return [];
+  let q = l.client.from('hr_test').select('date, hr_max, note').order('date');
+  if (l.athleteId) q = q.eq('athlete_id', l.athleteId);
+  const { data } = await q;
+  return (data as HrTest[] | null) ?? [];
+}
+
+/** Wat er van één dag gemeten is: de langste activiteit met haar afdaalminuten,
+ *  en de sessielog. Voor een wedstrijd of test hoef je zo niets over te typen —
+ *  het staat er al, via de nachtelijke sync. */
+export async function getDayMeasurements(date: IsoDate, r?: Reader) {
+  const l = await reader(r);
+  if (!l) return { activity: null, log: null };
+
+  let q = l.client
+    .from('activity')
+    .select('id, name, sport_type, distance_m, moving_s, elapsed_s, elev_gain_m, avg_hr, max_hr')
+    .eq('date', date)
+    .order('moving_s', { ascending: false })
+    .limit(1);
+  if (l.athleteId) q = q.eq('athlete_id', l.athleteId);
+  const { data: act } = await q.maybeSingle();
+  const activity = act as (Activity & { id: number }) | null;
+
+  let descent: number | null = null;
+  if (activity) {
+    const { data } = await l.client
+      .from('activity_descent')
+      .select('descent_seconds')
+      .eq('activity_id', activity.id)
+      .maybeSingle();
+    const sec = (data as { descent_seconds: number } | null)?.descent_seconds;
+    descent = sec === undefined || sec === null ? null : Math.round(Number(sec) / 60);
+  }
+
+  let lq = l.client
+    .from('session_log')
+    .select('rpe, pain_score, gi_score, carbs_g_per_h')
+    .eq('date', date)
+    .limit(1);
+  if (l.athleteId) lq = lq.eq('athlete_id', l.athleteId);
+  const { data: log } = await lq.maybeSingle();
+
+  return {
+    activity: activity ? { ...activity, descent_min: descent } : null,
+    log: (log as { rpe: number | null; pain_score: number | null; gi_score: number | null; carbs_g_per_h: number | null } | null) ?? null,
+  };
+}
+
+export type IjkPunt = {
+  date: IsoDate;
+  name: string | null;
+  km: number;
+  minutes: number;
+  hm: number;
+  avg_hr: number | null;
+  descent_min: number | null;
+};
+
+/** De activiteiten op een handvol mijlpaaldagen, in één keer. Voor de
+ *  vergelijking tussen je ijkpunten: dezelfde soort dag, twaalf weken later. */
+export async function getIjkPunten(dates: IsoDate[], r?: Reader): Promise<Map<IsoDate, IjkPunt>> {
+  const l = await reader(r);
+  if (!l || !dates.length) return new Map();
+
+  let q = l.client
+    .from('activity')
+    .select('id, date, name, distance_m, moving_s, elev_gain_m, avg_hr')
+    .in('date', dates)
+    .order('moving_s', { ascending: false });
+  if (l.athleteId) q = q.eq('athlete_id', l.athleteId);
+  const { data } = await q;
+  const rijen = (data as { id: number; date: IsoDate; name: string | null; distance_m: number | null; moving_s: number | null; elev_gain_m: number | null; avg_hr: number | null }[] | null) ?? [];
+  if (!rijen.length) return new Map();
+
+  // Per dag de langste activiteit; de rij-volgorde is al aflopend op tijd.
+  const perDag = new Map<IsoDate, (typeof rijen)[number]>();
+  for (const rij of rijen) if (!perDag.has(rij.date)) perDag.set(rij.date, rij);
+
+  const { data: dalingen } = await l.client
+    .from('activity_descent')
+    .select('activity_id, descent_seconds')
+    .in('activity_id', [...perDag.values()].map((a) => a.id));
+  const perActiviteit = new Map(
+    ((dalingen as { activity_id: number; descent_seconds: number }[] | null) ?? []).map((d) => [
+      d.activity_id,
+      Math.round(Number(d.descent_seconds) / 60),
+    ]),
+  );
+
+  return new Map(
+    [...perDag.entries()].map(([datum, a]) => [
+      datum,
+      {
+        date: datum,
+        name: a.name,
+        km: Math.round((Number(a.distance_m ?? 0) / 1000) * 10) / 10,
+        minutes: Math.round(Number(a.moving_s ?? 0) / 60),
+        hm: Math.round(Number(a.elev_gain_m ?? 0)),
+        avg_hr: a.avg_hr === null ? null : Math.round(Number(a.avg_hr)),
+        descent_min: perActiviteit.get(a.id) ?? null,
+      },
+    ]),
+  );
 }

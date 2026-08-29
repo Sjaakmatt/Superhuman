@@ -314,7 +314,8 @@
         "Dit is je nulmeting. Alles wat later afwijkt vergelijk je hiermee, niet met de referentiewaarden van het lab.",
         "Sportkeuring: bloeddruk en rust-ECG bij de sportarts. Zitten er hartklachten in de familie, vraag dan om een inspannings-ECG.",
         "Zet de uitslag daarna bij Instellingen onder bloedwaarden."
-      ]
+      ],
+      "logs": "bloed"
     },
     {
       "week": 6,
@@ -328,7 +329,8 @@
         "Je HRmax is de hoogste waarde in de laatste dertig seconden. Een losse piek van een seconde is meestal ruis van de band, geen hartslag.",
         "Zet de nieuwe waarde daarna in Instellingen. Al je zones, de zoneverdeling en de Z2-drift rekenen daarmee verder.",
         "Voel je je niet goed, dan stop je. Een test is geen wedstrijd."
-      ]
+      ],
+      "logs": "hrmax"
     },
     {
       "week": 12,
@@ -339,7 +341,8 @@
         "Kort betekent: ferritine, transferrinesaturatie, Hb en CRP. De rest hoeft niet elke keer.",
         "Nuchter, 's ochtends, minstens 48 uur na een zware sessie.",
         "Ferritine die zakt terwijl je volume stijgt is waar je naar kijkt. Vergelijk met je eigen T0, niet met de ondergrens van het lab."
-      ]
+      ],
+      "logs": "bloed"
     },
     {
       "week": 14,
@@ -352,7 +355,8 @@
         "Draai je wedstrijdspullen: schoenen, sokken, rugzak, stokken, jas. Wat hier schuurt, schuurt over 100 km tien keer zo hard.",
         "Eet en drink zoals je op wedstrijddag wilt doen. De getallen per uur staan op deze kaart.",
         "Log achteraf hoe zwaar het voelde, hoe je maag het deed en of er pijn was."
-      ]
+      ],
+      "logs": "loop"
     },
     {
       "week": 21,
@@ -374,7 +378,8 @@
         "Midden in de winter: dit is het moment waarop je vitamine D het laagst staat.",
         "Kort panel plus vitamine D: ferritine, transferrinesaturatie, Hb, CRP en vitamine D.",
         "Nuchter, 's ochtends, minstens 48 uur na een zware sessie."
-      ]
+      ],
+      "logs": "bloed"
     },
     {
       "week": 27,
@@ -386,7 +391,8 @@
         "Draai je eten en drinken precies zoals je het in oktober wilt doen. De getallen per uur staan op deze kaart.",
         "Test het volledige tenue: schoenen, sokken, tape, rugzak, stokken, jas, lamp.",
         "Schrijf achteraf op wat je zou veranderen. Dat is waar deze dag voor is."
-      ]
+      ],
+      "logs": "loop"
     },
     {
       "week": 30,
@@ -408,7 +414,8 @@
         "Kort betekent: ferritine, transferrinesaturatie, Hb en CRP. De rest hoeft niet elke keer.",
         "Nuchter, 's ochtends, minstens 48 uur na een zware sessie.",
         "Ferritine die zakt terwijl je volume stijgt is waar je naar kijkt. Vergelijk met je eigen T0, niet met de ondergrens van het lab."
-      ]
+      ],
+      "logs": "bloed"
     },
     {
       "week": 39,
@@ -419,7 +426,8 @@
         "De langste wedstrijd voor de doelwedstrijd. Het gaat hier om het tweede deel: hoe je eet en hoe je loopt na vier uur.",
         "Alles precies zoals in oktober. Geen nieuwe schoenen, geen nieuw merk gel, geen nieuw idee op de ochtend zelf.",
         "Noteer waar het misging: je maag, je voeten, je hoofd. Er zijn nog achttien weken om het op te lossen."
-      ]
+      ],
+      "logs": "loop"
     },
     {
       "week": 52,
@@ -430,7 +438,8 @@
         "Volledig: ferritine, transferrinesaturatie, Hb, CRP, vitamine B12, vitamine D en TSH. Dezelfde lijst als je T0, zodat je ze naast elkaar kunt leggen.",
         "Zes weken voor de wedstrijd. Wat hier uitkomt is nog te corrigeren; over een maand niet meer.",
         "Nuchter, 's ochtends, minstens 48 uur na een zware sessie."
-      ]
+      ],
+      "logs": "bloed"
     },
     {
       "week": 53,
@@ -441,7 +450,8 @@
         "De generale repetitie. Zelfde starttijd, zelfde ontbijt, zelfde spullen, zelfde soort ondergrond als de wedstrijd.",
         "Draai het hele voedingsplan af, van het eerste uur tot het eind. Niet alleen als je trek krijgt.",
         "Na vandaag verander je niets meer aan je materiaal."
-      ]
+      ],
+      "logs": "loop"
     },
     {
       "week": 54,
@@ -451,7 +461,8 @@
       "prep": [
         "De laatste keer dat je je quadriceps zwaar belast. Daarna heeft spierschade van afdalen weken nodig om helemaal weg te zijn.",
         "Een zware afdaalsessie in de taper kost je meer dan hij oplevert."
-      ]
+      ],
+      "logs": "loop"
     },
     {
       "week": 56,
@@ -474,7 +485,8 @@
         "Eten en drinken per uur staan op deze kaart. Begin in het eerste uur, niet als je honger krijgt — dan ben je al te laat.",
         "De eerste dertig kilometer horen te makkelijk te voelen. Dat is de bedoeling.",
         "Verplicht materiaal en dropbags: leg ze de avond ervoor klaar, niet 's ochtends."
-      ]
+      ],
+      "logs": "loop"
     }
   ]
 }

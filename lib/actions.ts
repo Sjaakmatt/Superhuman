@@ -420,29 +420,51 @@ export async function deleteBloodPanel(date: IsoDate): Promise<Result> {
  *  het ankerpunt klopt nu.
  *
  *  Tempo's laten we ongemoeid. Die volgen niet uit een hartslag. */
-export async function saveHrMax(hrMax: number, measuredOn: IsoDate): Promise<Result> {
+export async function saveHrMax(hrMax: number, measuredOn: IsoDate, note?: string | null): Promise<Result> {
   const resultaat = await context();
   if (!resultaat.ok) return resultaat.fout;
   const ctx = resultaat.ctx;
 
-  if (!Number.isFinite(hrMax) || hrMax < 120 || hrMax > 230) {
+  const waarde = Math.round(hrMax);
+  if (!Number.isFinite(hrMax) || waarde < 120 || waarde > 230) {
     return { ok: false, error: 'Een HRmax onder 120 of boven 230 is bijna zeker een meetfout. Controleer je band.' };
   }
   if (!/^\d{4}-\d{2}-\d{2}$/.test(measuredOn)) {
     return { ok: false, error: 'Die datum begrijp ik niet.' };
   }
 
+  // De meting zelf blijft bewaard, ook als er later een hogere of lagere komt.
+  const meting = await ctx.client
+    .from('hr_test')
+    .upsert(
+      { athlete_id: ctx.athlete.id, date: measuredOn, hr_max: waarde, note: note?.trim() || null },
+      { onConflict: 'athlete_id,date' },
+    );
+  if (meting.error) return { ok: false, error: meting.error.message };
+
+  // Op `athlete` staat de laatste meting: daar rekenen de zones mee. Voer je
+  // achteraf een oudere test in, dan blijft de nieuwste leidend.
+  const { data: laatste } = await ctx.client
+    .from('hr_test')
+    .select('date, hr_max')
+    .eq('athlete_id', ctx.athlete.id)
+    .order('date', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const leidend = (laatste as { date: IsoDate; hr_max: number } | null) ?? { date: measuredOn, hr_max: waarde };
   const naslag = await getReference('zones');
-  const bands = schaalZones(naslag, Math.round(hrMax));
+  const bands = schaalZones(naslag, leidend.hr_max);
 
   const { error } = await ctx.client
     .from('athlete')
-    .update({ hr_max: Math.round(hrMax), hr_zones: bands, hr_max_measured_on: measuredOn })
+    .update({ hr_max: leidend.hr_max, hr_zones: bands, hr_max_measured_on: leidend.date })
     .eq('id', ctx.athlete.id);
   if (error) return { ok: false, error: error.message };
 
   revalidatePath('/instellingen');
   revalidatePath('/analyse');
+  revalidatePath('/seizoen');
   revalidatePath('/');
   return { ok: true };
 }

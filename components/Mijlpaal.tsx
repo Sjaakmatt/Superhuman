@@ -1,4 +1,4 @@
-import MijlpaalUitslag from '@/components/MijlpaalUitslag';
+import MijlpaalUitslag, { type Gemeten } from '@/components/MijlpaalUitslag';
 import VraagDeCoach from '@/components/VraagDeCoach';
 import { Card, CardTitle, Pill } from '@/components/ui';
 import { formatLong, daysBetween, type IsoDate } from '@/lib/date';
@@ -26,6 +26,8 @@ export default function Mijlpaal({
   today,
   reference,
   result,
+  gemeten,
+  bloedIngevuld,
 }: {
   milestone: Milestone;
   day: PlanDay | null;
@@ -33,6 +35,10 @@ export default function Mijlpaal({
   zones: Zones;
   /** Wat je er zelf over noteerde, als je dat al deed. */
   result: MilestoneResult | null;
+  /** Wat de app al van die dag weet: de activiteit en de sessielog. */
+  gemeten: Gemeten;
+  /** Of er al een bloedpanel rond deze datum staat. */
+  bloedIngevuld: boolean;
   /** De echte dag van vandaag. */
   today: IsoDate;
   /** De dag die je op het scherm bekijkt. Bladert hij vooruit, dan telt de
@@ -114,7 +120,15 @@ export default function Mijlpaal({
 
       <VraagDeCoach vraag={vraag}>Vraag de coach om een briefing</VraagDeCoach>
 
-      <MijlpaalUitslag date={milestone.date} saved={result} verleden={milestone.date <= today} />
+      <MijlpaalUitslag
+        date={milestone.date}
+        logs={milestone.logs ?? null}
+        saved={result}
+        verleden={milestone.date <= today}
+        gemeten={gemeten}
+        hrMax={zones.hr_max}
+        bloedIngevuld={bloedIngevuld}
+      />
     </Card>
   );
 }

@@ -8,7 +8,7 @@ import SessionCard from '@/components/SessionCard';
 import WeekStrip from '@/components/WeekStrip';
 import { Card, CardTitle, Empty, Note, Pill } from '@/components/ui';
 import { getDay, getDays, getReference, getWeek, getWeekDays, phaseForWeek, planBounds, planSource } from '@/lib/plan';
-import { getLogs, getMilestoneResults, getWellness, getZones, loadRuleInput } from '@/lib/data';
+import { getBloodPanels, getDayMeasurements, getLogs, getMilestoneResults, getWellness, getZones, loadRuleInput } from '@/lib/data';
 import { evaluate } from '@/lib/rules';
 import { meanOver } from '@/lib/metrics';
 import { addDays, daysBetween, formatLong, formatMonth, formatShort, monthDays, monthOf, today as todayIn } from '@/lib/date';
@@ -54,6 +54,16 @@ export default async function Vandaag({
     null;
   const mijlpaalDag = komende ? (komende.date === date ? day : await getDay(komende.date)) : null;
   const fueling = komende ? phaseForWeek(await getReference('fueling_by_week'), komende.week) : null;
+
+  // Wat er van de mijlpaaldag al gemeten is, en of het bloedpanel eromheen
+  // ingevuld staat. Hetzelfde venster als de regel blood-due gebruikt.
+  const gemeten = komende ? await getDayMeasurements(komende.date) : { activity: null, log: null };
+  const bloedIngevuld =
+    komende?.logs === 'bloed'
+      ? (await getBloodPanels()).some(
+          (p) => p.date >= addDays(komende.date, -14) && p.date <= addDays(komende.date, 28),
+        )
+      : false;
 
   const ruleInput = day && week ? await loadRuleInput(now, week.week, week.status) : null;
   const hits = ruleInput ? evaluate(ruleInput) : [];
@@ -153,7 +163,8 @@ export default async function Vandaag({
 
       {komende ? (
         <Mijlpaal milestone={komende} day={mijlpaalDag} fueling={fueling} zones={zones} today={now}
-          reference={date} result={uitslagen.get(komende.date) ?? null} />
+          reference={date} result={uitslagen.get(komende.date) ?? null} gemeten={gemeten}
+          bloedIngevuld={bloedIngevuld} />
       ) : null}
 
       <SessionCard day={day} week={week} />

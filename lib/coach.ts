@@ -95,6 +95,12 @@ export const TOOLS: Anthropic.Tool[] = [
     },
   },
   {
+    name: 'metingen',
+    description:
+      'Wat er gemeten is buiten de trainingen om: bloedpanels (ferritine, transferrinesaturatie, Hb, CRP, B12, vitamine D, TSH), gemeten maximumhartslagen, en wat hij bij een mijlpaal noteerde. Gebruik dit bij vragen over bloedwaarden, ijzer, moeheid of de uitslag van een test.',
+    input_schema: { type: 'object', properties: {} },
+  },
+  {
     name: 'oefeningen',
     description:
       'De krachtoefeningen uit het plan: naam, bij welk blok ze horen, de eenheid, het aantal series en de uitvoeringsnotitie. Gebruik dit als er gevraagd wordt hoe een oefening moet.',
@@ -287,6 +293,20 @@ export async function runTool(
       if (onderwerp === 'zones') return getZones({ client: sb, athleteId: null });
       const { data } = await sb.from('reference').select('value').eq('key', onderwerp).maybeSingle();
       return data?.value ?? { fout: `"${onderwerp}" staat niet in de naslag.` };
+    }
+
+    case 'metingen': {
+      const [bloed, hartslag, uitslagen] = await Promise.all([
+        sb.from('blood_panel').select('date, ferritin, tsat, hb, crp, b12, vit_d, tsh, note').order('date'),
+        sb.from('hr_test').select('date, hr_max, note').order('date'),
+        sb.from('milestone_result').select('date, done, outcome').order('date'),
+      ]);
+      return {
+        bloedpanels: bloed.data ?? [],
+        maximumhartslag: hartslag.data ?? [],
+        mijlpalen: uitslagen.data ?? [],
+        let_op: 'Vergelijk bloedwaarden met de eerste meting van deze loper, niet met een populatienorm.',
+      };
     }
 
     case 'oefeningen': {
