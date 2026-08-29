@@ -14,8 +14,9 @@ export const SCOPE = 'activity:read_all,profile:read_all';
 /** De eerste keer halen we alles op vanaf deze datum, daarna incrementeel. */
 export const BACKFILL_FROM = '2026-08-01';
 
-/** Streams zijn één verzoek per activiteit. Strava staat 100 verzoeken per
- *  kwartier toe, dus we halen er hoogstens veertig per sync op. */
+/** Streams zijn één verzoek per activiteit. Strava staat 200 verzoeken per
+ *  kwartier en 2.000 per dag toe; veertig per sync laat ruimte over voor de
+ *  activiteitenlijst en voor een handmatige tweede run. */
 export const STREAM_BUDGET = 40;
 
 export type StravaTokens = {
