@@ -248,3 +248,16 @@ export async function loadRuleInput(today: IsoDate, currentWeek: number, weekSta
     shoes,
   };
 }
+
+/** Het gesprek met de coach, oplopend in tijd. RLS zorgt dat je alleen je eigen
+ *  berichten ziet; `limit` telt vanaf het einde. */
+export async function getChat(limit = 40): Promise<{ role: 'user' | 'assistant'; content: string }[]> {
+  const client = await db();
+  if (!client) return [];
+  const { data } = await client
+    .from('chat_message')
+    .select('role, content')
+    .order('created_at', { ascending: false })
+    .limit(limit);
+  return (((data as { role: 'user' | 'assistant'; content: string }[] | null) ?? []).reverse());
+}
