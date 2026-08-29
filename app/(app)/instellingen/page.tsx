@@ -1,4 +1,5 @@
 import HartslagMax from '@/components/HartslagMax';
+import StravaOphalen from '@/components/StravaOphalen';
 import Link from 'next/link';
 import ThemeToggle from '@/components/ThemeToggle';
 import ShoeList from '@/components/ShoeList';
@@ -6,7 +7,7 @@ import PushToggle from '@/components/PushToggle';
 import Uitloggen from '@/components/Uitloggen';
 import Uitnodigingen from '@/components/Uitnodigingen';
 import { Card, CardTitle, Empty, Note, Pill } from '@/components/ui';
-import { getAthlete, getInvitations, getShoes, getZones } from '@/lib/data';
+import { getAthlete, getInvitations, getLastSync, getShoes, getZones } from '@/lib/data';
 import { currentUser } from '@/lib/db';
 import { dbConfigured } from '@/lib/db';
 import { insightConfigured } from '@/lib/insight';
@@ -23,6 +24,7 @@ export default async function Instellingen({ searchParams }: { searchParams: Pro
     getZones(),
     currentUser(),
   ]);
+  const laatsteSync = athlete?.strava_athlete_id ? await getLastSync() : null;
   // De lijst is alleen zichtbaar voor wie hem mag beheren.
   const uitnodigingen = athlete?.can_invite ? await getInvitations() : [];
 
@@ -56,7 +58,11 @@ export default async function Instellingen({ searchParams }: { searchParams: Pro
             <code> STRAVA_CLIENT_ID</code> en <code>STRAVA_CLIENT_SECRET</code> in je omgeving.
           </Empty>
         )}
-        <Note>De sync draait elke nacht om 03:10. Tokens leven alleen server-side.</Note>
+        {athlete?.strava_athlete_id ? <StravaOphalen laatst={laatsteSync} /> : null}
+        <Note>
+          De sync draait elke nacht rond 03:10 en haalt alles op wat er sinds je laatste activiteit bij is gekomen —
+          ook trainingen die niet op het plan stonden. Tokens leven alleen server-side.
+        </Note>
       </Card>
 
       <Card>

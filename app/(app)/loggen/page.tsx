@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import SessionLogForm from '@/components/SessionLogForm';
+import StravaOphalen from '@/components/StravaOphalen';
 import { Card, CardTitle, Empty, Grid, Note, Pill, Stat } from '@/components/ui';
 import { getDay } from '@/lib/plan';
-import { getActivities, getLogs, getShoes } from '@/lib/data';
+import { getActivities, getLastSync, getLogs, getShoes } from '@/lib/data';
 import { dbConfigured } from '@/lib/db';
 import { addDays, formatLong, formatShort, today as todayIn } from '@/lib/date';
 import { km, minutes } from '@/lib/metrics';
@@ -20,6 +21,7 @@ export default async function Loggen({ searchParams }: { searchParams: Promise<{
     getLogs(addDays(now, -30), now),
   ]);
 
+  const laatsteSync = await getLastSync();
   const saved = logs.find((l) => l.date === date) ?? null;
   const isLongrun = Boolean(day && (/lang|back-to-back|trail/i.test(day.session_type) || Number(day.planned_km) >= 20));
 
@@ -65,6 +67,17 @@ export default async function Loggen({ searchParams }: { searchParams: Promise<{
         </Card>
       ) : null}
 
+      {activities.length === 0 && dbConfigured() ? (
+        <Card sunk>
+          <CardTitle aside="uit Strava">Gelopen</CardTitle>
+          <p className="mb-3 text-[13px]" style={{ color: 'var(--ink3)' }}>
+            Nog niets voor deze dag. De sync draait vannacht; wil je hem nu, druk dan hier. Ook een training die niet
+            op het plan stond komt gewoon binnen.
+          </p>
+          <StravaOphalen laatst={laatsteSync} compact />
+        </Card>
+      ) : null}
+
       {activities.length > 0 ? (
         <Card>
           <CardTitle aside="uit Strava">Gelopen</CardTitle>
@@ -79,6 +92,9 @@ export default async function Loggen({ searchParams }: { searchParams: Promise<{
               </Grid>
             </div>
           ))}
+          <div className="mt-4 border-t pt-3" style={{ borderColor: 'var(--hair)' }}>
+            <StravaOphalen laatst={laatsteSync} compact />
+          </div>
         </Card>
       ) : null}
 

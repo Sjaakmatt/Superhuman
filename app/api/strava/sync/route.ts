@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { admin } from '@/lib/db';
+import { admin, db } from '@/lib/db';
 import { getZones } from '@/lib/data';
 import { cronAuthorized } from '@/lib/cron';
 import {
@@ -16,38 +16,69 @@ import {
   withBackoff,
 } from '@/lib/strava';
 
-/** Dagelijkse sync, om 03:10 UTC+1 aangeroepen door de Cloudflare Cron Trigger
- *  (Cloudflare rekent in UTC, dus in de zomer een uur later).
+/** Twee ingangen, hetzelfde werk.
  *
- *  Iedereen met een gekoppeld Strava-account wordt gesynct, niet alleen de
- *  eerste atleet. Twee keer achter elkaar draaien mag: alles gaat via upsert op
- *  de Strava-id, dus er ontstaan geen duplicaten. */
+ *  De cron (03:10 UTC+1, in de zomer een uur later) haalt iedereen op met een
+ *  gekoppeld Strava-account. Ben je ingelogd, dan haal je alleen jezelf op —
+ *  de knop "Nu ophalen", voor als je net gelopen hebt en niet tot morgen wilt
+ *  wachten.
+ *
+ *  Twee keer achter elkaar draaien mag: alles gaat via upsert op de Strava-id,
+ *  dus er ontstaan geen duplicaten. */
 export async function GET(request: Request) {
-  if (!cronAuthorized(request)) return NextResponse.json({ error: 'Niet toegestaan.' }, { status: 401 });
-
   const sb = admin();
-  const { data: tokens } = await sb.from('strava_token').select('*').order('athlete_id');
-  const rijen = (tokens as StravaToken[] | null) ?? [];
-  if (!rijen.length) return NextResponse.json({ error: 'Strava is nog niet verbonden.' }, { status: 409 });
 
-  // Achter elkaar, niet parallel: de rate limit van Strava geldt per app, niet
-  // per atleet. Een mislukte sync mag de anderen niet tegenhouden.
-  const uitkomsten = [];
-  for (const token of rijen) {
-    try {
-      // Zones per atleet: wie zijn HRmax heeft gemeten rekent met eigen banden.
-      const { bands } = await getZones({ client: sb, athleteId: token.athlete_id });
-      uitkomsten.push(await syncAtleet(sb, token, bands));
-    } catch (fout) {
-      uitkomsten.push({ athlete_id: token.athlete_id, error: (fout as Error).message });
+  if (cronAuthorized(request)) {
+    const { data: tokens } = await sb.from('strava_token').select('*').order('athlete_id');
+    const rijen = (tokens as StravaToken[] | null) ?? [];
+    if (!rijen.length) return NextResponse.json({ error: 'Strava is nog niet verbonden.' }, { status: 409 });
+
+    // Achter elkaar, niet parallel: de rate limit van Strava geldt per app, niet
+    // per atleet. Een mislukte sync mag de anderen niet tegenhouden.
+    const uitkomsten = [];
+    for (const token of rijen) {
+      try {
+        uitkomsten.push(await syncAtleet(sb, token));
+      } catch (fout) {
+        uitkomsten.push({ athlete_id: token.athlete_id, error: (fout as Error).message });
+      }
     }
+
+    const mislukt = uitkomsten.filter((u) => 'error' in u).length;
+    return NextResponse.json(
+      { atleten: rijen.length, gelukt: rijen.length - mislukt, uitkomsten },
+      { status: mislukt === rijen.length ? 502 : 200 },
+    );
   }
 
-  const mislukt = uitkomsten.filter((u) => 'error' in u).length;
-  return NextResponse.json(
-    { atleten: rijen.length, gelukt: rijen.length - mislukt, uitkomsten },
-    { status: mislukt === rijen.length ? 502 : 200 },
-  );
+  // Geen cron-geheim: dan moet je ingelogd zijn, en haal je alleen jezelf op.
+  const client = await db();
+  if (!client) return NextResponse.json({ error: 'Geen database verbonden.' }, { status: 503 });
+  const { data: auth } = await client.auth.getUser();
+  if (!auth.user) return NextResponse.json({ error: 'Niet toegestaan.' }, { status: 401 });
+
+  const { data: athlete } = await client.from('athlete').select('id').eq('user_id', auth.user.id).maybeSingle();
+  if (!athlete) return NextResponse.json({ error: 'Nog geen atleet in de database.' }, { status: 409 });
+
+  const { data: token } = await sb
+    .from('strava_token')
+    .select('*')
+    .eq('athlete_id', (athlete as { id: string }).id)
+    .maybeSingle();
+  if (!token) return NextResponse.json({ error: 'Strava is nog niet verbonden.' }, { status: 409 });
+
+  // Niet vaker dan één keer per minuut: de knop mag niet uitnodigen tot rammen
+  // op de rate limit van Strava.
+  const rij = token as StravaToken;
+  if (rij.synced_at && Date.now() - Date.parse(rij.synced_at) < 60_000) {
+    return NextResponse.json({ error: 'Net opgehaald. Probeer het over een minuut nog eens.' }, { status: 429 });
+  }
+
+  try {
+    return NextResponse.json(await syncAtleet(sb, rij));
+  } catch (fout) {
+    return NextResponse.json({ error: (fout as Error).message }, { status: 502 });
+  }
 }
 
 type StravaToken = {
@@ -55,12 +86,13 @@ type StravaToken = {
   access_token: string;
   refresh_token: string;
   expires_at: string;
+  synced_at: string | null;
 };
 
-type Bands = Awaited<ReturnType<typeof getZones>>['bands'];
-
-async function syncAtleet(sb: SupabaseClient, token: StravaToken, bands: Bands) {
+async function syncAtleet(sb: SupabaseClient, token: StravaToken) {
   const athleteId = token.athlete_id;
+  // Zones per atleet: wie zijn HRmax heeft gemeten rekent met eigen banden.
+  const { bands } = await getZones({ client: sb, athleteId });
 
   // Access tokens verlopen na zes uur; we verversen als er minder dan tien
   // minuten over is. Een nieuw refresh token slaan we meteen op.
@@ -164,6 +196,8 @@ async function syncAtleet(sb: SupabaseClient, token: StravaToken, bands: Bands) 
       .maybeSingle();
     if (match) await sb.from('session_log').update({ activity_id: match.id }).eq('id', log.id);
   }
+
+  await sb.from('strava_token').update({ synced_at: new Date().toISOString() }).eq('athlete_id', athleteId);
 
   return {
     athlete_id: athleteId,

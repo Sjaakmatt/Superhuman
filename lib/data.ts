@@ -445,3 +445,24 @@ export async function getIjkPunten(dates: IsoDate[], r?: Reader): Promise<Map<Is
     ]),
   );
 }
+
+/** Wanneer de Strava-sync voor deze atleet voor het laatst liep. Null als hij
+ *  nog nooit gedraaid heeft of als Strava niet gekoppeld is. */
+export async function getLastSync(r?: Reader): Promise<string | null> {
+  const l = await reader(r);
+  if (!l) return null;
+  const { data: auth } = await l.client.auth.getUser();
+  const athleteId = l.athleteId ?? (await getAthlete())?.id;
+  if (!athleteId || (!l.athleteId && !auth.user)) return null;
+  // strava_token heeft bewust geen RLS-policy, dus dit gaat via de service-role.
+  try {
+    const { data } = await admin()
+      .from('strava_token')
+      .select('synced_at')
+      .eq('athlete_id', athleteId)
+      .maybeSingle();
+    return (data as { synced_at: string | null } | null)?.synced_at ?? null;
+  } catch {
+    return null;
+  }
+}
