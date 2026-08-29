@@ -31,6 +31,7 @@ Het trainingsplan is 57 weken, 399 dagen, en staat vast in de database — de ap
 | **Z2-drift** | Gemiddelde hartslag op geplande Z2-sessies min het Z2-plafond (152). Alleen sessies met `planned_zone = 'Z2'` en ≥ 20 min. |
 | **Weeksprong** | Weekvolume gedeeld door het maximum van de twee voorgaande weken. Vlag boven 1,30. Niet vergelijken met alleen de vorige week: een deloadweek verlaagt de chronische belasting niet. |
 | **Welzijn** | Som van vijf items van 1–7 (geslapen, fris, benen, rust in je hoofd, zin om te gaan) = 5–35. Vergelijk met het 14-daags gemiddelde, nooit met een populatienorm. |
+| **Zones na een hertest** | De banden uit `reference.zones` geschaald naar de gemeten HRmax, met dezelfde percentages (Z1 tot 64,9%, Z2 tot 80,9%, Z3 tot 88,8%, Z4 tot 96,8%). Tempo's schalen niet mee: die volgen niet uit een hartslag. Zodra `athlete.hr_max_measured_on` staat, winnen de eigen banden van de naslag — lees ze via `getZones()`, nooit rechtstreeks via `getReference('zones')`. |
 | **Pijnmodel** | Pijn ≤5/10 tijdens is toegestaan, moet de volgende ochtend 0 zijn, en mag niet week op week stijgen. Alle drie moeten kloppen. |
 
 ## Mappen
@@ -61,6 +62,7 @@ styles/tokens.css    kleuren en typografie — bron van waarheid
 - Seed-integriteit: 399 dagen, 57 weken, elke dag hoort bij een bestaande week, weektotaal = som van de dagen.
 - `lib/coach.ts` — de begrenzing van een opgevraagd bereik, en dat geen enkel gereedschap kan schrijven.
 - `lib/date.ts` — de maandhulpjes van de agenda, inclusief schrikkeljaar en jaargrens.
+- `lib/metrics.ts` — het herschalen van de zones na een HRmax-hertest: geen gat en geen overlap tussen de banden.
 
 ## Wat je niet moet bouwen
 

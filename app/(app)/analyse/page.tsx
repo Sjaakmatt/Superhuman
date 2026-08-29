@@ -5,8 +5,8 @@ import Trend from '@/components/charts/Trend';
 import WeekBars from '@/components/charts/WeekBars';
 import InsightPanel from '@/components/InsightPanel';
 import { Card, CardTitle, Empty, Grid, Note, Stat } from '@/components/ui';
-import { getReference, getWeeks } from '@/lib/plan';
-import { getInsights, getWeekActuals, getWellness, getZoneSeconds, loadRuleInput } from '@/lib/data';
+import { getWeeks } from '@/lib/plan';
+import { getInsights, getWeekActuals, getWellness, getZoneSeconds, getZones, loadRuleInput } from '@/lib/data';
 import { dbConfigured } from '@/lib/db';
 import { evaluate } from '@/lib/rules';
 import { distribution, weekJump, wellnessTrend, z2Drift } from '@/lib/metrics';
@@ -18,7 +18,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function Analyse() {
   const now = todayIn();
-  const [weeks, zones] = await Promise.all([getWeeks(), getReference('zones')]);
+  const [weeks, zones] = await Promise.all([getWeeks(), getZones()]);
   const current = weeks.find((w) => w.start_date <= now && addDays(w.start_date, 6) >= now) ?? weeks[0]!;
 
   const [actuals, wellness, zoneSeconds, insights] = await Promise.all([

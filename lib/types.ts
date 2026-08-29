@@ -165,6 +165,8 @@ export type Insight = {
   created_at: string;
 };
 
+/** Een bloedpanel. Alle waarden mogen leeg zijn: je laat niet elke keer alles
+ *  prikken, en een leeg veld is iets anders dan een nul. */
 export type BloodPanel = {
   date: IsoDate;
   ferritin: number | null;
@@ -175,4 +177,12 @@ export type BloodPanel = {
   vit_d: number | null;
   tsh: number | null;
   note: string | null;
+};
+
+/** Wat er van een mijlpaal terecht is gekomen. De mijlpaal zelf staat vast in
+ *  de naslag; dit is wat jij erover noteert. */
+export type MilestoneResult = {
+  date: IsoDate;
+  done: boolean;
+  outcome: string | null;
 };

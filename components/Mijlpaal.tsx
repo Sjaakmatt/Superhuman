@@ -1,7 +1,8 @@
+import MijlpaalUitslag from '@/components/MijlpaalUitslag';
 import VraagDeCoach from '@/components/VraagDeCoach';
 import { Card, CardTitle, Pill } from '@/components/ui';
 import { formatLong, daysBetween, type IsoDate } from '@/lib/date';
-import type { Fueling, Milestone, PlanDay, Zones } from '@/lib/types';
+import type { Fueling, Milestone, MilestoneResult, PlanDay, Zones } from '@/lib/types';
 
 const TOON: Record<string, 'acc' | 'warn' | 'neutral'> = {
   wedstrijd: 'warn',
@@ -24,11 +25,14 @@ export default function Mijlpaal({
   zones,
   today,
   reference,
+  result,
 }: {
   milestone: Milestone;
   day: PlanDay | null;
   fueling: Fueling | null;
   zones: Zones;
+  /** Wat je er zelf over noteerde, als je dat al deed. */
+  result: MilestoneResult | null;
   /** De echte dag van vandaag. */
   today: IsoDate;
   /** De dag die je op het scherm bekijkt. Bladert hij vooruit, dan telt de
@@ -109,6 +113,8 @@ export default function Mijlpaal({
       ) : null}
 
       <VraagDeCoach vraag={vraag}>Vraag de coach om een briefing</VraagDeCoach>
+
+      <MijlpaalUitslag date={milestone.date} saved={result} verleden={milestone.date <= today} />
     </Card>
   );
 }

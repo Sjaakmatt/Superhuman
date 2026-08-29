@@ -1,5 +1,5 @@
 import { getReference, getWeeks, phaseForWeek } from '@/lib/plan';
-import { getActivities, getWeekActuals, getWellness, getZoneSeconds, getLogs } from '@/lib/data';
+import { getActivities, getWeekActuals, getWellness, getZoneSeconds, getZones, getLogs } from '@/lib/data';
 import { getDays } from '@/lib/plan';
 import { distribution, km, minutes, weekJump, wellnessTrend, z2Drift } from '@/lib/metrics';
 import { addDays, weekStart, type IsoDate } from '@/lib/date';
@@ -12,7 +12,7 @@ import type { Reader } from '@/lib/db';
 export async function buildFacts(kind: string, today: IsoDate, ruleInput: RuleInput | null, r?: Reader) {
   const [weeks, zones, fueling, milestones] = await Promise.all([
     getWeeks(r),
-    getReference('zones', r),
+    getZones(r),
     getReference('fueling_by_week', r),
     getReference('milestones', r),
   ]);

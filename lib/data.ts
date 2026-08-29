@@ -2,7 +2,7 @@ import { admin, db, reader, type Reader } from '@/lib/db';
 import { getReference, getWeeks } from '@/lib/plan';
 import { addDays, type IsoDate } from '@/lib/date';
 import type { RuleInput } from '@/lib/rules';
-import type { Activity, Insight, Shoe, StrengthSet, Wellness, Zones } from '@/lib/types';
+import type { Activity, BloodPanel, Insight, MilestoneResult, Shoe, StrengthSet, Wellness, Zones } from '@/lib/types';
 
 /* Alles wat uit de database komt loopt via dit bestand. Zonder database
  * leveren de functies null of een lege lijst — de schermen zeggen dat dan
@@ -15,6 +15,8 @@ export type Athlete = {
   strava_athlete_id: number | null;
   hr_max: number;
   hr_zones: Zones['bands'];
+  /** Leeg zolang hr_max nog uit de leeftijdsformule komt. */
+  hr_max_measured_on: IsoDate | null;
   race_date: IsoDate;
   timezone: string;
 };
@@ -207,7 +209,7 @@ export async function loadRuleInput(
     getWeeks(l),
     getWeekActuals(l),
     getShoes(l),
-    getReference('zones', l),
+    getZones(l),
     getReference('milestones', l),
   ]);
 
@@ -268,4 +270,52 @@ export async function loadRuleInput(
     bloodPanelDates: ((panels as { date: IsoDate }[] | null) ?? []).map((p) => p.date),
     shoes,
   };
+}
+
+/** De zones waar deze atleet mee rekent.
+ *
+ *  Staat er een gemeten HRmax op `athlete`, dan winnen zijn eigen banden van de
+ *  naslag: die is voor iedereen gelijk en kan dus niet jouw hertest bevatten.
+ *  Zonder gemeten waarde valt hij terug op reference.zones. */
+export async function getZones(r?: Reader): Promise<Zones> {
+  const l = await reader(r);
+  const naslag = await getReference('zones', l ?? undefined);
+  if (!l) return naslag;
+
+  let q = l.client.from('athlete').select('hr_max, hr_zones, hr_max_measured_on');
+  if (l.athleteId) q = q.eq('id', l.athleteId);
+  const { data } = await q.limit(1).maybeSingle();
+  const eigen = data as { hr_max: number; hr_zones: Zones['bands']; hr_max_measured_on: string | null } | null;
+  if (!eigen?.hr_max_measured_on || !eigen.hr_zones?.length) return naslag;
+
+  return {
+    ...naslag,
+    hr_max: eigen.hr_max,
+    bands: eigen.hr_zones,
+    source: `HRmax ${eigen.hr_max}, gemeten op ${eigen.hr_max_measured_on}`,
+  };
+}
+
+/** Je bloedpanels, oudste eerst. De eerste is je nulmeting; daar vergelijk je
+ *  de rest mee, niet met de referentiewaarden van een lab. */
+export async function getBloodPanels(r?: Reader): Promise<BloodPanel[]> {
+  const l = await reader(r);
+  if (!l) return [];
+  let q = l.client
+    .from('blood_panel')
+    .select('date, ferritin, tsat, hb, crp, b12, vit_d, tsh, note')
+    .order('date');
+  if (l.athleteId) q = q.eq('athlete_id', l.athleteId);
+  const { data } = await q;
+  return (data as BloodPanel[] | null) ?? [];
+}
+
+/** Wat je van je mijlpalen hebt genoteerd, op datum. */
+export async function getMilestoneResults(r?: Reader): Promise<Map<IsoDate, MilestoneResult>> {
+  const l = await reader(r);
+  if (!l) return new Map();
+  let q = l.client.from('milestone_result').select('date, done, outcome').order('date');
+  if (l.athleteId) q = q.eq('athlete_id', l.athleteId);
+  const { data } = await q;
+  return new Map(((data as MilestoneResult[] | null) ?? []).map((m) => [m.date, m]));
 }

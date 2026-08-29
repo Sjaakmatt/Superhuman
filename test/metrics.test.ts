@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   adherence,
+  schaalZones,
   descentMeters,
   descentSeconds,
   distribution,
@@ -141,5 +142,45 @@ describe('gewicht en adherentie', () => {
 
   it('kapt een extra krachtsessie af op honderd procent', () => {
     expect(adherence([{ done: 5, planned: 3 }, { done: 0, planned: 3 }])).toBeCloseTo(0.5);
+  });
+});
+
+describe('schaalZones', () => {
+  const naslag = {
+    source: 'test',
+    hr_max: 188,
+    distribution_target: { z1_z2: 0.78, z3: 0.15, z4_z5: 0.07 },
+    bands: [
+      { key: 'Z1', name: 'Herstel', hr_min: 0, hr_max: 122, pace: '7:15-8:00' },
+      { key: 'Z2', name: 'Duurloop', hr_min: 123, hr_max: 152, pace: '6:30-7:10' },
+      { key: 'Z3', name: 'Steady', hr_min: 153, hr_max: 167, pace: '5:50-6:20' },
+      { key: 'Z4', name: 'Drempel', hr_min: 168, hr_max: 182, pace: '5:15-5:40' },
+      { key: 'Z5', name: 'VO2max', hr_min: 183, hr_max: 220, pace: '<5:00' },
+    ],
+  };
+
+  it('laat de banden staan als de HRmax niet verandert', () => {
+    expect(schaalZones(naslag, 188)).toEqual(naslag.bands);
+  });
+
+  it('schaalt de grenzen mee met een hogere gemeten HRmax', () => {
+    const bands = schaalZones(naslag, 196);
+    expect(bands[0]!.hr_max).toBe(127); // 122 / 188 * 196
+    expect(bands[1]!.hr_max).toBe(158);
+    expect(bands[3]!.hr_max).toBe(190);
+  });
+
+  it('laat geen gat of overlap tussen de banden', () => {
+    for (const hrMax of [172, 188, 196, 205]) {
+      const bands = schaalZones(naslag, hrMax);
+      for (let i = 1; i < bands.length; i++) {
+        expect(bands[i]!.hr_min).toBe(bands[i - 1]!.hr_max + 1);
+      }
+      expect(bands[0]!.hr_min).toBe(0);
+    }
+  });
+
+  it('houdt de bovengrens van de hoogste zone open', () => {
+    expect(schaalZones(naslag, 196).at(-1)!.hr_max).toBe(220);
   });
 });

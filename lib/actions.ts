@@ -5,6 +5,8 @@ import { admin, db } from '@/lib/db';
 import { getAthlete, type Athlete } from '@/lib/data';
 import type { IsoDate } from '@/lib/date';
 import type { Proposal } from '@/lib/types';
+import { getReference } from '@/lib/plan';
+import { schaalZones } from '@/lib/metrics';
 
 /* Server actions voor de handinvoer. Elke actie geeft een resultaat terug in
  * plaats van te gooien: de invoerschermen moeten een storing kunnen tonen
@@ -361,4 +363,120 @@ async function stuurUitnodiging(adres: string): Promise<Result> {
   } catch (err) {
     return { ok: false, error: (err as Error).message };
   }
+}
+
+export type BloodPanelInput = {
+  date: IsoDate;
+  ferritin: number | null;
+  tsat: number | null;
+  hb: number | null;
+  crp: number | null;
+  b12: number | null;
+  vit_d: number | null;
+  tsh: number | null;
+  note: string | null;
+};
+
+/** Een uitslag opslaan. Upsert op (atleet, datum): dezelfde dag nog eens
+ *  invoeren corrigeert de vorige in plaats van er een tweede naast te zetten. */
+export async function saveBloodPanel(input: BloodPanelInput): Promise<Result> {
+  const resultaat = await context();
+  if (!resultaat.ok) return resultaat.fout;
+  const ctx = resultaat.ctx;
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(input.date)) {
+    return { ok: false, error: 'Die datum begrijp ik niet.' };
+  }
+  const waarden = [input.ferritin, input.tsat, input.hb, input.crp, input.b12, input.vit_d, input.tsh];
+  if (waarden.every((w) => w === null) && !input.note) {
+    return { ok: false, error: 'Vul minstens één waarde in.' };
+  }
+
+  const { error } = await ctx.client
+    .from('blood_panel')
+    .upsert({ ...input, athlete_id: ctx.athlete.id }, { onConflict: 'athlete_id,date' });
+  if (error) return { ok: false, error: error.message };
+  revalidatePath('/instellingen');
+  revalidatePath('/analyse');
+  return { ok: true };
+}
+
+export async function deleteBloodPanel(date: IsoDate): Promise<Result> {
+  const resultaat = await context();
+  if (!resultaat.ok) return resultaat.fout;
+  const { error } = await resultaat.ctx.client.from('blood_panel').delete().eq('date', date);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath('/instellingen');
+  revalidatePath('/analyse');
+  return { ok: true };
+}
+
+/** De gemeten HRmax uit de test in week 6 of week 30.
+ *
+ *  De zonegrenzen schalen mee. We houden de percentages van de naslag aan —
+ *  Z1 tot 64,9%, Z2 tot 80,9%, Z3 tot 88,8%, Z4 tot 96,8% van HRmax — en
+ *  rekenen die om naar de nieuwe waarde. Dat is een afgeleid getal, geen
+ *  nieuw trainingsvoorschrift: de verdeling van het plan blijft staan, alleen
+ *  het ankerpunt klopt nu.
+ *
+ *  Tempo's laten we ongemoeid. Die volgen niet uit een hartslag. */
+export async function saveHrMax(hrMax: number, measuredOn: IsoDate): Promise<Result> {
+  const resultaat = await context();
+  if (!resultaat.ok) return resultaat.fout;
+  const ctx = resultaat.ctx;
+
+  if (!Number.isFinite(hrMax) || hrMax < 120 || hrMax > 230) {
+    return { ok: false, error: 'Een HRmax onder 120 of boven 230 is bijna zeker een meetfout. Controleer je band.' };
+  }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(measuredOn)) {
+    return { ok: false, error: 'Die datum begrijp ik niet.' };
+  }
+
+  const naslag = await getReference('zones');
+  const bands = schaalZones(naslag, Math.round(hrMax));
+
+  const { error } = await ctx.client
+    .from('athlete')
+    .update({ hr_max: Math.round(hrMax), hr_zones: bands, hr_max_measured_on: measuredOn })
+    .eq('id', ctx.athlete.id);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath('/instellingen');
+  revalidatePath('/analyse');
+  revalidatePath('/');
+  return { ok: true };
+}
+
+/** Wat er van een mijlpaal terecht kwam. Afvinken mag zonder tekst; een
+ *  notitie zonder vinkje bestaat niet — je schrijft het op omdat het gebeurd is. */
+export async function saveMilestoneResult(
+  date: IsoDate,
+  input: { done: boolean; outcome: string | null },
+): Promise<Result> {
+  const resultaat = await context();
+  if (!resultaat.ok) return resultaat.fout;
+  const ctx = resultaat.ctx;
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return { ok: false, error: 'Die datum begrijp ik niet.' };
+
+  if (!input.done && !input.outcome) {
+    const { error } = await ctx.client.from('milestone_result').delete().eq('date', date);
+    if (error) return { ok: false, error: error.message };
+  } else {
+    const { error } = await ctx.client.from('milestone_result').upsert(
+      {
+        athlete_id: ctx.athlete.id,
+        date,
+        done: input.done,
+        outcome: input.outcome,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'athlete_id,date' },
+    );
+    if (error) return { ok: false, error: error.message };
+  }
+
+  revalidatePath('/');
+  revalidatePath('/seizoen');
+  return { ok: true };
 }

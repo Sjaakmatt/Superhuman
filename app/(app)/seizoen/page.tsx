@@ -4,7 +4,7 @@ import SeasonGrid from '@/components/charts/SeasonGrid';
 import VolumeProfile from '@/components/charts/VolumeProfile';
 import { Card, CardTitle, Grid, Note, Pill, Stat } from '@/components/ui';
 import { getDays, getReference, getWeeks, planBounds } from '@/lib/plan';
-import { getWeekActuals } from '@/lib/data';
+import { getMilestoneResults, getWeekActuals } from '@/lib/data';
 import { addDays, daysBetween, formatShort, today as todayIn } from '@/lib/date';
 
 const KIND: Record<string, 'acc' | 'warn' | 'neutral'> = {
@@ -24,11 +24,12 @@ export const dynamic = 'force-dynamic';
 export default async function Seizoen() {
   const now = todayIn();
   const bounds = planBounds();
-  const [weeks, days, milestones, actuals] = await Promise.all([
+  const [weeks, days, milestones, actuals, uitslagen] = await Promise.all([
     getWeeks(),
     getDays(bounds.first, bounds.last),
     getReference('milestones'),
     getWeekActuals(),
+    getMilestoneResults(),
   ]);
 
   const current = weeks.find((w) => w.start_date <= now && addDays(w.start_date, 6) >= now);
@@ -85,15 +86,29 @@ export default async function Seizoen() {
         <CardTitle aside={`${milestones.length} mijlpalen`}>Wat er aankomt</CardTitle>
         <ol className="flex flex-col">
           {milestones.map((m) => {
+            const uitslag = uitslagen.get(m.date) ?? null;
             const past = m.date < now;
             return (
               <li key={`${m.week}-${m.title}`} className="flex items-center gap-3 border-b py-3 last:border-0"
-                style={{ borderColor: 'var(--hair)', opacity: past ? 0.5 : 1 }}>
+                style={{ borderColor: 'var(--hair)', opacity: past && !uitslag ? 0.5 : 1 }}>
                 <span className="num w-12 shrink-0 text-[12px]" style={{ color: 'var(--ink3)' }}>wk {m.week}</span>
                 <Link href={`/?d=${m.date}`} className="num w-20 shrink-0 text-[12px]" style={{ color: 'var(--ink2)' }}>
                   {formatShort(m.date, now)}
                 </Link>
-                <span className="flex-1 text-[14px] font-medium">{m.title}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[14px] font-medium">{m.title}</span>
+                  {uitslag?.outcome ? (
+                    <span className="block truncate text-[12px]" style={{ color: 'var(--ink3)' }}>{uitslag.outcome}</span>
+                  ) : null}
+                </span>
+                {uitslag?.done ? (
+                  <span aria-label="gedaan" title="gedaan" style={{ color: 'var(--acc)' }}>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                      strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                      <path d="M4 12l5 5L20 6" />
+                    </svg>
+                  </span>
+                ) : null}
                 <Pill tone={KIND[m.kind] ?? 'neutral'}>{m.kind}</Pill>
               </li>
             );

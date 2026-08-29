@@ -1,24 +1,28 @@
+import Bloedwaarden from '@/components/Bloedwaarden';
+import HartslagMax from '@/components/HartslagMax';
 import ThemeToggle from '@/components/ThemeToggle';
 import ShoeList from '@/components/ShoeList';
 import PushToggle from '@/components/PushToggle';
 import Uitloggen from '@/components/Uitloggen';
 import Uitnodigingen from '@/components/Uitnodigingen';
 import { Card, CardTitle, Empty, Note, Pill } from '@/components/ui';
-import { getAthlete, getInvitations, getShoes } from '@/lib/data';
+import { getAthlete, getBloodPanels, getInvitations, getShoes, getZones } from '@/lib/data';
 import { currentUser } from '@/lib/db';
-import { getReference } from '@/lib/plan';
 import { dbConfigured } from '@/lib/db';
 import { insightConfigured } from '@/lib/insight';
 import { stravaConfigured } from '@/lib/strava';
 import { planSource } from '@/lib/plan';
+import { today as todayIn } from '@/lib/date';
 
 export default async function Instellingen({ searchParams }: { searchParams: Promise<{ strava?: string }> }) {
   const params = await searchParams;
-  const [athlete, shoes, zones, user] = await Promise.all([
+  const now = todayIn();
+  const [athlete, shoes, zones, user, panels] = await Promise.all([
     getAthlete(),
     getShoes(),
-    getReference('zones'),
+    getZones(),
     currentUser(),
+    getBloodPanels(),
   ]);
   // De lijst is alleen zichtbaar voor wie hem mag beheren.
   const uitnodigingen = athlete?.can_invite ? await getInvitations() : [];
@@ -69,7 +73,12 @@ export default async function Instellingen({ searchParams }: { searchParams: Pro
           ))}
         </ul>
         <Note>{zones.source}</Note>
+        {dbConfigured() && athlete ? (
+          <HartslagMax hrMax={zones.hr_max} measuredOn={athlete.hr_max_measured_on} today={now} />
+        ) : null}
       </Card>
+
+      {dbConfigured() ? <Bloedwaarden panels={panels} today={now} /> : null}
 
       <PushToggle vapidPublicKey={process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? null} />
 

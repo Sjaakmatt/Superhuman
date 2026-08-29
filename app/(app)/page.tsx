@@ -8,7 +8,7 @@ import SessionCard from '@/components/SessionCard';
 import WeekStrip from '@/components/WeekStrip';
 import { Card, CardTitle, Empty, Note, Pill } from '@/components/ui';
 import { getDay, getDays, getReference, getWeek, getWeekDays, phaseForWeek, planBounds, planSource } from '@/lib/plan';
-import { getLogs, getWellness, loadRuleInput } from '@/lib/data';
+import { getLogs, getMilestoneResults, getWellness, getZones, loadRuleInput } from '@/lib/data';
 import { evaluate } from '@/lib/rules';
 import { meanOver } from '@/lib/metrics';
 import { addDays, daysBetween, formatLong, formatMonth, formatShort, monthDays, monthOf, today as todayIn } from '@/lib/date';
@@ -31,11 +31,12 @@ export default async function Vandaag({
   const month = params.m && /^\d{4}-\d{2}$/.test(params.m) ? params.m : monthOf(date);
   const opAgenda = params.v === 'agenda';
 
-  const [day, weekDays, milestones, zones] = await Promise.all([
+  const [day, weekDays, milestones, zones, uitslagen] = await Promise.all([
     getDay(date),
     getWeekDays(date),
     getReference('milestones'),
-    getReference('zones'),
+    getZones(),
+    getMilestoneResults(),
   ]);
   const week = day ? await getWeek(day.week) : null;
 
@@ -151,7 +152,8 @@ export default async function Vandaag({
       {hits.length > 0 ? <Alerts hits={hits} /> : null}
 
       {komende ? (
-        <Mijlpaal milestone={komende} day={mijlpaalDag} fueling={fueling} zones={zones} today={now} reference={date} />
+        <Mijlpaal milestone={komende} day={mijlpaalDag} fueling={fueling} zones={zones} today={now}
+          reference={date} result={uitslagen.get(komende.date) ?? null} />
       ) : null}
 
       <SessionCard day={day} week={week} />

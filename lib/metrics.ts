@@ -1,5 +1,5 @@
 import { addDays, daysBetween, type IsoDate } from '@/lib/date';
-import type { Zone } from '@/lib/types';
+import type { Zone, Zones } from '@/lib/types';
 
 /* Alle afgeleide getallen staan hier, en nergens anders. Elke definitie die
  * niet van Strava komt is hieronder opgeschreven; wijk je ervan af, wijzig dan
@@ -161,4 +161,16 @@ export function km(meters: number | null | undefined): number {
 
 export function minutes(seconds: number | null | undefined): number {
   return Math.round((seconds ?? 0) / 60);
+}
+
+/** Zet de banden van de naslag om naar een andere HRmax, met dezelfde
+ *  percentages. De bovengrens van de hoogste zone blijft open. */
+export function schaalZones(naslag: Zones, hrMax: number): Zones['bands'] {
+  const factor = hrMax / naslag.hr_max;
+  return naslag.bands.map((band, i) => {
+    const laatste = i === naslag.bands.length - 1;
+    const boven = laatste ? band.hr_max : Math.round(band.hr_max * factor);
+    const onder = i === 0 ? band.hr_min : Math.round(naslag.bands[i - 1]!.hr_max * factor) + 1;
+    return { ...band, hr_min: onder, hr_max: boven };
+  });
 }

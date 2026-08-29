@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { admin } from '@/lib/db';
-import { getReference } from '@/lib/plan';
+import { getZones } from '@/lib/data';
 import { cronAuthorized } from '@/lib/cron';
 import {
   BACKFILL_FROM,
@@ -30,13 +30,13 @@ export async function GET(request: Request) {
   const rijen = (tokens as StravaToken[] | null) ?? [];
   if (!rijen.length) return NextResponse.json({ error: 'Strava is nog niet verbonden.' }, { status: 409 });
 
-  const bands = (await getReference('zones')).bands;
-
   // Achter elkaar, niet parallel: de rate limit van Strava geldt per app, niet
   // per atleet. Een mislukte sync mag de anderen niet tegenhouden.
   const uitkomsten = [];
   for (const token of rijen) {
     try {
+      // Zones per atleet: wie zijn HRmax heeft gemeten rekent met eigen banden.
+      const { bands } = await getZones({ client: sb, athleteId: token.athlete_id });
       uitkomsten.push(await syncAtleet(sb, token, bands));
     } catch (fout) {
       uitkomsten.push({ athlete_id: token.athlete_id, error: (fout as Error).message });
@@ -57,7 +57,7 @@ type StravaToken = {
   expires_at: string;
 };
 
-type Bands = Awaited<ReturnType<typeof getReference<'zones'>>>['bands'];
+type Bands = Awaited<ReturnType<typeof getZones>>['bands'];
 
 async function syncAtleet(sb: SupabaseClient, token: StravaToken, bands: Bands) {
   const athleteId = token.athlete_id;

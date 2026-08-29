@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { getZones } from '@/lib/data';
 import { km, minutes } from '@/lib/metrics';
 import { addDays, daysBetween, type IsoDate } from '@/lib/date';
 import type { RuleHit } from '@/lib/rules';
@@ -281,6 +282,9 @@ export async function runTool(
       ) {
         return { fout: `Onbekend onderwerp "${String(onderwerp)}".` };
       }
+      // Zones zijn persoonlijk zodra je HRmax gemeten is; de rest is voor
+      // iedereen gelijk en komt uit de naslag.
+      if (onderwerp === 'zones') return getZones({ client: sb, athleteId: null });
       const { data } = await sb.from('reference').select('value').eq('key', onderwerp).maybeSingle();
       return data?.value ?? { fout: `"${onderwerp}" staat niet in de naslag.` };
     }
