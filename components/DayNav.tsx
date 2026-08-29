@@ -3,10 +3,22 @@ import { addDays, formatLong, today as todayIn } from '@/lib/date';
 
 /** Bladeren door het plan. De pijl terug naar vandaag verschijnt alleen als je
  *  ergens anders staat. */
-export default function DayNav({ date, first, last }: { date: string; first: string; last: string }) {
+export default function DayNav({
+  date,
+  first,
+  last,
+  month,
+}: {
+  date: string;
+  first: string;
+  last: string;
+  /** De maand die de agenda toont; die willen we niet kwijt bij het bladeren. */
+  month?: string;
+}) {
   const now = todayIn();
   const prev = addDays(date, -1);
   const next = addDays(date, 1);
+  const m = month ? `&m=${month}` : '';
 
   return (
     <div className="flex items-center justify-between gap-3">
@@ -23,8 +35,8 @@ export default function DayNav({ date, first, last }: { date: string; first: str
             Vandaag
           </Link>
         ) : null}
-        <Arrow href={`/?d=${prev}`} disabled={prev < first} label="Dag terug" d="M15 5l-7 7 7 7" />
-        <Arrow href={`/?d=${next}`} disabled={next > last} label="Dag verder" d="M9 5l7 7-7 7" />
+        <Arrow href={`/?d=${prev}${m}`} disabled={prev < first} label="Dag terug" d="M15 5l-7 7 7 7" />
+        <Arrow href={`/?d=${next}${m}`} disabled={next > last} label="Dag verder" d="M9 5l7 7-7 7" />
       </nav>
     </div>
   );

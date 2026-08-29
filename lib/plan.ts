@@ -1,4 +1,4 @@
-import { db, dbConfigured } from '@/lib/db';
+import { dbConfigured, reader, type Reader } from '@/lib/db';
 import { planSeed, referenceSeed } from '@/lib/seed-files';
 import { addDays, weekStart, type IsoDate } from '@/lib/date';
 import type { Exercise, Fueling, Milestone, PlanDay, PlanWeek, StrengthPhase, Zones } from '@/lib/types';
@@ -12,8 +12,8 @@ export function planSource(): PlanSource {
   return dbConfigured() ? 'database' : 'seed';
 }
 
-export async function getDay(date: IsoDate): Promise<PlanDay | null> {
-  const client = await db();
+export async function getDay(date: IsoDate, r?: Reader): Promise<PlanDay | null> {
+  const client = (await reader(r))?.client;
   if (client) {
     const { data } = await client.from('plan_day').select('*').eq('date', date).maybeSingle();
     if (data) return data as PlanDay;
@@ -21,8 +21,8 @@ export async function getDay(date: IsoDate): Promise<PlanDay | null> {
   return planSeed().days.find((d) => d.date === date) ?? null;
 }
 
-export async function getDays(from: IsoDate, to: IsoDate): Promise<PlanDay[]> {
-  const client = await db();
+export async function getDays(from: IsoDate, to: IsoDate, r?: Reader): Promise<PlanDay[]> {
+  const client = (await reader(r))?.client;
   if (client) {
     const { data } = await client.from('plan_day').select('*').gte('date', from).lte('date', to).order('date');
     if (data && data.length) return data as PlanDay[];
@@ -30,8 +30,8 @@ export async function getDays(from: IsoDate, to: IsoDate): Promise<PlanDay[]> {
   return planSeed().days.filter((d) => d.date >= from && d.date <= to);
 }
 
-export async function getWeek(week: number): Promise<PlanWeek | null> {
-  const client = await db();
+export async function getWeek(week: number, r?: Reader): Promise<PlanWeek | null> {
+  const client = (await reader(r))?.client;
   if (client) {
     const { data } = await client.from('plan_week').select('*').eq('week', week).maybeSingle();
     if (data) return data as PlanWeek;
@@ -39,8 +39,8 @@ export async function getWeek(week: number): Promise<PlanWeek | null> {
   return planSeed().weeks.find((w) => w.week === week) ?? null;
 }
 
-export async function getWeeks(): Promise<PlanWeek[]> {
-  const client = await db();
+export async function getWeeks(r?: Reader): Promise<PlanWeek[]> {
+  const client = (await reader(r))?.client;
   if (client) {
     const { data } = await client.from('plan_week').select('*').order('week');
     if (data && data.length) return data as PlanWeek[];
@@ -49,13 +49,13 @@ export async function getWeeks(): Promise<PlanWeek[]> {
 }
 
 /** De dagen van de week waarin `date` valt, maandag tot en met zondag. */
-export async function getWeekDays(date: IsoDate): Promise<PlanDay[]> {
+export async function getWeekDays(date: IsoDate, r?: Reader): Promise<PlanDay[]> {
   const start = weekStart(date);
-  return getDays(start, addDays(start, 6));
+  return getDays(start, addDays(start, 6), r);
 }
 
-export async function getReference<K extends keyof Reference>(key: K): Promise<Reference[K]> {
-  const client = await db();
+export async function getReference<K extends keyof Reference>(key: K, r?: Reader): Promise<Reference[K]> {
+  const client = (await reader(r))?.client;
   if (client) {
     const { data } = await client.from('reference').select('value').eq('key', key).maybeSingle();
     if (data?.value) return data.value as Reference[K];
@@ -70,8 +70,8 @@ export type Reference = {
   milestones: Milestone[];
 };
 
-export async function getExercises(): Promise<Exercise[]> {
-  const client = await db();
+export async function getExercises(r?: Reader): Promise<Exercise[]> {
+  const client = (await reader(r))?.client;
   if (client) {
     const { data } = await client.from('exercise').select('*').order('slug');
     if (data && data.length) return data as Exercise[];
@@ -104,7 +104,7 @@ export async function searchDays(query: string, limit = 8): Promise<SearchHit[]>
 
   const cols = 'date, week, weekday, session_type, session_text';
   const weekNo = /^(week\s*)?(\d{1,2})$/i.exec(q);
-  const client = await db();
+  const client = (await reader())?.client;
 
   if (client) {
     let rows: SearchHit[] | null = null;

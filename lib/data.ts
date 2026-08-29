@@ -1,4 +1,4 @@
-import { admin, db } from '@/lib/db';
+import { admin, db, reader, type Reader } from '@/lib/db';
 import { getReference, getWeeks } from '@/lib/plan';
 import { addDays, type IsoDate } from '@/lib/date';
 import type { RuleInput } from '@/lib/rules';
@@ -76,51 +76,61 @@ export type WeekActual = {
   strength_done: number;
 };
 
-export async function getWeekActuals(): Promise<WeekActual[]> {
-  const client = await db();
-  if (!client) return [];
-  const { data } = await client
+export async function getWeekActuals(r?: Reader): Promise<WeekActual[]> {
+  const l = await reader(r);
+  if (!l) return [];
+  let q = l.client
     .from('v_week_actual')
     .select('week, actual_km, actual_min, actual_hm, actual_descent_min, strength_done')
     .order('week');
+  if (l.athleteId) q = q.eq('athlete_id', l.athleteId);
+  const { data } = await q;
   return (data as WeekActual[] | null) ?? [];
 }
 
-export async function getWellness(from: IsoDate, to: IsoDate): Promise<Wellness[]> {
-  const client = await db();
-  if (!client) return [];
-  const { data } = await client.from('wellness').select('*').gte('date', from).lte('date', to).order('date');
+export async function getWellness(from: IsoDate, to: IsoDate, r?: Reader): Promise<Wellness[]> {
+  const l = await reader(r);
+  if (!l) return [];
+  let q = l.client.from('wellness').select('*').gte('date', from).lte('date', to).order('date');
+  if (l.athleteId) q = q.eq('athlete_id', l.athleteId);
+  const { data } = await q;
   return (data as Wellness[] | null) ?? [];
 }
 
-export async function getLogs(from: IsoDate, to: IsoDate) {
-  const client = await db();
-  if (!client) return [];
-  const { data } = await client
+export async function getLogs(from: IsoDate, to: IsoDate, r?: Reader) {
+  const l = await reader(r);
+  if (!l) return [];
+  let q = l.client
     .from('session_log')
     .select('id, date, activity_id, rpe, pain_score, pain_note, pain_next_morning, shoe_id, carbs_g_per_h, gi_score, taped, note')
     .gte('date', from)
     .lte('date', to)
     .order('date');
+  if (l.athleteId) q = q.eq('athlete_id', l.athleteId);
+  const { data } = await q;
   return data ?? [];
 }
 
-export async function getActivities(from: IsoDate, to: IsoDate): Promise<Activity[]> {
-  const client = await db();
-  if (!client) return [];
-  const { data } = await client
+export async function getActivities(from: IsoDate, to: IsoDate, r?: Reader): Promise<Activity[]> {
+  const l = await reader(r);
+  if (!l) return [];
+  let q = l.client
     .from('activity')
     .select('id, date, start_local, sport_type, name, distance_m, moving_s, elapsed_s, elev_gain_m, avg_hr, max_hr, avg_cadence, calories, suffer_score, streams_synced_at')
     .gte('date', from)
     .lte('date', to)
     .order('start_local');
+  if (l.athleteId) q = q.eq('athlete_id', l.athleteId);
+  const { data } = await q;
   return (data as Activity[] | null) ?? [];
 }
 
-export async function getShoes(): Promise<Shoe[]> {
-  const client = await db();
-  if (!client) return [];
-  const { data } = await client.from('shoe').select('*').order('retired').order('name');
+export async function getShoes(r?: Reader): Promise<Shoe[]> {
+  const l = await reader(r);
+  if (!l) return [];
+  let q = l.client.from('shoe').select('*').order('retired').order('name');
+  if (l.athleteId) q = q.eq('athlete_id', l.athleteId);
+  const { data } = await q;
   return (data as Shoe[] | null) ?? [];
 }
 
@@ -156,14 +166,16 @@ export async function getLastSets(before: IsoDate): Promise<Map<string, { date: 
 }
 
 /** Seconden per zone over een periode, opgeteld over alle activiteiten. */
-export async function getZoneSeconds(from: IsoDate, to: IsoDate): Promise<Record<string, number>> {
-  const client = await db();
-  if (!client) return {};
-  const { data } = await client
+export async function getZoneSeconds(from: IsoDate, to: IsoDate, r?: Reader): Promise<Record<string, number>> {
+  const l = await reader(r);
+  if (!l) return {};
+  let q = l.client
     .from('activity_zone')
-    .select('zone, seconds, activity!inner(date)')
+    .select('zone, seconds, activity!inner(date, athlete_id)')
     .gte('activity.date', from)
     .lte('activity.date', to);
+  if (l.athleteId) q = q.eq('activity.athlete_id', l.athleteId);
+  const { data } = await q;
   const out: Record<string, number> = {};
   for (const row of (data as { zone: string; seconds: number }[] | null) ?? []) {
     out[row.zone] = (out[row.zone] ?? 0) + Number(row.seconds);
@@ -179,26 +191,33 @@ export async function getInsights(limit = 6): Promise<Insight[]> {
 }
 
 /** Alles wat lib/rules.ts nodig heeft, in één keer opgehaald. */
-export async function loadRuleInput(today: IsoDate, currentWeek: number, weekStatus: string): Promise<RuleInput | null> {
-  const client = await db();
-  if (!client) return null;
+export async function loadRuleInput(
+  today: IsoDate,
+  currentWeek: number,
+  weekStatus: string,
+  r?: Reader,
+): Promise<RuleInput | null> {
+  const l = await reader(r);
+  if (!l) return null;
 
   const from = addDays(today, -120);
   const [wellness, logs, weeks, actuals, shoes, zones, milestones] = await Promise.all([
-    getWellness(from, today),
-    getLogs(from, today),
-    getWeeks(),
-    getWeekActuals(),
-    getShoes(),
-    getReference('zones'),
-    getReference('milestones'),
+    getWellness(from, today, l),
+    getLogs(from, today, l),
+    getWeeks(l),
+    getWeekActuals(l),
+    getShoes(l),
+    getReference('zones', l),
+    getReference('milestones', l),
   ]);
 
-  const { data: panels } = await client.from('blood_panel').select('date').order('date');
+  let panelQuery = l.client.from('blood_panel').select('date').order('date');
+  if (l.athleteId) panelQuery = panelQuery.eq('athlete_id', l.athleteId);
+  const { data: panels } = await panelQuery;
   const actualByWeek = new Map(actuals.map((a) => [a.week, a]));
 
   // Geplande Z2-sessies van minstens twintig minuten met een gemeten hartslag.
-  const { data: z2rows } = await client
+  let z2query = l.client
     .from('activity')
     .select('date, avg_hr, moving_s, plan_day!inner(zone)')
     .eq('plan_day.zone', 'Z2')
@@ -207,6 +226,8 @@ export async function loadRuleInput(today: IsoDate, currentWeek: number, weekSta
     .not('avg_hr', 'is', null)
     .gte('moving_s', 1200)
     .order('date');
+  if (l.athleteId) z2query = z2query.eq('athlete_id', l.athleteId);
+  const { data: z2rows } = await z2query;
 
   const ceiling = zones.bands.find((b) => b.key === 'Z2')?.hr_max ?? 152;
 
@@ -247,17 +268,4 @@ export async function loadRuleInput(today: IsoDate, currentWeek: number, weekSta
     bloodPanelDates: ((panels as { date: IsoDate }[] | null) ?? []).map((p) => p.date),
     shoes,
   };
-}
-
-/** Het gesprek met de coach, oplopend in tijd. RLS zorgt dat je alleen je eigen
- *  berichten ziet; `limit` telt vanaf het einde. */
-export async function getChat(limit = 40): Promise<{ role: 'user' | 'assistant'; content: string }[]> {
-  const client = await db();
-  if (!client) return [];
-  const { data } = await client
-    .from('chat_message')
-    .select('role, content')
-    .order('created_at', { ascending: false })
-    .limit(limit);
-  return (((data as { role: 'user' | 'assistant'; content: string }[] | null) ?? []).reverse());
 }

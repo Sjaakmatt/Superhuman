@@ -4,32 +4,33 @@ import { getDays } from '@/lib/plan';
 import { distribution, km, minutes, weekJump, wellnessTrend, z2Drift } from '@/lib/metrics';
 import { addDays, weekStart, type IsoDate } from '@/lib/date';
 import type { RuleInput } from '@/lib/rules';
+import type { Reader } from '@/lib/db';
 
 /* Stuur nooit ruwe activiteiten naar het model. Hier maken we er een compacte
  * verzameling van een paar tientallen getallen van. */
 
-export async function buildFacts(kind: string, today: IsoDate, ruleInput: RuleInput | null) {
+export async function buildFacts(kind: string, today: IsoDate, ruleInput: RuleInput | null, r?: Reader) {
   const [weeks, zones, fueling, milestones] = await Promise.all([
-    getWeeks(),
-    getReference('zones'),
-    getReference('fueling_by_week'),
-    getReference('milestones'),
+    getWeeks(r),
+    getReference('zones', r),
+    getReference('fueling_by_week', r),
+    getReference('milestones', r),
   ]);
 
   const current = weeks.find((w) => w.start_date <= today && addDays(w.start_date, 6) >= today) ?? weeks[0]!;
   const [actuals, wellness, zoneSeconds, logs, planDays] = await Promise.all([
-    getWeekActuals(),
-    getWellness(addDays(today, -27), today),
-    getZoneSeconds(addDays(today, -27), today),
-    getLogs(addDays(today, -13), today),
-    getDays(addDays(today, -1), addDays(today, 2)),
+    getWeekActuals(r),
+    getWellness(addDays(today, -27), today, r),
+    getZoneSeconds(addDays(today, -27), today, r),
+    getLogs(addDays(today, -13), today, r),
+    getDays(addDays(today, -1), addDays(today, 2), r),
   ]);
 
   const byWeek = new Map(actuals.map((a) => [a.week, a]));
   const volumes = new Map(actuals.map((a) => [a.week, Number(a.actual_km)]));
   const trend = wellnessTrend(wellness, today);
   const dist = distribution(zoneSeconds);
-  const yesterday = await getActivities(addDays(today, -1), addDays(today, -1));
+  const yesterday = await getActivities(addDays(today, -1), addDays(today, -1), r);
 
   const week = byWeek.get(current.week);
 

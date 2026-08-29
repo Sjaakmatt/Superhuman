@@ -22,11 +22,14 @@ export default function SessionLogForm({
   saved,
   shoes,
   isLongrun,
+  isToday,
 }: {
   date: string;
   saved: Partial<SessionLogInput> | null;
   shoes: Shoe[];
   isLongrun: boolean;
+  /** Op de dag zelf kun je de ochtend erna nog niet beoordelen. */
+  isToday: boolean;
 }) {
   const [draft, setDraft] = useState<Draft>({
     rpe: saved?.rpe ?? null,
@@ -94,9 +97,21 @@ export default function SessionLogForm({
         </Field>
       ) : null}
 
-      <Field label="Pijn de volgende ochtend" hint="Het pijnmodel vraagt hier nul.">
-        <Scale from={0} to={10} value={draft.pain_next_morning} onPick={(v) => set('pain_next_morning', v)} danger={1} />
-      </Field>
+      {/* De ochtend erna kun je vandaag niet weten. Die vraag komt morgen bij de
+          ochtendcheck op Vandaag, en gaat dan naar de log van deze dag. */}
+      {draft.pain_score > 0 && isToday ? (
+        <Field label="Pijn de volgende ochtend">
+          <p className="text-[13px]" style={{ color: 'var(--ink3)' }}>
+            Die vraag krijg je morgen bij de ochtendcheck. Het pijnmodel vraagt daar nul.
+          </p>
+        </Field>
+      ) : null}
+
+      {!isToday ? (
+        <Field label="Pijn de ochtend erna" hint="Het pijnmodel vraagt hier nul.">
+          <Scale from={0} to={10} value={draft.pain_next_morning} onPick={(v) => set('pain_next_morning', v)} danger={1} />
+        </Field>
+      ) : null}
 
       {shoes.length > 0 ? (
         <Field label="Schoen">
@@ -128,7 +143,7 @@ export default function SessionLogForm({
         </>
       ) : null}
 
-      <Field label="Getapet?">
+      <Field label="Heb je getapet?" hint="Kinesiotape of sporttape, bijvoorbeeld om je achillespees of knie. Zo zie je later terug of tape verschil maakt.">
         <button type="button" onClick={() => set('taped', !draft.taped)} aria-pressed={draft.taped}
           className="interactive rounded-[var(--r-btn)] px-4 py-2 text-[13px] font-semibold"
           style={{

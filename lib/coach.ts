@@ -94,6 +94,17 @@ export const TOOLS: Anthropic.Tool[] = [
     },
   },
   {
+    name: 'oefeningen',
+    description:
+      'De krachtoefeningen uit het plan: naam, bij welk blok ze horen, de eenheid, het aantal series en de uitvoeringsnotitie. Gebruik dit als er gevraagd wordt hoe een oefening moet.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        blok: { type: 'string', description: 'Beperk tot één krachtblok, bijvoorbeeld "A" of "B". Laat weg voor alle oefeningen.' },
+      },
+    },
+  },
+  {
     name: 'zoek_in_plan',
     description:
       'Zoek in de tekst van de geplande sessies, bijvoorbeeld "heuvel", "tempo" of "test". Levert hoogstens twintig dagen.',
@@ -274,6 +285,13 @@ export async function runTool(
       return data?.value ?? { fout: `"${onderwerp}" staat niet in de naslag.` };
     }
 
+    case 'oefeningen': {
+      let q = sb.from('exercise').select('slug, name, block, unit, default_sets, note').order('slug');
+      if (typeof input.blok === 'string' && input.blok.trim()) q = q.eq('block', input.blok.trim());
+      const { data } = await q;
+      return data ?? [];
+    }
+
     case 'zoek_in_plan': {
       const term = String(input.zoekterm ?? '').trim();
       if (term.length < 2) return [];
@@ -333,8 +351,9 @@ export function coachConfigured(): boolean {
 
 /** De opening van het gesprek: de samenvatting van vandaag en de actieve regels,
  *  zodat een gewone vraag geen enkele opzoekactie kost. */
-function opening(facts: Record<string, unknown>, rules: RuleHit[]): string {
+function opening(facts: Record<string, unknown>, rules: RuleHit[], scherm: string | null): string {
   return `Vandaag is ${facts.vandaag}. Hieronder de stand van zaken. Alles wat je verder nodig hebt zoek je op met de gereedschappen.
+${scherm ? `\nWaar hij nu naar kijkt: ${scherm}\n` : ''}
 
 Samenvatting:
 ${JSON.stringify(facts, null, 1)}
@@ -356,6 +375,9 @@ export async function* runCoach(
   facts: Record<string, unknown>,
   rules: RuleHit[],
   vandaag: IsoDate,
+  /** Het scherm waar de vraag vandaan komt, in één zin. Zo weet de coach dat
+   *  "deze oefening" over het krachtblok van die dag gaat. */
+  scherm: string | null = null,
 ): AsyncGenerator<CoachEvent> {
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) {
@@ -373,8 +395,18 @@ export async function* runCoach(
   // De stand van zaken hangt aan de eerste vraag van dit verzoek, niet aan een
   // los systeembericht: zo blijft zichtbaar bij welke dag de cijfers hoorden.
   const messages: Anthropic.MessageParam[] = historie.map((m, i) =>
-    i === 0 ? { role: m.role, content: `${opening(facts, rules)}\n\nVraag: ${m.content}` } : { role: m.role, content: m.content },
+    i === 0 ? { role: m.role, content: `${opening(facts, rules, scherm)}\n\nVraag: ${m.content}` } : { role: m.role, content: m.content },
   );
+
+  // Bij een vervolgvraag hoort de schermcontext bij díe vraag, niet bij de
+  // eerste van het gesprek.
+  const laatsteIndex = messages.length - 1;
+  if (scherm && laatsteIndex > 0) {
+    const laatsteVraag = messages[laatsteIndex]!;
+    if (typeof laatsteVraag.content === 'string') {
+      laatsteVraag.content = `[Hij kijkt nu naar: ${scherm}]\n\n${laatsteVraag.content}`;
+    }
+  }
 
   let laatste = '';
 

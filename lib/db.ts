@@ -47,3 +47,24 @@ export async function currentUser() {
   const { data } = await client.auth.getUser();
   return data.user ?? null;
 }
+
+/** Wie leest, en namens wie.
+ *
+ *  Zonder `athleteId` leest de sessie van de gebruiker zelf en doet RLS het
+ *  filteren. Met `athleteId` — de cron, met de service-role-sleutel — staat RLS
+ *  uit en filteren we zelf. Zonder dat filter zou de nachtelijke analyse van de
+ *  een op de cijfers van de ander draaien. */
+export type Reader = { client: SupabaseClient; athleteId: string | null };
+
+/** De meegegeven lezer, of anders de sessie van de gebruiker. */
+export async function reader(given?: Reader): Promise<Reader | null> {
+  if (given) return given;
+  const client = await db();
+  return client ? { client, athleteId: null } : null;
+}
+
+/** Een lezer die namens één atleet leest, met de service-role-sleutel. Alleen
+ *  voor cron-routes en scripts. */
+export function readerFor(athleteId: string): Reader {
+  return { client: admin(), athleteId };
+}

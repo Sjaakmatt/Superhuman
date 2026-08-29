@@ -67,3 +67,39 @@ export function formatLong(date: IsoDate): string {
 export function localDayOf(startDateLocal: string): IsoDate {
   return startDateLocal.slice(0, 10);
 }
+
+/** De maand waar een kalenderdag in valt, als `YYYY-MM`. */
+export function monthOf(date: IsoDate): string {
+  return date.slice(0, 7);
+}
+
+/** Verschuif een maand met hele maanden. */
+export function addMonths(month: string, months: number): string {
+  const [y, m] = month.split('-').map(Number) as [number, number];
+  const t = new Date(Date.UTC(y, m - 1 + months, 1));
+  return `${t.getUTCFullYear()}-${String(t.getUTCMonth() + 1).padStart(2, '0')}`;
+}
+
+/** Alle kalenderdagen van een maand, op volgorde. */
+export function monthDays(month: string): IsoDate[] {
+  const [y, m] = month.split('-').map(Number) as [number, number];
+  const count = new Date(Date.UTC(y, m, 0)).getUTCDate();
+  return Array.from({ length: count }, (_, i) => `${month}-${String(i + 1).padStart(2, '0')}`);
+}
+
+/** Maandag = 0, zondag = 6. De agenda begint op maandag, net als het plan. */
+export function weekdayIndex(date: IsoDate): number {
+  const [y, m, d] = date.split('-').map(Number) as [number, number, number];
+  return (new Date(Date.UTC(y, m - 1, d)).getUTCDay() + 6) % 7;
+}
+
+const MONTH_NAMES = [
+  'januari', 'februari', 'maart', 'april', 'mei', 'juni',
+  'juli', 'augustus', 'september', 'oktober', 'november', 'december',
+] as const;
+
+/** "september 2026". */
+export function formatMonth(month: string): string {
+  const [y, m] = month.split('-').map(Number) as [number, number];
+  return `${MONTH_NAMES[m - 1]} ${y}`;
+}

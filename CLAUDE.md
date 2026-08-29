@@ -36,7 +36,7 @@ Het trainingsplan is 57 weken, 399 dagen, en staat vast in de database — de ap
 ## Mappen
 
 ```
-app/                 routes (vandaag, loggen, kracht, analyse, coach, seizoen)
+app/                 routes (vandaag, loggen, kracht, analyse, seizoen)
   api/strava/sync    dagelijkse sync, aangeroepen door de Cron Trigger
   api/insight/[kind] daily | weekly | longrun | debrief
   api/coach          het gesprek met de coach, streamt regel-voor-regel JSON
@@ -48,6 +48,7 @@ lib/rules.ts         deterministische escalatieregels
 lib/strava.ts        OAuth, sync, streams
 lib/insight.ts       promptopbouw + Anthropic-aanroep
 lib/coach.ts         het gesprek: systeemprompt, leesgereedschappen, de lus
+components/CoachWidget.tsx  de coach hangt over elk scherm, geen eigen route
 supabase/migrations/ SQL
 supabase/seed/       plan-seed.json, reference-seed.json
 styles/tokens.css    kleuren en typografie — bron van waarheid
@@ -59,6 +60,7 @@ styles/tokens.css    kleuren en typografie — bron van waarheid
 - `lib/rules.ts` — elke escalatieregel met een geval dat wel en een dat niet vuurt.
 - Seed-integriteit: 399 dagen, 57 weken, elke dag hoort bij een bestaande week, weektotaal = som van de dagen.
 - `lib/coach.ts` — de begrenzing van een opgevraagd bereik, en dat geen enkel gereedschap kan schrijven.
+- `lib/date.ts` — de maandhulpjes van de agenda, inclusief schrikkeljaar en jaargrens.
 
 ## Wat je niet moet bouwen
 

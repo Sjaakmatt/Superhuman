@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import CoachWidget from '@/components/CoachWidget';
 import ThemeToggle from '@/components/ThemeToggle';
 import PlanSearch from '@/components/PlanSearch';
 import { EXTRA_TITLES, NAV, type NavItem } from '@/lib/nav';
 
-const TAB_HREFS = ['/', '/loggen', '/kracht', '/analyse', '/coach'];
+const TAB_HREFS = ['/', '/loggen', '/kracht', '/analyse'];
 
 function NavIcon({ item, className }: { item: NavItem; className?: string }) {
   return (
@@ -102,7 +103,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         <main className="min-w-0 flex-1 px-4 pb-28 side:px-8 side:pb-12">{children}</main>
       </div>
 
-      <nav aria-label="Hoofdnavigatie" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 gap-1 px-2 pt-2 side:hidden"
+      <nav aria-label="Hoofdnavigatie" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 gap-1 px-2 pt-2 side:hidden"
         style={{
           background: 'var(--card)',
           borderTop: '1px solid var(--hair)',
@@ -120,6 +121,12 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           );
         })}
       </nav>
+
+      {/* De coach hangt over elk scherm heen en weet waar je stond toen je het
+          vroeg. useSearchParams wil een Suspense-grens. */}
+      <Suspense fallback={null}>
+        <CoachWidget />
+      </Suspense>
     </div>
   );
 }

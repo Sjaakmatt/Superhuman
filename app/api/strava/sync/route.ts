@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { admin } from '@/lib/db';
 import { getReference } from '@/lib/plan';
 import { cronAuthorized } from '@/lib/cron';
@@ -15,32 +16,65 @@ import {
   withBackoff,
 } from '@/lib/strava';
 
-/** Dagelijkse sync, om 03:10 aangeroepen door de Cloudflare Cron Trigger.
- *  Twee keer achter elkaar draaien mag: alles gaat via upsert op de Strava-id,
- *  dus er ontstaan geen duplicaten. */
+/** Dagelijkse sync, om 03:10 UTC+1 aangeroepen door de Cloudflare Cron Trigger
+ *  (Cloudflare rekent in UTC, dus in de zomer een uur later).
+ *
+ *  Iedereen met een gekoppeld Strava-account wordt gesynct, niet alleen de
+ *  eerste atleet. Twee keer achter elkaar draaien mag: alles gaat via upsert op
+ *  de Strava-id, dus er ontstaan geen duplicaten. */
 export async function GET(request: Request) {
   if (!cronAuthorized(request)) return NextResponse.json({ error: 'Niet toegestaan.' }, { status: 401 });
 
   const sb = admin();
-  const { data: athlete } = await sb.from('athlete').select('id').limit(1).maybeSingle();
-  if (!athlete) return NextResponse.json({ error: 'Nog geen atleet in de database.' }, { status: 409 });
+  const { data: tokens } = await sb.from('strava_token').select('*').order('athlete_id');
+  const rijen = (tokens as StravaToken[] | null) ?? [];
+  if (!rijen.length) return NextResponse.json({ error: 'Strava is nog niet verbonden.' }, { status: 409 });
 
-  const { data: token } = await sb.from('strava_token').select('*').eq('athlete_id', athlete.id).maybeSingle();
-  if (!token) return NextResponse.json({ error: 'Strava is nog niet verbonden.' }, { status: 409 });
+  const bands = (await getReference('zones')).bands;
+
+  // Achter elkaar, niet parallel: de rate limit van Strava geldt per app, niet
+  // per atleet. Een mislukte sync mag de anderen niet tegenhouden.
+  const uitkomsten = [];
+  for (const token of rijen) {
+    try {
+      uitkomsten.push(await syncAtleet(sb, token, bands));
+    } catch (fout) {
+      uitkomsten.push({ athlete_id: token.athlete_id, error: (fout as Error).message });
+    }
+  }
+
+  const mislukt = uitkomsten.filter((u) => 'error' in u).length;
+  return NextResponse.json(
+    { atleten: rijen.length, gelukt: rijen.length - mislukt, uitkomsten },
+    { status: mislukt === rijen.length ? 502 : 200 },
+  );
+}
+
+type StravaToken = {
+  athlete_id: string;
+  access_token: string;
+  refresh_token: string;
+  expires_at: string;
+};
+
+type Bands = Awaited<ReturnType<typeof getReference<'zones'>>>['bands'];
+
+async function syncAtleet(sb: SupabaseClient, token: StravaToken, bands: Bands) {
+  const athleteId = token.athlete_id;
 
   // Access tokens verlopen na zes uur; we verversen als er minder dan tien
   // minuten over is. Een nieuw refresh token slaan we meteen op.
-  let accessToken = token.access_token as string;
-  const expiresAt = Date.parse(token.expires_at as string);
+  let accessToken = token.access_token;
+  const expiresAt = Date.parse(token.expires_at);
   if (Number.isNaN(expiresAt) || expiresAt - Date.now() < 600_000) {
-    const fresh = await refresh(token.refresh_token as string);
+    const fresh = await refresh(token.refresh_token);
     accessToken = fresh.access_token;
     await sb.from('strava_token').update({
       access_token: fresh.access_token,
       refresh_token: fresh.refresh_token,
       expires_at: new Date(fresh.expires_at * 1000).toISOString(),
       updated_at: new Date().toISOString(),
-    }).eq('athlete_id', athlete.id);
+    }).eq('athlete_id', athleteId);
   }
 
   // Eerste keer: alles vanaf 1 augustus 2026. Daarna vanaf de laatste activiteit
@@ -48,7 +82,7 @@ export async function GET(request: Request) {
   const { data: last } = await sb
     .from('activity')
     .select('start_local')
-    .eq('athlete_id', athlete.id)
+    .eq('athlete_id', athleteId)
     .order('start_local', { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -59,8 +93,8 @@ export async function GET(request: Request) {
 
   const activities = await withBackoff(() => listActivities(accessToken, after));
   if (activities.length) {
-    const { error } = await sb.from('activity').upsert(activities.map((a) => toRow(a, athlete.id)), { onConflict: 'id' });
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    const { error } = await sb.from('activity').upsert(activities.map((a) => toRow(a, athleteId)), { onConflict: 'id' });
+    if (error) throw new Error(error.message);
   }
 
   // Streams alleen voor hardloopactiviteiten die we nog niet hebben, en
@@ -68,7 +102,7 @@ export async function GET(request: Request) {
   const { data: pending } = await sb
     .from('activity')
     .select('id, sport_type')
-    .eq('athlete_id', athlete.id)
+    .eq('athlete_id', athleteId)
     .is('streams_synced_at', null)
     .order('start_local', { ascending: false })
     .limit(STREAM_BUDGET * 2);
@@ -77,7 +111,6 @@ export async function GET(request: Request) {
     .filter((a) => isRun(a.sport_type))
     .slice(0, STREAM_BUDGET);
 
-  const bands = (await getReference('zones')).bands;
   let withStreams = 0;
 
   for (const activity of queue) {
@@ -117,14 +150,14 @@ export async function GET(request: Request) {
   const { data: orphans } = await sb
     .from('session_log')
     .select('id, date')
-    .eq('athlete_id', athlete.id)
+    .eq('athlete_id', athleteId)
     .is('activity_id', null);
 
   for (const log of ((orphans as { id: string; date: string }[] | null) ?? [])) {
     const { data: match } = await sb
       .from('activity')
       .select('id')
-      .eq('athlete_id', athlete.id)
+      .eq('athlete_id', athleteId)
       .eq('date', log.date)
       .order('moving_s', { ascending: false })
       .limit(1)
@@ -132,12 +165,13 @@ export async function GET(request: Request) {
     if (match) await sb.from('session_log').update({ activity_id: match.id }).eq('id', log.id);
   }
 
-  return NextResponse.json({
+  return {
+    athlete_id: athleteId,
     opgehaald: activities.length,
     streams: withStreams,
     wachtrij_over: Math.max(0, queue.length - withStreams),
     vanaf: after.toISOString(),
-  });
+  };
 }
 
 export async function POST(request: Request) {

@@ -61,6 +61,22 @@ export async function saveWellness(input: WellnessInput): Promise<Result> {
   return { ok: true };
 }
 
+/** De pijn van de volgende ochtend hoort bij de sessie van gisteren, maar je
+ *  weet hem pas vandaag. Daarom een eigen actie met een `update`: een upsert met
+ *  alleen dit veld zou de rest van de log leegmaken. */
+export async function savePainNextMorning(date: IsoDate, value: number | null): Promise<Result> {
+  const resultaat = await context();
+  if (!resultaat.ok) return resultaat.fout;
+  const { client } = resultaat.ctx;
+
+  const { error } = await client.from('session_log').update({ pain_next_morning: value }).eq('date', date);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath('/');
+  revalidatePath('/loggen');
+  revalidatePath('/analyse');
+  return { ok: true };
+}
+
 export type SessionLogInput = {
   date: IsoDate;
   rpe?: number | null;

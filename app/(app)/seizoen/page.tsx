@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Ring from '@/components/charts/Ring';
 import SeasonGrid from '@/components/charts/SeasonGrid';
-import Trend from '@/components/charts/Trend';
+import VolumeProfile from '@/components/charts/VolumeProfile';
 import { Card, CardTitle, Grid, Note, Pill, Stat } from '@/components/ui';
 import { getDays, getReference, getWeeks, planBounds } from '@/lib/plan';
 import { getWeekActuals } from '@/lib/data';
@@ -32,13 +32,22 @@ export default async function Seizoen() {
   ]);
 
   const current = weeks.find((w) => w.start_date <= now && addDays(w.start_date, 6) >= now);
-  const currentIndex = current ? weeks.findIndex((w) => w.week === current.week) : -1;
   const done = Math.max(0, daysBetween(bounds.first, now));
   const totalDays = daysBetween(bounds.first, bounds.last) + 1;
 
-  const volumeLine = weeks.map((w) => ({ label: `week ${w.week}`, value: Number(w.target_km) }));
   const totalKm = weeks.reduce((t, w) => t + Number(w.target_km), 0);
   const ranKm = actuals.reduce((t, a) => t + Number(a.actual_km), 0);
+
+  // Alleen weken die al geweest zijn krijgen een gelopen waarde. Voor de rest
+  // null: nul zou "niets gelopen" betekenen in plaats van "moet nog komen".
+  const actualByWeek = new Map(actuals.map((a) => [a.week, Number(a.actual_km)]));
+  const volume = weeks.map((w) => ({
+    week: w.week,
+    phase: w.phase,
+    status: w.status,
+    target_km: Number(w.target_km),
+    actual_km: current && w.week > current.week ? null : actualByWeek.get(w.week) ?? 0,
+  }));
 
   return (
     <div className="mx-auto flex max-w-[1080px] flex-col gap-4 pt-2">
@@ -58,9 +67,8 @@ export default async function Seizoen() {
       </Card>
 
       <Card>
-        <CardTitle aside="doel per week">Volumeprofiel</CardTitle>
-        <Trend points={volumeLine} markIndex={currentIndex >= 0 ? currentIndex : undefined} height={150}
-          ariaLabel="Geplande weekkilometers over 57 weken" />
+        <CardTitle aside="kilometers per week">Volumeprofiel</CardTitle>
+        <VolumeProfile weeks={volume} currentWeek={current?.week ?? null} />
         <div className="mt-2 flex justify-between text-[11px]" style={{ color: 'var(--ink3)' }}>
           <span>week 1 · {formatShort(bounds.first)} 2026</span>
           <span>week 57 · {formatShort(bounds.race)} 2027</span>

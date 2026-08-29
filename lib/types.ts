@@ -64,7 +64,16 @@ export type Fueling = {
   sodium_mg_per_h: [number, number];
 };
 
-export type Milestone = { week: number; date: IsoDate; kind: string; title: string };
+export type Milestone = {
+  week: number;
+  date: IsoDate;
+  kind: string;
+  title: string;
+  /** Eigen voorbereidingsnotities. Staan in reference-seed.json, niet in code:
+   *  trainingsinhoud komt uit de seed. Leeg is prima — de kaart toont dan wat
+   *  het plan en de naslag al weten. */
+  prep?: string[];
+};
 
 export type Wellness = {
   date: IsoDate;
