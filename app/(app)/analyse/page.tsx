@@ -125,9 +125,9 @@ export default async function Analyse() {
             <Note>
               Hoe verder je afstand aflegt per hartslag, hoe beter je basis. Een stijgende lijn betekent dat je bij
               dezelfde hartslag sneller loopt — precies waar dit blok op stuurt. Meetellen doen hardloopsessies van
-              minstens twintig minuten waarvan de gemiddelde hartslag in je Z2-band viel; een geplande intensieve dag
-              telt niet mee, ook niet als het gemiddelde toevallig in Z2 uitkwam. Heuvels drukken de waarde, dus de
-              hoogtemeters staan bij elk punt.
+              minstens twintig minuten waarvan de gemiddelde hartslag in Z2 viel én die hoogstens een tiende van de
+              tijd erboven zaten. Dat laatste houdt sessies van hard-en-uitrusten eruit: die komen gemiddeld ook in Z2
+              uit en scoren kunstmatig hoog. Heuvels drukken de waarde, dus de hoogtemeters staan bij elk punt.
             </Note>
           </>
         ) : (

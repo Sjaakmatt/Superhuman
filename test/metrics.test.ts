@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   adherence,
+  aandeelBovenZ2,
   aerobicEfficiency,
   countsAsBase,
   isIntensief,
@@ -230,39 +231,69 @@ describe('rollingMean', () => {
 });
 
 describe('countsAsBase', () => {
-  const z2 = { hr_min: 123, hr_max: 152 };
-  const duurloop = { sport_type: 'Run', moving_s: 3600, avg_hr: 140 };
+  const bands = { z2: { hr_min: 123, hr_max: 152 }, z3Max: 167 };
+  const duurloop = { sport_type: 'Run', moving_s: 3600, avg_hr: 140, max_hr: 148 };
+  const rustig = { Z1: 400, Z2: 3000 };
 
   it('telt een duurloop mee die gemiddeld in Z2 uitkwam', () => {
-    expect(countsAsBase(duurloop, 'Z2', z2)).toBe(true);
+    expect(countsAsBase(duurloop, 'Z2', bands, rustig)).toBe(true);
   });
 
   it('telt hem ook mee zonder plandag, zodat de lijn vóór het plan begint', () => {
-    expect(countsAsBase(duurloop, null, z2)).toBe(true);
-    expect(countsAsBase(duurloop, undefined, z2)).toBe(true);
-    expect(countsAsBase(duurloop, '-', z2)).toBe(true);
+    expect(countsAsBase(duurloop, null, bands, rustig)).toBe(true);
+    expect(countsAsBase(duurloop, undefined, bands, rustig)).toBe(true);
+    expect(countsAsBase(duurloop, '-', bands, rustig)).toBe(true);
   });
 
   it('laat een sessie buiten de Z2-band vallen', () => {
-    expect(countsAsBase({ ...duurloop, avg_hr: 160 }, null, z2)).toBe(false);
-    expect(countsAsBase({ ...duurloop, avg_hr: 110 }, null, z2)).toBe(false);
-    expect(countsAsBase({ ...duurloop, avg_hr: null }, null, z2)).toBe(false);
+    expect(countsAsBase({ ...duurloop, avg_hr: 160 }, null, bands, rustig)).toBe(false);
+    expect(countsAsBase({ ...duurloop, avg_hr: 110 }, null, bands, rustig)).toBe(false);
+    expect(countsAsBase({ ...duurloop, avg_hr: null }, null, bands, rustig)).toBe(false);
   });
 
   it('laat korte sessies vallen', () => {
-    expect(countsAsBase({ ...duurloop, moving_s: 900 }, null, z2)).toBe(false);
+    expect(countsAsBase({ ...duurloop, moving_s: 900 }, null, bands, rustig)).toBe(false);
   });
 
   it('telt alleen hardlopen', () => {
-    expect(countsAsBase({ ...duurloop, sport_type: 'Ride' }, null, z2)).toBe(false);
-    expect(countsAsBase({ ...duurloop, sport_type: 'TrailRun' }, null, z2)).toBe(true);
+    expect(countsAsBase({ ...duurloop, sport_type: 'Ride' }, null, bands, rustig)).toBe(false);
+    expect(countsAsBase({ ...duurloop, sport_type: 'TrailRun' }, null, bands, rustig)).toBe(true);
   });
 
   it('laat een geplande intensieve dag vallen, ook als het gemiddelde in Z2 viel', () => {
-    expect(countsAsBase(duurloop, 'Z4', z2)).toBe(false);
-    expect(countsAsBase(duurloop, 'Z2/Z3', z2)).toBe(false);
+    expect(countsAsBase(duurloop, 'Z4', bands, rustig)).toBe(false);
+    expect(countsAsBase(duurloop, 'Z2/Z3', bands, rustig)).toBe(false);
   });
 
+  it('laat een sessie vallen die te lang boven Z2 zat, ook al was het gemiddelde Z2', () => {
+    // Hard met lange pauzes: gemiddeld Z2, maar 39% van de tijd erboven.
+    expect(countsAsBase(duurloop, null, bands, { Z1: 400, Z2: 1700, Z4: 1400 })).toBe(false);
+  });
+
+  it('staat een enkele heuvel toe', () => {
+    expect(countsAsBase(duurloop, null, bands, { Z2: 3400, Z3: 200 })).toBe(true);
+  });
+
+  it('valt zonder streams terug op de piekhartslag', () => {
+    expect(countsAsBase(duurloop, null, bands, null)).toBe(true);
+    expect(countsAsBase({ ...duurloop, max_hr: 176 }, null, bands, null)).toBe(false);
+    // Lege zonerijen tellen als "niets gemeten", niet als "nul boven Z2".
+    expect(countsAsBase({ ...duurloop, max_hr: 176 }, null, bands, {})).toBe(false);
+  });
+});
+
+describe('aandeelBovenZ2', () => {
+  it('rekent het aandeel over de gemeten tijd', () => {
+    expect(aandeelBovenZ2({ Z1: 100, Z2: 700, Z3: 200 })).toBeCloseTo(0.2, 5);
+  });
+
+  it('levert niets als er niets gemeten is', () => {
+    expect(aandeelBovenZ2(null)).toBeNull();
+    expect(aandeelBovenZ2({})).toBeNull();
+  });
+});
+
+describe('isIntensief', () => {
   it('herkent de zones aan het plan en niet aan losse letters', () => {
     expect(isIntensief('Z1')).toBe(false);
     expect(isIntensief('Z2')).toBe(false);

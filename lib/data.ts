@@ -503,7 +503,7 @@ export const getAerobicSessions = cache(async (from: IsoDate, to: IsoDate, r?: R
 
   let q = l.client
     .from('activity')
-    .select('date, sport_type, distance_m, moving_s, elev_gain_m, avg_hr')
+    .select('date, sport_type, distance_m, moving_s, elev_gain_m, avg_hr, max_hr, activity_zone(zone, seconds)')
     .gte('date', from)
     .lte('date', to)
     .in('sport_type', ['Run', 'TrailRun'])
@@ -516,16 +516,36 @@ export const getAerobicSessions = cache(async (from: IsoDate, to: IsoDate, r?: R
   // dat het tegenspreekt. Beide vragen lopen naast elkaar.
   const [{ data }, zones, planDagen] = await Promise.all([q, getZones(l), getDays(from, to, l)]);
 
-  const band = zones.bands.find((b) => b.key === 'Z2');
-  if (!band) return [];
+  const z2 = zones.bands.find((b) => b.key === 'Z2');
+  const z3 = zones.bands.find((b) => b.key === 'Z3');
+  if (!z2) return [];
+  const bands = { z2, z3Max: z3?.hr_max ?? z2.hr_max };
   const zonePerDag = new Map(planDagen.map((d) => [d.date, d.zone]));
 
   const rijen = (data as
-    | { date: IsoDate; sport_type: string; distance_m: number | null; moving_s: number | null; elev_gain_m: number | null; avg_hr: number }[]
+    | {
+        date: IsoDate;
+        sport_type: string;
+        distance_m: number | null;
+        moving_s: number | null;
+        elev_gain_m: number | null;
+        avg_hr: number;
+        max_hr: number | null;
+        activity_zone: { zone: string; seconds: number }[] | null;
+      }[]
     | null) ?? [];
 
   return rijen
-    .filter((a) => countsAsBase(a, zonePerDag.get(a.date), band))
+    .filter((a) =>
+      countsAsBase(
+        a,
+        zonePerDag.get(a.date),
+        bands,
+        a.activity_zone?.length
+          ? Object.fromEntries(a.activity_zone.map((z) => [z.zone, Number(z.seconds)]))
+          : null,
+      ),
+    )
     .map((a) => {
       const ef = aerobicEfficiency(a.distance_m, a.moving_s, a.avg_hr);
       if (ef === null) return null;

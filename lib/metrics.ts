@@ -210,6 +210,11 @@ export function rollingMean(values: number[], venster: number): number[] {
   });
 }
 
+/** Hoeveel van de gemeten tijd een rustige duurloop bóven Z2 mag zitten. Een
+ *  heuvel, een stoplicht, een hond: dat gebeurt. Meer dan een tiende is geen
+ *  duurloop meer. */
+export const MAX_BOVEN_Z2 = 0.1;
+
 /** Telt deze activiteit mee voor de aerobe-efficiëntielijn?
  *
  *  De maat is alleen vergelijkbaar binnen dezelfde intensiteit. We kijken naar
@@ -218,21 +223,45 @@ export function rollingMean(values: number[], venster: number): number[] {
  *  helemaal geen plan was. Zo begint de lijn bij je eerste gelogde duurloop en
  *  niet pas op de eerste plandag.
  *
- *  Eén uitzondering: stond er die dag een intensieve sessie gepland, dan telt
- *  hij niet mee. Een intervaltraining kan gemiddeld in Z2 uitkomen — hard met
- *  lange pauzes — en dat is geen duurloop. */
+ *  Een gemiddelde in Z2 is alleen niet genoeg. Een sessie van hard-en-uitrusten
+ *  komt gemiddeld ook in Z2 uit terwijl het geen duurloop was, en zulke lopen
+ *  scoren kunstmatig hoog. Daarom kijken we naar de verdeling: hoeveel van de
+ *  gemeten tijd zat boven Z2? Die seconden hebben we al uit de streams. Zijn
+ *  de streams er nog niet, dan valt hij terug op de piekhartslag — grover, maar
+ *  dan hoeft een verse loop niet te wachten tot de nacht.
+ *
+ *  Eén uitzondering blijft: stond er die dag een intensieve sessie gepland, dan
+ *  telt hij sowieso niet mee. */
 export function countsAsBase(
-  activity: { sport_type: string; moving_s: number | null; avg_hr: number | null },
+  activity: { sport_type: string; moving_s: number | null; avg_hr: number | null; max_hr: number | null },
   planZone: string | null | undefined,
-  z2: { hr_min: number; hr_max: number },
+  bands: { z2: { hr_min: number; hr_max: number }; z3Max: number },
+  /** Seconden per zone uit de streams, of null zolang die er nog niet zijn. */
+  zoneSeconds: Record<string, number> | null,
 ): boolean {
   if (activity.sport_type !== 'Run' && activity.sport_type !== 'TrailRun') return false;
   if (Number(activity.moving_s ?? 0) < 1200) return false;
 
   const hr = Number(activity.avg_hr ?? 0);
-  if (hr < z2.hr_min || hr > z2.hr_max) return false;
+  if (hr < bands.z2.hr_min || hr > bands.z2.hr_max) return false;
 
-  return !isIntensief(planZone);
+  if (isIntensief(planZone)) return false;
+
+  const aandeel = aandeelBovenZ2(zoneSeconds);
+  if (aandeel !== null) return aandeel <= MAX_BOVEN_Z2;
+
+  // Geen streams: dan maar de grove maat. Een rustige duurloop tikt niet aan Z4.
+  const piek = Number(activity.max_hr ?? 0);
+  return piek === 0 || piek <= bands.z3Max;
+}
+
+/** Het aandeel van de gemeten tijd boven Z2, of null als er niets gemeten is. */
+export function aandeelBovenZ2(zoneSeconds: Record<string, number> | null): number | null {
+  if (!zoneSeconds) return null;
+  const totaal = Object.values(zoneSeconds).reduce((t, s) => t + Number(s ?? 0), 0);
+  if (totaal <= 0) return null;
+  const boven = ['Z3', 'Z4', 'Z5'].reduce((t, z) => t + Number(zoneSeconds[z] ?? 0), 0);
+  return boven / totaal;
 }
 
 /** Een plandag is intensief zodra er een zone boven Z2 in staat. Geen plandag
