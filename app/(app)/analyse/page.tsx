@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import Alerts from '@/components/Alerts';
 import DistributionBar from '@/components/charts/DistributionBar';
+import AerobicTrend from '@/components/charts/AerobicTrend';
 import Trend from '@/components/charts/Trend';
 import WeekBars from '@/components/charts/WeekBars';
 import InsightPanel from '@/components/InsightPanel';
 import { Card, CardTitle, Empty, Grid, Note, Stat } from '@/components/ui';
 import { getWeeks } from '@/lib/plan';
-import { getInsights, getWeekActuals, getWellness, getZoneSeconds, getZones, loadRuleInput } from '@/lib/data';
+import { getAerobicSessions, getInsights, getWeekActuals, getWellness, getZoneSeconds, getZones, loadRuleInput } from '@/lib/data';
 import { dbConfigured } from '@/lib/db';
 import { evaluate } from '@/lib/rules';
 import { distribution, weekJump, wellnessTrend, z2Drift } from '@/lib/metrics';
@@ -27,6 +28,9 @@ export default async function Analyse() {
     getZoneSeconds(addDays(now, -27), now),
     getInsights(6),
   ]);
+
+  // De hele opbouw, niet de laatste vier weken: een basis bouw je over maanden.
+  const aeroob = await getAerobicSessions(addDays(now, -365), now);
 
   const ruleInput = await loadRuleInput(now, current.week, current.status);
   const hits = ruleInput ? evaluate(ruleInput) : [];
@@ -110,6 +114,25 @@ export default async function Analyse() {
           )}
         </Card>
       </div>
+
+      <Card>
+        <CardTitle aside="meters per minuut per hartslag">Aerobe basis</CardTitle>
+        {aeroob.length >= 3 ? (
+          <>
+            <AerobicTrend points={aeroob} />
+            <Note>
+              Hoe verder je afstand aflegt per hartslag, hoe beter je basis. Een stijgende lijn betekent dat je bij
+              dezelfde hartslag sneller loopt — precies waar dit blok op stuurt. Alleen geplande Z2-sessies van
+              minstens twintig minuten met een gemeten hartslag tellen mee; anders vergelijk je een intervaltraining
+              met een duurloop. Heuvels drukken de waarde, dus de hoogtemeters staan bij elk punt.
+            </Note>
+          </>
+        ) : (
+          <Empty title="Nog te weinig Z2-sessies">
+            Vanaf drie geplande Z2-sessies van twintig minuten of langer, met hartslag, verschijnt hier de lijn.
+          </Empty>
+        )}
+      </Card>
 
       <Card>
         <CardTitle>Stuurvariabelen</CardTitle>

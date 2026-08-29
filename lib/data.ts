@@ -1,6 +1,7 @@
 import { admin, db, reader, type Reader } from '@/lib/db';
 import { getReference, getWeeks } from '@/lib/plan';
 import { addDays, type IsoDate } from '@/lib/date';
+import { aerobicEfficiency, km, minutes } from '@/lib/metrics';
 import type { RuleInput } from '@/lib/rules';
 import type { Activity, BloodPanel, HrTest, Insight, MilestoneResult, Shoe, StrengthSet, Wellness, Zones } from '@/lib/types';
 
@@ -487,4 +488,55 @@ export async function getRunKmByDay(from: IsoDate, to: IsoDate, r?: Reader): Pro
   }
   for (const [datum, km] of per) per.set(datum, Math.round(km * 10) / 10);
   return per;
+}
+
+export type AeroobPunt = {
+  date: IsoDate;
+  km: number;
+  minutes: number;
+  hm: number;
+  avg_hr: number;
+  /** Meters per minuut per hartslag. Zie aerobicEfficiency in lib/metrics.ts. */
+  ef: number;
+};
+
+/** De geplande Z2-sessies met een gemeten hartslag, voor de efficiëntielijn.
+ *
+ *  Zelfde afbakening als de Z2-drift: alleen dagen waar het plan `Z2` zegt en
+ *  minstens twintig minuten beweging. Buiten die afbakening is de maat niet
+ *  vergelijkbaar — een intervalsessie levert per definitie een lagere waarde. */
+export async function getAerobicSessions(from: IsoDate, to: IsoDate, r?: Reader): Promise<AeroobPunt[]> {
+  const l = await reader(r);
+  if (!l) return [];
+
+  let q = l.client
+    .from('activity')
+    .select('date, distance_m, moving_s, elev_gain_m, avg_hr, plan_day!inner(zone)')
+    .eq('plan_day.zone', 'Z2')
+    .gte('date', from)
+    .lte('date', to)
+    .not('avg_hr', 'is', null)
+    .gte('moving_s', 1200)
+    .order('date');
+  if (l.athleteId) q = q.eq('athlete_id', l.athleteId);
+  const { data } = await q;
+
+  const rijen = (data as
+    | { date: IsoDate; distance_m: number | null; moving_s: number | null; elev_gain_m: number | null; avg_hr: number }[]
+    | null) ?? [];
+
+  return rijen
+    .map((a) => {
+      const ef = aerobicEfficiency(a.distance_m, a.moving_s, a.avg_hr);
+      if (ef === null) return null;
+      return {
+        date: a.date,
+        km: km(a.distance_m),
+        minutes: minutes(a.moving_s),
+        hm: Math.round(Number(a.elev_gain_m ?? 0)),
+        avg_hr: Math.round(Number(a.avg_hr)),
+        ef,
+      };
+    })
+    .filter((p): p is AeroobPunt => p !== null);
 }

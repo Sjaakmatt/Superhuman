@@ -1,7 +1,7 @@
 import { getReference, getWeeks, phaseForWeek } from '@/lib/plan';
-import { getActivities, getWeekActuals, getWellness, getZoneSeconds, getZones, getLogs } from '@/lib/data';
+import { getActivities, getAerobicSessions, getWeekActuals, getWellness, getZoneSeconds, getZones, getLogs } from '@/lib/data';
 import { getDays } from '@/lib/plan';
-import { distribution, km, minutes, weekJump, wellnessTrend, z2Drift } from '@/lib/metrics';
+import { distribution, km, minutes, rollingMean, weekJump, wellnessTrend, z2Drift } from '@/lib/metrics';
 import { addDays, weekStart, type IsoDate } from '@/lib/date';
 import type { RuleInput } from '@/lib/rules';
 import type { Reader } from '@/lib/db';
@@ -31,6 +31,7 @@ export async function buildFacts(kind: string, today: IsoDate, ruleInput: RuleIn
   const trend = wellnessTrend(wellness, today);
   const dist = distribution(zoneSeconds);
   const yesterday = await getActivities(addDays(today, -1), addDays(today, -1), r);
+  const aeroob = await getAerobicSessions(addDays(today, -365), today, r);
 
   const week = byWeek.get(current.week);
 
@@ -61,6 +62,7 @@ export async function buildFacts(kind: string, today: IsoDate, ruleInput: RuleIn
       uren_met_hartslag: Math.round((dist.seconds / 3600) * 10) / 10,
     },
     z2_drift_bpm: round2(ruleInput ? z2Drift(ruleInput.z2, ruleInput.z2Ceiling) : null),
+    aerobe_efficientie: aerobeEfficientie(aeroob),
     welzijn: {
       vandaag: trend.today,
       gemiddelde_7d: round2(trend.last7),
@@ -98,3 +100,20 @@ export async function buildFacts(kind: string, today: IsoDate, ruleInput: RuleIn
 }
 
 const round2 = (n: number | null) => (n === null ? null : Math.round(n * 100) / 100);
+
+/** Meters per minuut per hartslag op geplande Z2-sessies. Waar hij begon en
+ *  waar hij nu staat, allebei over vijf sessies gemiddeld — één sessie zegt te
+ *  weinig om iets over een basis te beweren. */
+function aerobeEfficientie(punten: { ef: number }[]) {
+  if (punten.length < 5) return { sessies: punten.length, toelichting: 'te weinig sessies om iets te zeggen' };
+  const trend = rollingMean(punten.map((p) => p.ef), 5);
+  const start = trend[4]!;
+  const nu = trend[trend.length - 1]!;
+  return {
+    sessies: punten.length,
+    eerste_vijf: Math.round(start * 1000) / 1000,
+    laatste_vijf: Math.round(nu * 1000) / 1000,
+    verandering_procent: Math.round(((nu - start) / start) * 1000) / 10,
+    eenheid: 'meter per minuut per hartslag, hoger is beter',
+  };
+}

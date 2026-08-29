@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   adherence,
+  aerobicEfficiency,
+  rollingMean,
   schaalZones,
   descentMeters,
   descentSeconds,
@@ -182,5 +184,45 @@ describe('schaalZones', () => {
 
   it('houdt de bovengrens van de hoogste zone open', () => {
     expect(schaalZones(naslag, 196).at(-1)!.hr_max).toBe(220);
+  });
+});
+
+describe('aerobicEfficiency', () => {
+  it('rekent meters per minuut per hartslag', () => {
+    // 10 km in 60 minuten bij 140 slagen: 166,67 m/min / 140 = 1,190
+    expect(aerobicEfficiency(10000, 3600, 140)).toBeCloseTo(1.19, 2);
+  });
+
+  it('stijgt als je hetzelfde tempo bij een lagere hartslag loopt', () => {
+    const voor = aerobicEfficiency(10000, 3600, 145)!;
+    const na = aerobicEfficiency(10000, 3600, 138)!;
+    expect(na).toBeGreaterThan(voor);
+  });
+
+  it('stijgt als je harder loopt bij dezelfde hartslag', () => {
+    const voor = aerobicEfficiency(10000, 3600, 140)!;
+    const na = aerobicEfficiency(10600, 3600, 140)!;
+    expect(na).toBeGreaterThan(voor);
+  });
+
+  it('levert niets bij een ontbrekende of nulwaarde', () => {
+    expect(aerobicEfficiency(null, 3600, 140)).toBeNull();
+    expect(aerobicEfficiency(10000, null, 140)).toBeNull();
+    expect(aerobicEfficiency(10000, 3600, null)).toBeNull();
+    expect(aerobicEfficiency(10000, 0, 140)).toBeNull();
+  });
+});
+
+describe('rollingMean', () => {
+  it('begint bij het eerste punt in plaats van bij het volle venster', () => {
+    expect(rollingMean([1, 2, 3], 3)).toEqual([1, 1.5, 2]);
+  });
+
+  it('kijkt niet verder terug dan het venster', () => {
+    expect(rollingMean([1, 1, 1, 10], 2)).toEqual([1, 1, 1, 5.5]);
+  });
+
+  it('laat een lege reeks leeg', () => {
+    expect(rollingMean([], 5)).toEqual([]);
   });
 });

@@ -33,6 +33,7 @@ Het trainingsplan is 57 weken, 399 dagen, en staat vast in de database — de ap
 | **Welzijn** | Som van vijf items van 1–7 (geslapen, fris, benen, rust in je hoofd, zin om te gaan) = 5–35. Vergelijk met het 14-daags gemiddelde, nooit met een populatienorm. |
 | **Zones na een hertest** | De banden uit `reference.zones` geschaald naar de gemeten HRmax, met dezelfde percentages (Z1 tot 64,9%, Z2 tot 80,9%, Z3 tot 88,8%, Z4 tot 96,8%). Tempo's schalen niet mee: die volgen niet uit een hartslag. Zodra `athlete.hr_max_measured_on` staat, winnen de eigen banden van de naslag — lees ze via `getZones()`, nooit rechtstreeks via `getReference('zones')`. |
 | **Wat een mijlpaal oplevert** | Het veld `logs` op een mijlpaal in de seed: `hrmax` een gemeten maximumhartslag, `bloed` een bloedpanel, `loop` een activiteit die uit Strava komt. Leeg = alleen een notitie. De kaart leest dat veld; hij raadt nooit uit de titel. |
+| **Aerobe efficiëntie** | Meters per minuut gedeeld door de gemiddelde hartslag, op geplande Z2-sessies van ≥ 20 min met een gemeten hartslag — dezelfde afbakening als de Z2-drift. Hoger is beter. Niet gecorrigeerd voor helling: heuvels drukken de waarde, dus de hoogtemeters staan bij elk punt. De lijn op Analyse is het voortschrijdend gemiddelde over vijf sessies; losse punten wisselen te sterk. |
 | **Pijnmodel** | Pijn ≤5/10 tijdens is toegestaan, moet de volgende ochtend 0 zijn, en mag niet week op week stijgen. Alle drie moeten kloppen. |
 
 ## Mappen
@@ -64,6 +65,7 @@ styles/tokens.css    kleuren en typografie — bron van waarheid
 - `lib/coach.ts` — de begrenzing van een opgevraagd bereik, en dat geen enkel gereedschap kan schrijven.
 - `lib/date.ts` — de maandhulpjes van de agenda, inclusief schrikkeljaar en jaargrens.
 - `lib/metrics.ts` — het herschalen van de zones na een HRmax-hertest: geen gat en geen overlap tussen de banden.
+- `lib/metrics.ts` — aerobe efficiëntie stijgt bij een lagere hartslag én bij een hoger tempo, en het voortschrijdend gemiddelde begint bij het eerste punt.
 
 ## Wat je niet moet bouwen
 

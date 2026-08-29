@@ -174,3 +174,38 @@ export function schaalZones(naslag: Zones, hrMax: number): Zones['bands'] {
     return { ...band, hr_min: onder, hr_max: boven };
   });
 }
+
+/** Aerobe efficiëntie: meters per minuut gedeeld door de gemiddelde hartslag.
+ *
+ *  Hoger is beter — je legt meer afstand af per hartslag. Dit is de maat waar
+ *  een basisblok op stuurt: niet harder lopen, maar hetzelfde tempo bij een
+ *  lagere hartslag. Alleen vergelijkbaar binnen dezelfde intensiteit, dus we
+ *  rekenen hem uitsluitend op geplande Z2-sessies van minstens twintig minuten
+ *  (zelfde filter als de Z2-drift).
+ *
+ *  Heuvels drukken de waarde: dezelfde inspanning levert minder meters op. Dat
+ *  corrigeren we niet — Strava geeft ons geen hellingsgecorrigeerd tempo — maar
+ *  de hoogtemeters staan wel bij elk punt, zodat een uitschieter te verklaren is. */
+export function aerobicEfficiency(
+  distanceM: number | null,
+  movingS: number | null,
+  avgHr: number | null,
+): number | null {
+  const meters = Number(distanceM ?? 0);
+  const seconden = Number(movingS ?? 0);
+  const hartslag = Number(avgHr ?? 0);
+  if (meters <= 0 || seconden <= 0 || hartslag <= 0) return null;
+  const meterPerMinuut = meters / (seconden / 60);
+  return Math.round((meterPerMinuut / hartslag) * 1000) / 1000;
+}
+
+/** Voortschrijdend gemiddelde over de laatste `venster` waarden, inclusief de
+ *  huidige. Vóór het venster vol is rekenen we met wat er al is, zodat de lijn
+ *  bij het eerste punt begint en niet pas bij het vijfde. */
+export function rollingMean(values: number[], venster: number): number[] {
+  return values.map((_, i) => {
+    const vanaf = Math.max(0, i - venster + 1);
+    const stuk = values.slice(vanaf, i + 1);
+    return stuk.reduce((t, v) => t + v, 0) / stuk.length;
+  });
+}
