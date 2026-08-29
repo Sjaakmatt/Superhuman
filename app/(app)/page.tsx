@@ -11,7 +11,7 @@ import { getDay, getDays, getReference, getWeek, getWeekDays, phaseForWeek, plan
 import { getBloodPanels, getDayMeasurements, getLogs, getMilestoneResults, getRunKmByDay, getWellness, getZones, loadRuleInput } from '@/lib/data';
 import { evaluate } from '@/lib/rules';
 import { meanOver } from '@/lib/metrics';
-import { addDays, daysBetween, formatLong, formatMonth, formatShort, monthDays, monthOf, today as todayIn } from '@/lib/date';
+import { addDays, daysBetween, formatLong, formatMonth, formatShort, monthDays, monthOf, today as todayIn, weekStart } from '@/lib/date';
 
 /* Een mijlpaal komt niet uit de lucht vallen: vanaf twee weken van tevoren
  * staat hij op Vandaag, zodat je je erop kunt voorbereiden. */
@@ -31,20 +31,25 @@ export default async function Vandaag({
   const month = params.m && /^\d{4}-\d{2}$/.test(params.m) ? params.m : monthOf(date);
   const opAgenda = params.v === 'agenda';
 
-  const [day, weekDays, milestones, zones, uitslagen] = await Promise.all([
-    getDay(date),
-    getWeekDays(date),
-    getReference('milestones'),
-    getZones(),
-    getMilestoneResults(),
-  ]);
-  const week = day ? await getWeek(day.week) : null;
-
+  // Alles wat niet van elkaar afhangt gaat in één golf naar de database. Elke
+  // los gewachte query is een rondje van een paar honderd milliseconden, en dat
+  // waren er op dit scherm bijna twintig.
   const maandDagen = monthDays(month);
-  const agendaDagen = await getDays(maandDagen[0]!, maandDagen.at(-1)!);
-  const weekGelopen = weekDays.length
-    ? await getRunKmByDay(weekDays[0]!.date, weekDays.at(-1)!.date)
-    : new Map<string, number>();
+  const gisteren = addDays(now, -1);
+  const weekBegin = weekStart(date);
+
+  const [day, weekDays, milestones, zones, uitslagen, agendaDagen, weekGelopen, wellness, gisterenLogs] =
+    await Promise.all([
+      getDay(date),
+      getWeekDays(date),
+      getReference('milestones'),
+      getZones(),
+      getMilestoneResults(),
+      getDays(maandDagen[0]!, maandDagen.at(-1)!),
+      getRunKmByDay(weekBegin, addDays(weekBegin, 6)),
+      getWellness(addDays(date, -13), date),
+      date === now ? getLogs(gisteren, gisteren) : Promise.resolve([]),
+    ]);
 
   // De mijlpaal van de dag die je bekijkt, en anders de eerstvolgende binnen de
   // aanloop — gerekend vanaf díe dag, niet vanaf vandaag. Anders zie je op
@@ -55,25 +60,25 @@ export default async function Vandaag({
       .filter((m) => m.date > date && daysBetween(date, m.date) <= AANLOOP)
       .sort((a, b) => a.date.localeCompare(b.date))[0] ??
     null;
-  const mijlpaalDag = komende ? (komende.date === date ? day : await getDay(komende.date)) : null;
-  const fueling = komende ? phaseForWeek(await getReference('fueling_by_week'), komende.week) : null;
+  // De tweede golf hangt af van de eerste: welke week het is, en welke mijlpaal.
+  const [week, mijlpaalDag, fuelingFases, gemeten, vandaagGemeten, panels] = await Promise.all([
+    day ? getWeek(day.week) : Promise.resolve(null),
+    komende ? getDay(komende.date) : Promise.resolve(null),
+    komende ? getReference('fueling_by_week') : Promise.resolve([]),
+    komende ? getDayMeasurements(komende.date) : Promise.resolve({ activity: null, log: null }),
+    getDayMeasurements(date),
+    komende?.logs === 'bloed' ? getBloodPanels() : Promise.resolve([]),
+  ]);
 
-  // Wat er van de mijlpaaldag al gemeten is, en of het bloedpanel eromheen
-  // ingevuld staat. Hetzelfde venster als de regel blood-due gebruikt.
-  const gemeten = komende ? await getDayMeasurements(komende.date) : { activity: null, log: null };
-  // Wat je op de dag zelf gelopen hebt, naast wat er gepland stond.
-  const vandaagGemeten = komende?.date === date ? gemeten : await getDayMeasurements(date);
-  const bloedIngevuld =
-    komende?.logs === 'bloed'
-      ? (await getBloodPanels()).some(
-          (p) => p.date >= addDays(komende.date, -14) && p.date <= addDays(komende.date, 28),
-        )
-      : false;
+  const fueling = komende ? phaseForWeek(fuelingFases, komende.week) : null;
+  // Hetzelfde venster als de regel blood-due gebruikt.
+  const bloedIngevuld = komende
+    ? panels.some((p) => p.date >= addDays(komende.date, -14) && p.date <= addDays(komende.date, 28))
+    : false;
 
   const ruleInput = day && week ? await loadRuleInput(now, week.week, week.status) : null;
   const hits = ruleInput ? evaluate(ruleInput) : [];
 
-  const wellness = await getWellness(addDays(date, -13), date);
   const stored = wellness.find((w) => w.date === date) ?? null;
   // De kolommen mogen null zijn; de schuifjes willen een getal of niets.
   const savedToday = stored
@@ -87,8 +92,7 @@ export default async function Vandaag({
 
   // De pijn van gisteren kun je pas vanochtend beoordelen. Alleen vragen als er
   // gisteren pijn was en het antwoord nog ontbreekt.
-  const gisteren = addDays(now, -1);
-  const gisterenLog = date === now ? (await getLogs(gisteren, gisteren))[0] ?? null : null;
+  const gisterenLog = gisterenLogs[0] ?? null;
   const pijnGisteren =
     gisterenLog && Number(gisterenLog.pain_score) > 0
       ? {

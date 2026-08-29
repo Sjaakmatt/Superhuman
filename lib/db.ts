@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
@@ -14,7 +15,7 @@ export function dbConfigured(): boolean {
 
 /** Client voor server components en route handlers: de sessie van de gebruiker,
  *  dus RLS is van kracht. */
-export async function db(): Promise<SupabaseClient | null> {
+export const db = cache(async (): Promise<SupabaseClient | null> => {
   if (!URL || !ANON) return null;
   const store = await cookies();
   return createServerClient(URL, ANON, {
@@ -29,7 +30,7 @@ export async function db(): Promise<SupabaseClient | null> {
       },
     },
   });
-}
+});
 
 /** Service-role client. Alleen voor cron-routes en scripts — nooit in de browser
  *  en nooit in een component. */
@@ -40,13 +41,28 @@ export function admin(): SupabaseClient {
   return createClient(URL, SERVICE, { auth: { persistSession: false } });
 }
 
-/** De ingelogde gebruiker, of null. */
+/** De ingelogde gebruiker, of null. Doet een netwerkcall; wil je alleen weten
+ *  wie het is, gebruik dan currentUserId(). */
 export async function currentUser() {
   const client = await db();
   if (!client) return null;
   const { data } = await client.auth.getUser();
   return data.user ?? null;
 }
+
+/** Het id van de ingelogde gebruiker, uit het token zelf.
+ *
+ *  Dit project ondertekent zijn tokens asymmetrisch, dus getClaims controleert
+ *  de handtekening lokaal met WebCrypto — geen netwerkcall. Dat scheelt bij elk
+ *  scherm een rondje naar Supabase, en de meeste queries hebben verder niets
+ *  van het gebruikersobject nodig. */
+export const currentUserId = cache(async (): Promise<string | null> => {
+  const client = await db();
+  if (!client) return null;
+  const { data } = await client.auth.getClaims();
+  const sub = data?.claims?.sub;
+  return typeof sub === 'string' ? sub : null;
+});
 
 /** Wie leest, en namens wie.
  *

@@ -30,10 +30,14 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  const { data } = await supabase.auth.getUser();
+  // getClaims verifieert het token lokaal met WebCrypto zolang het project
+  // asymmetrische sleutels gebruikt — dat doet het. getUser() deed hier een
+  // netwerkcall naar Supabase bij élke navigatie, ook bij het wisselen van tab.
+  // De handtekening wordt nog steeds gecontroleerd; alleen de omweg is weg.
+  const { data } = await supabase.auth.getClaims();
   const path = request.nextUrl.pathname;
 
-  if (!data.user && !PUBLIC.some((p) => path.startsWith(p))) {
+  if (!data?.claims && !PUBLIC.some((p) => path.startsWith(p))) {
     const login = request.nextUrl.clone();
     login.pathname = '/login';
     login.search = '';

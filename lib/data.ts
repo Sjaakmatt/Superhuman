@@ -1,4 +1,5 @@
-import { admin, db, reader, type Reader } from '@/lib/db';
+import { cache } from 'react';
+import { admin, currentUserId, db, reader, type Reader } from '@/lib/db';
 import { getReference, getWeeks } from '@/lib/plan';
 import { addDays, type IsoDate } from '@/lib/date';
 import { aerobicEfficiency, km, minutes } from '@/lib/metrics';
@@ -22,14 +23,12 @@ export type Athlete = {
   timezone: string;
 };
 
-export async function getAthlete(): Promise<Athlete | null> {
-  const client = await db();
-  if (!client) return null;
-  const { data: auth } = await client.auth.getUser();
-  if (!auth.user) return null;
-  const { data } = await client.from('athlete').select('*').eq('user_id', auth.user.id).maybeSingle();
+export const getAthlete = cache(async (): Promise<Athlete | null> => {
+  const [client, userId] = await Promise.all([db(), currentUserId()]);
+  if (!client || !userId) return null;
+  const { data } = await client.from('athlete').select('*').eq('user_id', userId).maybeSingle();
   return (data as Athlete | null) ?? null;
-}
+});
 
 export type UitnodigingStatus = 'uitgenodigd' | 'actief' | 'niet aangemaakt';
 
@@ -214,10 +213,10 @@ export async function loadRuleInput(
     getReference('milestones', l),
   ]);
 
+  const actualByWeek = new Map(actuals.map((a) => [a.week, a]));
+
   let panelQuery = l.client.from('blood_panel').select('date').order('date');
   if (l.athleteId) panelQuery = panelQuery.eq('athlete_id', l.athleteId);
-  const { data: panels } = await panelQuery;
-  const actualByWeek = new Map(actuals.map((a) => [a.week, a]));
 
   // Geplande Z2-sessies van minstens twintig minuten met een gemeten hartslag.
   let z2query = l.client
@@ -230,7 +229,7 @@ export async function loadRuleInput(
     .gte('moving_s', 1200)
     .order('date');
   if (l.athleteId) z2query = z2query.eq('athlete_id', l.athleteId);
-  const { data: z2rows } = await z2query;
+  const [{ data: panels }, { data: z2rows }] = await Promise.all([panelQuery, z2query]);
 
   const ceiling = zones.bands.find((b) => b.key === 'Z2')?.hr_max ?? 152;
 
@@ -278,14 +277,13 @@ export async function loadRuleInput(
  *  Staat er een gemeten HRmax op `athlete`, dan winnen zijn eigen banden van de
  *  naslag: die is voor iedereen gelijk en kan dus niet jouw hertest bevatten.
  *  Zonder gemeten waarde valt hij terug op reference.zones. */
-export async function getZones(r?: Reader): Promise<Zones> {
+export const getZones = cache(async (r?: Reader): Promise<Zones> => {
   const l = await reader(r);
-  const naslag = await getReference('zones', l ?? undefined);
-  if (!l) return naslag;
+  if (!l) return getReference('zones');
 
   let q = l.client.from('athlete').select('hr_max, hr_zones, hr_max_measured_on');
   if (l.athleteId) q = q.eq('id', l.athleteId);
-  const { data } = await q.limit(1).maybeSingle();
+  const [naslag, { data }] = await Promise.all([getReference('zones', l), q.limit(1).maybeSingle()]);
   const eigen = data as { hr_max: number; hr_zones: Zones['bands']; hr_max_measured_on: string | null } | null;
   if (!eigen?.hr_max_measured_on || !eigen.hr_zones?.length) return naslag;
 
@@ -295,7 +293,7 @@ export async function getZones(r?: Reader): Promise<Zones> {
     bands: eigen.hr_zones,
     source: `HRmax ${eigen.hr_max}, gemeten op ${eigen.hr_max_measured_on}`,
   };
-}
+});
 
 /** Je bloedpanels, oudste eerst. De eerste is je nulmeting; daar vergelijk je
  *  de rest mee, niet met de referentiewaarden van een lab.
@@ -351,30 +349,19 @@ export async function getHrTests(r?: Reader): Promise<HrTest[]> {
 /** Wat er van één dag gemeten is: de langste activiteit met haar afdaalminuten,
  *  en de sessielog. Voor een wedstrijd of test hoef je zo niets over te typen —
  *  het staat er al, via de nachtelijke sync. */
-export async function getDayMeasurements(date: IsoDate, r?: Reader) {
+export const getDayMeasurements = cache(async (date: IsoDate, r?: Reader) => {
   const l = await reader(r);
   if (!l) return { activity: null, log: null };
 
+  // De afdaalminuten komen mee in dezelfde query; de sessielog loopt ernaast.
+  // Dat waren drie rondjes naar de database, nu één golf.
   let q = l.client
     .from('activity')
-    .select('id, name, sport_type, distance_m, moving_s, elapsed_s, elev_gain_m, avg_hr, max_hr')
+    .select('id, name, sport_type, distance_m, moving_s, elapsed_s, elev_gain_m, avg_hr, max_hr, activity_descent(descent_seconds)')
     .eq('date', date)
     .order('moving_s', { ascending: false })
     .limit(1);
   if (l.athleteId) q = q.eq('athlete_id', l.athleteId);
-  const { data: act } = await q.maybeSingle();
-  const activity = act as (Activity & { id: number }) | null;
-
-  let descent: number | null = null;
-  if (activity) {
-    const { data } = await l.client
-      .from('activity_descent')
-      .select('descent_seconds')
-      .eq('activity_id', activity.id)
-      .maybeSingle();
-    const sec = (data as { descent_seconds: number } | null)?.descent_seconds;
-    descent = sec === undefined || sec === null ? null : Math.round(Number(sec) / 60);
-  }
 
   let lq = l.client
     .from('session_log')
@@ -382,13 +369,17 @@ export async function getDayMeasurements(date: IsoDate, r?: Reader) {
     .eq('date', date)
     .limit(1);
   if (l.athleteId) lq = lq.eq('athlete_id', l.athleteId);
-  const { data: log } = await lq.maybeSingle();
+
+  const [{ data: act }, { data: log }] = await Promise.all([q.maybeSingle(), lq.maybeSingle()]);
+  const activity = act as (Activity & { id: number; activity_descent: { descent_seconds: number }[] | null }) | null;
+  const seconden = activity?.activity_descent?.[0]?.descent_seconds;
+  const descent = seconden === undefined || seconden === null ? null : Math.round(Number(seconden) / 60);
 
   return {
     activity: activity ? { ...activity, descent_min: descent } : null,
     log: (log as { rpe: number | null; pain_score: number | null; gi_score: number | null; carbs_g_per_h: number | null } | null) ?? null,
   };
-}
+});
 
 export type IjkPunt = {
   date: IsoDate;

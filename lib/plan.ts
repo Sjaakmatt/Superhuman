@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { dbConfigured, reader, type Reader } from '@/lib/db';
 import { planSeed, referenceSeed } from '@/lib/seed-files';
 import { addDays, weekStart, type IsoDate } from '@/lib/date';
@@ -12,7 +13,7 @@ export function planSource(): PlanSource {
   return dbConfigured() ? 'database' : 'seed';
 }
 
-export async function getDay(date: IsoDate, r?: Reader): Promise<PlanDay | null> {
+async function leesDay(date: IsoDate, r?: Reader): Promise<PlanDay | null> {
   const client = (await reader(r))?.client;
   if (client) {
     const { data } = await client.from('plan_day').select('*').eq('date', date).maybeSingle();
@@ -21,7 +22,7 @@ export async function getDay(date: IsoDate, r?: Reader): Promise<PlanDay | null>
   return planSeed().days.find((d) => d.date === date) ?? null;
 }
 
-export async function getDays(from: IsoDate, to: IsoDate, r?: Reader): Promise<PlanDay[]> {
+async function leesDays(from: IsoDate, to: IsoDate, r?: Reader): Promise<PlanDay[]> {
   const client = (await reader(r))?.client;
   if (client) {
     const { data } = await client.from('plan_day').select('*').gte('date', from).lte('date', to).order('date');
@@ -30,7 +31,7 @@ export async function getDays(from: IsoDate, to: IsoDate, r?: Reader): Promise<P
   return planSeed().days.filter((d) => d.date >= from && d.date <= to);
 }
 
-export async function getWeek(week: number, r?: Reader): Promise<PlanWeek | null> {
+async function leesWeek(week: number, r?: Reader): Promise<PlanWeek | null> {
   const client = (await reader(r))?.client;
   if (client) {
     const { data } = await client.from('plan_week').select('*').eq('week', week).maybeSingle();
@@ -39,7 +40,7 @@ export async function getWeek(week: number, r?: Reader): Promise<PlanWeek | null
   return planSeed().weeks.find((w) => w.week === week) ?? null;
 }
 
-export async function getWeeks(r?: Reader): Promise<PlanWeek[]> {
+async function leesWeeks(r?: Reader): Promise<PlanWeek[]> {
   const client = (await reader(r))?.client;
   if (client) {
     const { data } = await client.from('plan_week').select('*').order('week');
@@ -48,13 +49,24 @@ export async function getWeeks(r?: Reader): Promise<PlanWeek[]> {
   return planSeed().weeks;
 }
 
+
+/* Het plan verandert na de seed bijna nooit en wordt op elk scherm gelezen —
+ * loadRuleInput vraagt de weken op, de pagina zelf ook. React-cache maakt daar
+ * binnen één verzoek één query van. */
+export const getDay = cache(leesDay);
+export const getDays = cache(leesDays);
+export const getWeek = cache(leesWeek);
+export const getWeeks = cache(leesWeeks);
+export const getReference = cache(leesReference);
+export const getExercises = cache(leesExercises);
+
 /** De dagen van de week waarin `date` valt, maandag tot en met zondag. */
 export async function getWeekDays(date: IsoDate, r?: Reader): Promise<PlanDay[]> {
   const start = weekStart(date);
   return getDays(start, addDays(start, 6), r);
 }
 
-export async function getReference<K extends keyof Reference>(key: K, r?: Reader): Promise<Reference[K]> {
+async function leesReference<K extends keyof Reference>(key: K, r?: Reader): Promise<Reference[K]> {
   const client = (await reader(r))?.client;
   if (client) {
     const { data } = await client.from('reference').select('value').eq('key', key).maybeSingle();
@@ -71,7 +83,7 @@ export type Reference = {
   blood_markers: BloodMarker[];
 };
 
-export async function getExercises(r?: Reader): Promise<Exercise[]> {
+async function leesExercises(r?: Reader): Promise<Exercise[]> {
   const client = (await reader(r))?.client;
   if (client) {
     const { data } = await client.from('exercise').select('*').order('slug');
