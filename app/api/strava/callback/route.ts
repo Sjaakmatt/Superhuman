@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { admin } from '@/lib/db';
-import { exchangeCode } from '@/lib/strava';
+import { exchangeCode, stravaAppVan } from '@/lib/strava';
 
 /** Strava stuurt de gebruiker hier terug. We wisselen de code om voor tokens en
  *  bewaren die met de service-role-sleutel — strava_token heeft geen RLS-policy,
@@ -19,8 +19,11 @@ export async function GET(request: Request) {
   const { data: athlete } = await sb.from('athlete').select('id').eq('user_id', userId).maybeSingle();
   if (!athlete) return NextResponse.redirect(new URL('/instellingen?strava=geen-atleet', url.origin));
 
+  const app = await stravaAppVan(athlete.id);
+  if (!app) return NextResponse.redirect(new URL('/instellingen?strava=geen-app', url.origin));
+
   try {
-    const tokens = await exchangeCode(code);
+    const tokens = await exchangeCode(app, code);
     await sb.from('strava_token').upsert({
       athlete_id: athlete.id,
       access_token: tokens.access_token,

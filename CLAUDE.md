@@ -20,7 +20,7 @@ Het trainingsplan is 57 weken, 399 dagen, en staat vast in de database — de ap
 3. **Alle interfacetekst is Nederlands**, in de tweede persoon, zonder uitroeptekens en zonder aanmoediging die niet verdiend is. Termen als "welzijnsscore" en "RPE" worden in de interface gewone woorden ("Hoe voel je je?", "Hoe zwaar voelde het?").
 4. **Alarmen komen uit SQL, niet uit het taalmodel.** De escalatieregels zijn deterministisch (zie `lib/rules.ts`). Het model schrijft de toelichting en stelt aanpassingen voor; het beslist nooit zelf of er een alarm afgaat.
 5. **Datums zijn `date`, geen `timestamptz`.** Tijdzone is `Europe/Amsterdam`. Een trainingsdag is een kalenderdag, geen moment.
-6. **Geen secrets client-side.** Strava-tokens en de Anthropic-sleutel leven alleen in server routes en Edge Functions.
+6. **Geen secrets client-side.** Strava-tokens, de Strava-client-secret en de Anthropic-sleutel leven alleen in server routes en Edge Functions. `strava_token` en `strava_app` hebben bewust geen RLS-policy: alleen de service-role-sleutel komt erbij.
 7. **Beide themas zijn ontworpen, niet omgeklapt.** Definieer een kleur nooit alleen binnen een `@media` of `[data-theme]` blok.
 8. **Afgeleide getallen berekenen we zelf en documenteren we.** "Afdaalminuten" is onze eigen definitie (zie hieronder) — geen Strava-veld. Zet de definitie in een comment bij de query.
 
@@ -35,7 +35,7 @@ Het trainingsplan is 57 weken, 399 dagen, en staat vast in de database — de ap
 | **Zones na een hertest** | De banden uit `reference.zones` geschaald naar de gemeten HRmax, met dezelfde percentages (Z1 tot 64,9%, Z2 tot 80,9%, Z3 tot 88,8%, Z4 tot 96,8%). Tempo's schalen niet mee: die volgen niet uit een hartslag. Zodra `athlete.hr_max_measured_on` staat, winnen de eigen banden van de naslag — lees ze via `getZones()`, nooit rechtstreeks via `getReference('zones')`. |
 | **Wat een mijlpaal oplevert** | Het veld `logs` op een mijlpaal in de seed: `hrmax` een gemeten maximumhartslag, `bloed` een bloedpanel, `loop` een activiteit die uit Strava komt. Leeg = alleen een notitie. De kaart leest dat veld; hij raadt nooit uit de titel. |
 | **Aerobe efficiëntie** | Meters per minuut gedeeld door de gemiddelde hartslag. Meetellen doen `Run`/`TrailRun` van ≥ 20 min waarvan de **gemeten** gemiddelde hartslag in de Z2-band valt — dus de uitkomst, niet de bedoeling. Zo begint de lijn bij je eerste duurloop en niet pas op de eerste plandag, en telt een Z2-sessie die je te hard liep niet mee. Een gemiddelde in Z2 is niet genoeg: hoogstens 10% van de gemeten tijd mag boven Z2 zitten (uit `activity_zone`, dus uit de streams). Zonder streams valt hij terug op de piekhartslag ≤ Z3-plafond. Staat er een intensieve dag gepland (zone met Z3, Z4 of Z5), dan valt hij sowieso af. Let op het verschil met de **Z2-drift**, die juist wél op de bedoeling filtert — die vraagt of je een sessie die Z2 hóórde te zijn te hard liep. Niet gecorrigeerd voor helling; de hoogtemeters staan bij elk punt. De lijn is het voortschrijdend gemiddelde over vijf sessies. |
-| **Welke activiteit is dit** | `(athlete_id, source, external_id)`, niet de primaire sleutel. `source` is `strava`, `health_connect` of `manual`; `external_id` is het Strava-id of het Health Connect-record-id. Dezelfde loop uit twee bronnen wordt bij het aanleveren herkend aan een starttijd binnen een kwartier én een duur die minder dan een tiende scheelt — zie `isDezelfdeSessie`. Zonder die controle telt hij dubbel in je weekvolume. |
+| **Welke activiteit is dit** | `(athlete_id, source, external_id)`, niet de primaire sleutel. `source` is `strava` of `manual`; `external_id` is het Strava-id. De primaire sleutel is historisch het Strava-id en blijft dat voor wat er staat; nieuwe rijen krijgen er één uit een reeks die ver boven elk Strava-id begint. |
 | **Pijnmodel** | Pijn ≤5/10 tijdens is toegestaan, moet de volgende ochtend 0 zijn, en mag niet week op week stijgen. Alle drie moeten kloppen. |
 
 ## Mappen
@@ -54,9 +54,6 @@ lib/strava.ts        OAuth, sync, streams
 lib/insight.ts       promptopbouw + Anthropic-aanroep
 lib/coach.ts         het gesprek: systeemprompt, leesgereedschappen, de lus
 components/CoachWidget.tsx  de coach hangt over elk scherm, geen eigen route
-app/api/ingest/       Health Connect: koppelen en aanleveren
-lib/ingest.ts        controle op wat de telefoon aanlevert
-android/             de brug naar Samsung Health (Health Connect), aparte APK
 supabase/migrations/ SQL
 supabase/seed/       plan-seed.json, reference-seed.json
 styles/tokens.css    kleuren en typografie — bron van waarheid
@@ -68,7 +65,6 @@ styles/tokens.css    kleuren en typografie — bron van waarheid
 - `lib/rules.ts` — elke escalatieregel met een geval dat wel en een dat niet vuurt.
 - Seed-integriteit: 399 dagen, 57 weken, elke dag hoort bij een bestaande week, weektotaal = som van de dagen.
 - `lib/coach.ts` — de begrenzing van een opgevraagd bereik, en dat geen enkel gereedschap kan schrijven.
-- `lib/ingest.ts` — elke grens van wat de telefoon mag aanleveren, en het herkennen van dezelfde loop uit twee bronnen.
 - `lib/date.ts` — de maandhulpjes van de agenda, inclusief schrikkeljaar en jaargrens.
 - `lib/metrics.ts` — het herschalen van de zones na een HRmax-hertest: geen gat en geen overlap tussen de banden.
 - `lib/metrics.ts` — aerobe efficiëntie stijgt bij een lagere hartslag én bij een hoger tempo, en het voortschrijdend gemiddelde begint bij het eerste punt.

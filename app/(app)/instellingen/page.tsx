@@ -1,6 +1,6 @@
-import Bronnen from '@/components/Bronnen';
 import Naam from '@/components/Naam';
 import HartslagMax from '@/components/HartslagMax';
+import StravaApp from '@/components/StravaApp';
 import StravaOphalen from '@/components/StravaOphalen';
 import Link from 'next/link';
 import ThemeToggle from '@/components/ThemeToggle';
@@ -9,11 +9,10 @@ import PushToggle from '@/components/PushToggle';
 import Uitloggen from '@/components/Uitloggen';
 import Uitnodigingen from '@/components/Uitnodigingen';
 import { Card, CardTitle, Empty, Note, Pill } from '@/components/ui';
-import { getApparaten, getAthlete, getInvitations, getLastSync, getShoes, getZones } from '@/lib/data';
+import { getAthlete, getInvitations, getLastSync, getShoes, getStravaApp, getZones } from '@/lib/data';
 import { currentUser } from '@/lib/db';
 import { dbConfigured } from '@/lib/db';
 import { insightConfigured } from '@/lib/insight';
-import { stravaConfigured } from '@/lib/strava';
 import { planSource } from '@/lib/plan';
 import { today as todayIn } from '@/lib/date';
 
@@ -26,10 +25,13 @@ export default async function Instellingen({ searchParams }: { searchParams: Pro
     getZones(),
     currentUser(),
   ]);
-  const [laatsteSync, apparaten] = await Promise.all([
+  const [laatsteSync, stravaApp] = await Promise.all([
     athlete?.strava_athlete_id ? getLastSync() : Promise.resolve(null),
-    dbConfigured() ? getApparaten() : Promise.resolve([]),
+    dbConfigured() ? getStravaApp() : Promise.resolve(null),
   ]);
+  // Het domein dat je bij Strava als callback opgeeft: hetzelfde adres als waar
+  // de app draait, want daar komt de omleiding terug.
+  const domein = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://ultra100.factumai.nl').host;
   // De lijst is alleen zichtbaar voor wie hem mag beheren.
   const uitnodigingen = athlete?.can_invite ? await getInvitations() : [];
 
@@ -51,18 +53,23 @@ export default async function Instellingen({ searchParams }: { searchParams: Pro
         </CardTitle>
         {params.strava ? (
           <p className="mb-3 text-[13px]" style={{ color: params.strava === 'verbonden' ? 'var(--acc)' : 'var(--crit)' }}>
-            {params.strava === 'verbonden' ? 'Gelukt. De eerste sync haalt alles vanaf 1 juni 2026 op.' : `Mislukt: ${params.strava}`}
+            {params.strava === 'verbonden'
+              ? 'Gelukt. De eerste sync haalt alles vanaf 1 juni 2026 op.'
+              : params.strava === 'geen-app'
+                ? 'Mislukt: er staat nog geen Strava-app. Vul je client-id en sleutel hieronder in.'
+                : `Mislukt: ${params.strava}`}
           </p>
         ) : null}
-        {stravaConfigured() ? (
+        {dbConfigured() && athlete ? <StravaApp app={stravaApp} domein={domein} /> : null}
+        {stravaApp ? (
           <a href="/api/strava/connect" className="interactive inline-block rounded-[var(--r-btn)] px-4 py-2.5 text-[13px] font-semibold"
             style={{ background: 'var(--acc)', color: 'var(--acc-ink)' }}>
             {athlete?.strava_athlete_id ? 'Opnieuw koppelen' : 'Koppel Strava'}
           </a>
         ) : (
-          <Empty title="Nog geen Strava-app">
-            Maak er één aan op strava.com/settings/api met scope <code>activity:read_all,profile:read_all</code> en zet
-            <code> STRAVA_CLIENT_ID</code> en <code>STRAVA_CLIENT_SECRET</code> in je omgeving.
+          <Empty title="Eerst je eigen Strava-app">
+            Zonder client-id en sleutel valt er niets te koppelen. Vul ze hierboven in; de app vraagt Strava dan om
+            <code> activity:read_all,profile:read_all</code>.
           </Empty>
         )}
         {athlete?.strava_athlete_id ? <StravaOphalen laatst={laatsteSync} /> : null}
@@ -94,8 +101,6 @@ export default async function Instellingen({ searchParams }: { searchParams: Pro
         </Note>
       </Card>
 
-      {dbConfigured() ? <Bronnen apparaten={apparaten} /> : null}
-
       <PushToggle vapidPublicKey={process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? null} />
 
       <ShoeList shoes={shoes} writable={dbConfigured()} />
@@ -110,7 +115,7 @@ export default async function Instellingen({ searchParams }: { searchParams: Pro
         <CardTitle>Verbindingen</CardTitle>
         <ul className="flex flex-col gap-2 text-[13px]">
           <Row label="Database" ok={dbConfigured()} detail={planSource() === 'seed' ? 'plan komt uit supabase/seed' : 'plan komt uit de database'} />
-          <Row label="Strava" ok={stravaConfigured()} detail="OAuth-app en sleutels" />
+          <Row label="Strava" ok={Boolean(stravaApp)} detail={stravaApp?.eigen ? 'je eigen app' : 'app uit de omgeving'} />
           <Row label="Anthropic" ok={insightConfigured()} detail="voor de analyses" />
         </ul>
         <Note>

@@ -564,12 +564,23 @@ export const getAerobicSessions = cache(async (from: IsoDate, to: IsoDate, r?: R
     .filter((p): p is AeroobPunt => p !== null);
 });
 
-/** De telefoons die aan jou gekoppeld zijn. */
-export async function getApparaten(r?: Reader): Promise<{ id: string; naam: string; laatste_sync: string | null; laatste_fout: string | null }[]> {
-  const l = await reader(r);
-  if (!l) return [];
-  let q = l.client.from('device').select('id, naam, laatste_sync, laatste_fout').order('created_at');
-  if (l.athleteId) q = q.eq('athlete_id', l.athleteId);
-  const { data } = await q;
-  return (data as { id: string; naam: string; laatste_sync: string | null; laatste_fout: string | null }[] | null) ?? [];
+/** Wat het scherm van je Strava-app mag weten: het client-id (dat staat toch al
+ *  in de koppel-URL) en of er een sleutel bij staat. De sleutel zelf blijft op
+ *  de server. Zonder eigen rij val je terug op de app uit de omgeving. */
+export async function getStravaApp(): Promise<{ client_id: string; eigen: boolean } | null> {
+  const athlete = await getAthlete();
+  if (!athlete) return null;
+  try {
+    const { data } = await admin()
+      .from('strava_app')
+      .select('client_id')
+      .eq('athlete_id', athlete.id)
+      .maybeSingle();
+    const rij = data as { client_id: string } | null;
+    if (rij?.client_id) return { client_id: rij.client_id, eigen: true };
+  } catch {
+    // Geen service-role-sleutel: dan kunnen we alleen over de omgeving praten.
+  }
+  const uitOmgeving = process.env.STRAVA_CLIENT_ID;
+  return uitOmgeving ? { client_id: uitOmgeving, eigen: false } : null;
 }

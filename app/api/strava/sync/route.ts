@@ -12,6 +12,7 @@ import {
   listActivities,
   pause,
   refresh,
+  stravaAppVan,
   toRow,
   withBackoff,
 } from '@/lib/strava';
@@ -100,7 +101,11 @@ async function syncAtleet(sb: SupabaseClient, token: StravaToken) {
   let accessToken = token.access_token;
   const expiresAt = Date.parse(token.expires_at);
   if (Number.isNaN(expiresAt) || expiresAt - Date.now() < 600_000) {
-    const fresh = await refresh(token.refresh_token);
+    // Verversen gaat met dezelfde app waarmee je gekoppeld hebt: een refresh
+    // token van de ene Strava-app werkt niet bij de andere.
+    const app = await stravaAppVan(athleteId);
+    if (!app) throw new Error('Geen Strava-app ingesteld. Vul je client-id en sleutel in bij Instellingen.');
+    const fresh = await refresh(app, token.refresh_token);
     accessToken = fresh.access_token;
     await sb.from('strava_token').update({
       access_token: fresh.access_token,

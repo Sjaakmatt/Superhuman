@@ -1,3 +1,4 @@
+import { admin } from '@/lib/db';
 import { descentMeters, descentSeconds, zoneSeconds } from '@/lib/metrics';
 import { localDayOf, type IsoDate } from '@/lib/date';
 import type { Zone } from '@/lib/types';
@@ -25,9 +26,39 @@ export type StravaTokens = {
   expires_at: number; // seconden sinds epoch
 };
 
-export function authorizeUrl(redirectUri: string, state: string): string {
+/** De Strava-app waarmee je koppelt: een client-id en een sleutel. Iedereen
+ *  maakt er zelf één aan op strava.com/settings/api, want de limieten van
+ *  Strava gelden per app — met z'n tweeën uit dezelfde app halen betekent
+ *  elkaars quotum opeten. Wat in de omgeving staat is de terugval, zodat een
+ *  bestaande koppeling blijft werken. */
+export type StravaApp = { client_id: string; client_secret: string };
+
+export function appUitOmgeving(): StravaApp | null {
+  const id = process.env.STRAVA_CLIENT_ID;
+  const secret = process.env.STRAVA_CLIENT_SECRET;
+  return id && secret ? { client_id: id, client_secret: secret } : null;
+}
+
+/** De app van deze atleet, anders die uit de omgeving, anders niets. De sleutel
+ *  komt alleen hier langs: hij gaat nooit naar de browser. */
+export async function stravaAppVan(athleteId: string): Promise<StravaApp | null> {
+  try {
+    const { data } = await admin()
+      .from('strava_app')
+      .select('client_id, client_secret')
+      .eq('athlete_id', athleteId)
+      .maybeSingle();
+    const rij = data as StravaApp | null;
+    if (rij?.client_id && rij.client_secret) return rij;
+  } catch {
+    // Zonder service-role-sleutel valt hij terug op de omgeving.
+  }
+  return appUitOmgeving();
+}
+
+export function authorizeUrl(app: StravaApp, redirectUri: string, state: string): string {
   const params = new URLSearchParams({
-    client_id: process.env.STRAVA_CLIENT_ID ?? '',
+    client_id: app.client_id,
     redirect_uri: redirectUri,
     response_type: 'code',
     approval_prompt: 'auto',
@@ -37,17 +68,16 @@ export function authorizeUrl(redirectUri: string, state: string): string {
   return `${OAUTH}/authorize?${params}`;
 }
 
-export function stravaConfigured(): boolean {
-  return Boolean(process.env.STRAVA_CLIENT_ID && process.env.STRAVA_CLIENT_SECRET);
-}
-
-async function tokenRequest(body: Record<string, string>): Promise<StravaTokens & { athlete?: { id: number } }> {
+async function tokenRequest(
+  app: StravaApp,
+  body: Record<string, string>,
+): Promise<StravaTokens & { athlete?: { id: number } }> {
   const res = await fetch(`${OAUTH}/token`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
-      client_id: process.env.STRAVA_CLIENT_ID,
-      client_secret: process.env.STRAVA_CLIENT_SECRET,
+      client_id: app.client_id,
+      client_secret: app.client_secret,
       ...body,
     }),
   });
@@ -55,14 +85,14 @@ async function tokenRequest(body: Record<string, string>): Promise<StravaTokens 
   return res.json();
 }
 
-export function exchangeCode(code: string) {
-  return tokenRequest({ code, grant_type: 'authorization_code' });
+export function exchangeCode(app: StravaApp, code: string) {
+  return tokenRequest(app, { code, grant_type: 'authorization_code' });
 }
 
 /** Access tokens verlopen na zes uur. Strava geeft soms een nieuw refresh token
  *  terug — sla dat op, anders ben je er na verloop van tijd uit. */
-export function refresh(refreshToken: string) {
-  return tokenRequest({ refresh_token: refreshToken, grant_type: 'refresh_token' });
+export function refresh(app: StravaApp, refreshToken: string) {
+  return tokenRequest(app, { refresh_token: refreshToken, grant_type: 'refresh_token' });
 }
 
 export type StravaActivity = {

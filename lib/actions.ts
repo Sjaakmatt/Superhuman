@@ -490,6 +490,55 @@ export async function saveHrMax(hrMax: number, measuredOn: IsoDate, note?: strin
   return { ok: true };
 }
 
+/** De Strava-app waarmee je koppelt. Client-id en sleutel komen van
+ *  strava.com/settings/api en gaan met de service-role-sleutel de database in:
+ *  `strava_app` heeft geen policy, dus de browser komt er nooit bij. */
+export async function saveStravaApp(clientId: string, clientSecret: string): Promise<Result> {
+  const resultaat = await context();
+  if (!resultaat.ok) return resultaat.fout;
+  const ctx = resultaat.ctx;
+
+  const id = clientId.trim();
+  const sleutel = clientSecret.trim();
+  if (!/^\d{1,10}$/.test(id)) {
+    return { ok: false, error: 'De client-id is een getal van een paar cijfers. Je vindt hem op strava.com/settings/api.' };
+  }
+  if (!/^[a-f0-9]{40}$/i.test(sleutel)) {
+    return { ok: false, error: 'De client secret is veertig tekens (cijfers en de letters a tot f). Kopieer hem opnieuw.' };
+  }
+
+  const { error } = await admin().from('strava_app').upsert({
+    athlete_id: ctx.athlete.id,
+    client_id: id,
+    client_secret: sleutel,
+    updated_at: new Date().toISOString(),
+  });
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath('/instellingen');
+  return { ok: true };
+}
+
+/** De app weghalen. De koppeling zelf gaat mee: een refresh token van de ene
+ *  Strava-app doet niets bij de andere, dus die laten staan levert alleen een
+ *  sync op die het morgen niet meer doet. */
+export async function deleteStravaApp(): Promise<Result> {
+  const resultaat = await context();
+  if (!resultaat.ok) return resultaat.fout;
+  const ctx = resultaat.ctx;
+
+  const sb = admin();
+  const { error } = await sb.from('strava_app').delete().eq('athlete_id', ctx.athlete.id);
+  if (error) return { ok: false, error: error.message };
+  await sb.from('strava_token').delete().eq('athlete_id', ctx.athlete.id);
+  // strava_athlete_id mag je van jezelf niet schrijven (zie 0020), dus dit gaat
+  // met de service-role-sleutel — op je eigen rij, en alleen deze kolom.
+  await sb.from('athlete').update({ strava_athlete_id: null }).eq('id', ctx.athlete.id);
+
+  revalidatePath('/instellingen');
+  return { ok: true };
+}
+
 /** Je naam, zoals de schil je begroet. Meer dan dit hoeft er niet van je in
  *  de database te staan: het adres waarmee je inlogt weet Supabase al. */
 export async function saveNaam(naam: string): Promise<Result> {
