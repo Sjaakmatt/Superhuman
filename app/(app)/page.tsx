@@ -8,7 +8,7 @@ import SessionCard from '@/components/SessionCard';
 import WeekStrip from '@/components/WeekStrip';
 import { Card, CardTitle, Empty, Note, Pill } from '@/components/ui';
 import { getDay, getDays, getReference, getWeek, getWeekDays, phaseForWeek, planBounds, planSource } from '@/lib/plan';
-import { getBloodPanels, getDayMeasurements, getLogs, getMilestoneResults, getWellness, getZones, loadRuleInput } from '@/lib/data';
+import { getBloodPanels, getDayMeasurements, getLogs, getMilestoneResults, getRunKmByDay, getWellness, getZones, loadRuleInput } from '@/lib/data';
 import { evaluate } from '@/lib/rules';
 import { meanOver } from '@/lib/metrics';
 import { addDays, daysBetween, formatLong, formatMonth, formatShort, monthDays, monthOf, today as todayIn } from '@/lib/date';
@@ -42,6 +42,9 @@ export default async function Vandaag({
 
   const maandDagen = monthDays(month);
   const agendaDagen = await getDays(maandDagen[0]!, maandDagen.at(-1)!);
+  const weekGelopen = weekDays.length
+    ? await getRunKmByDay(weekDays[0]!.date, weekDays.at(-1)!.date)
+    : new Map<string, number>();
 
   // De mijlpaal van de dag die je bekijkt, en anders de eerstvolgende binnen de
   // aanloop — gerekend vanaf díe dag, niet vanaf vandaag. Anders zie je op
@@ -58,6 +61,8 @@ export default async function Vandaag({
   // Wat er van de mijlpaaldag al gemeten is, en of het bloedpanel eromheen
   // ingevuld staat. Hetzelfde venster als de regel blood-due gebruikt.
   const gemeten = komende ? await getDayMeasurements(komende.date) : { activity: null, log: null };
+  // Wat je op de dag zelf gelopen hebt, naast wat er gepland stond.
+  const vandaagGemeten = komende?.date === date ? gemeten : await getDayMeasurements(date);
   const bloedIngevuld =
     komende?.logs === 'bloed'
       ? (await getBloodPanels()).some(
@@ -167,7 +172,7 @@ export default async function Vandaag({
           bloedIngevuld={bloedIngevuld} />
       ) : null}
 
-      <SessionCard day={day} week={week} />
+      <SessionCard day={day} week={week} gemeten={vandaagGemeten} toonGelopen={date <= now} />
 
       {day.strength_block ? (
         <Card>
@@ -189,7 +194,7 @@ export default async function Vandaag({
         <MorningCheck date={date} saved={savedToday} average={average} yesterday={pijnGisteren} />
       ) : null}
 
-      <WeekStrip days={weekDays} today={now} />
+      <WeekStrip days={weekDays} today={now} gelopen={weekGelopen} />
 
       {week ? (
         <Card sunk>

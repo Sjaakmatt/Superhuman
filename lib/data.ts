@@ -466,3 +466,25 @@ export async function getLastSync(r?: Reader): Promise<string | null> {
     return null;
   }
 }
+
+/** Gelopen kilometers per dag over een periode. Alleen hardlopen, net als in
+ *  v_week_actual — anders staat er een fietstocht in je weekstreep. */
+export async function getRunKmByDay(from: IsoDate, to: IsoDate, r?: Reader): Promise<Map<IsoDate, number>> {
+  const l = await reader(r);
+  if (!l) return new Map();
+  let q = l.client
+    .from('activity')
+    .select('date, distance_m, sport_type')
+    .gte('date', from)
+    .lte('date', to)
+    .in('sport_type', ['Run', 'TrailRun']);
+  if (l.athleteId) q = q.eq('athlete_id', l.athleteId);
+  const { data } = await q;
+
+  const per = new Map<IsoDate, number>();
+  for (const rij of ((data as { date: IsoDate; distance_m: number | null }[] | null) ?? [])) {
+    per.set(rij.date, (per.get(rij.date) ?? 0) + Number(rij.distance_m ?? 0) / 1000);
+  }
+  for (const [datum, km] of per) per.set(datum, Math.round(km * 10) / 10);
+  return per;
+}
