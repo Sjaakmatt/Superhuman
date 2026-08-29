@@ -2,8 +2,9 @@ import ThemeToggle from '@/components/ThemeToggle';
 import ShoeList from '@/components/ShoeList';
 import PushToggle from '@/components/PushToggle';
 import Uitloggen from '@/components/Uitloggen';
+import Uitnodigingen from '@/components/Uitnodigingen';
 import { Card, CardTitle, Empty, Note, Pill } from '@/components/ui';
-import { getAthlete, getShoes } from '@/lib/data';
+import { getAthlete, getInvitations, getShoes } from '@/lib/data';
 import { currentUser } from '@/lib/db';
 import { getReference } from '@/lib/plan';
 import { dbConfigured } from '@/lib/db';
@@ -19,6 +20,8 @@ export default async function Instellingen({ searchParams }: { searchParams: Pro
     getReference('zones'),
     currentUser(),
   ]);
+  // De lijst is alleen zichtbaar voor wie hem mag beheren.
+  const uitnodigingen = athlete?.can_invite ? await getInvitations() : [];
 
   return (
     <div className="mx-auto flex max-w-[720px] flex-col gap-4 pt-2">
@@ -71,6 +74,10 @@ export default async function Instellingen({ searchParams }: { searchParams: Pro
       <PushToggle vapidPublicKey={process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? null} />
 
       <ShoeList shoes={shoes} writable={dbConfigured()} />
+
+      {athlete?.can_invite ? (
+        <Uitnodigingen uitnodigingen={uitnodigingen} jij={user?.email ?? null} />
+      ) : null}
 
       <Uitloggen email={user?.email ?? null} />
 

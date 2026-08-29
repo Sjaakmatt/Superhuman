@@ -1,4 +1,4 @@
-import { db } from '@/lib/db';
+import { admin, db } from '@/lib/db';
 import { getReference, getWeeks } from '@/lib/plan';
 import { addDays, type IsoDate } from '@/lib/date';
 import type { RuleInput } from '@/lib/rules';
@@ -10,6 +10,8 @@ import type { Activity, Insight, Shoe, StrengthSet, Wellness, Zones } from '@/li
 
 export type Athlete = {
   id: string;
+  /** Alleen de eerste gebruiker mag anderen uitnodigen. */
+  can_invite: boolean;
   strava_athlete_id: number | null;
   hr_max: number;
   hr_zones: Zones['bands'];
@@ -24,6 +26,45 @@ export async function getAthlete(): Promise<Athlete | null> {
   if (!auth.user) return null;
   const { data } = await client.from('athlete').select('*').eq('user_id', auth.user.id).maybeSingle();
   return (data as Athlete | null) ?? null;
+}
+
+export type UitnodigingStatus = 'uitgenodigd' | 'actief' | 'niet aangemaakt';
+
+export type Uitnodiging = {
+  email: string;
+  invited_at: string;
+  status: UitnodigingStatus;
+  laatste_login: string | null;
+};
+
+/** De uitnodigingenlijst met de werkelijke staat van elk account erbij. De
+ *  tabel weet wie je hebt uitgenodigd; of iemand ook echt is binnengekomen
+ *  weet alleen Supabase Auth. */
+export async function getInvitations(): Promise<Uitnodiging[]> {
+  const client = await db();
+  if (!client) return [];
+  const { data } = await client.from('invitation').select('email, invited_at, user_id').order('invited_at');
+  const rijen = (data as { email: string; invited_at: string; user_id: string | null }[] | null) ?? [];
+  if (!rijen.length) return [];
+
+  const perId = new Map<string, string | null>();
+  try {
+    const { data: auth } = await admin().auth.admin.listUsers({ perPage: 200 });
+    for (const u of auth?.users ?? []) perId.set(u.id, u.last_sign_in_at ?? null);
+  } catch {
+    // Zonder service-role-sleutel tonen we de lijst zonder status in plaats van niets.
+  }
+
+  return rijen.map((r) => {
+    if (!r.user_id) return { email: r.email, invited_at: r.invited_at, status: 'niet aangemaakt' as const, laatste_login: null };
+    const login = perId.get(r.user_id) ?? null;
+    return {
+      email: r.email,
+      invited_at: r.invited_at,
+      status: (login ? 'actief' : 'uitgenodigd') as UitnodigingStatus,
+      laatste_login: login,
+    };
+  });
 }
 
 export type WeekActual = {

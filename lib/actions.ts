@@ -228,7 +228,7 @@ export async function addShoe(input: { name: string; drop_mm: number | null }): 
   const resultaat = await context();
   if (!resultaat.ok) return resultaat.fout;
   const ctx = resultaat.ctx;
-  const { error } = await ctx.client.from('shoe').insert(input);
+  const { error } = await ctx.client.from('shoe').insert({ ...input, athlete_id: ctx.athlete.id });
   if (error) return { ok: false, error: error.message };
   revalidatePath('/instellingen');
   return { ok: true };
@@ -242,4 +242,107 @@ export async function retireShoe(id: string, retired: boolean): Promise<Result> 
   if (error) return { ok: false, error: error.message };
   revalidatePath('/instellingen');
   return { ok: true };
+}
+
+/* ── uitnodigingen ──────────────────────────────────────────────────────────
+ * Toegang gaat op uitnodiging. De rij in `invitation` gaat eerst: de trigger op
+ * auth.users weigert elk account waarvoor geen uitnodiging klaarstaat, en
+ * Supabase maakt dat account al aan bij het versturen. */
+
+const ADRES = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+async function alsBeheerder() {
+  const resultaat = await context();
+  if (!resultaat.ok) return { ok: false as const, fout: resultaat.fout };
+  if (!resultaat.ctx.athlete.can_invite) {
+    return { ok: false as const, fout: { ok: false as const, error: 'Je mag geen mensen uitnodigen.' } };
+  }
+  return { ok: true as const, ctx: resultaat.ctx };
+}
+
+export async function inviteAthlete(email: string): Promise<Result> {
+  const beheer = await alsBeheerder();
+  if (!beheer.ok) return beheer.fout;
+
+  const adres = email.trim().toLowerCase();
+  if (!ADRES.test(adres)) return { ok: false, error: 'Dat is geen geldig e-mailadres.' };
+
+  const { error: insertError } = await beheer.ctx.client
+    .from('invitation')
+    .insert({ email: adres, invited_by: beheer.ctx.athlete.id });
+  if (insertError) {
+    return {
+      ok: false,
+      error: insertError.code === '23505' ? 'Dat adres staat al op de lijst.' : insertError.message,
+    };
+  }
+
+  const verstuurd = await stuurUitnodiging(adres);
+  if (!verstuurd.ok) {
+    // Geen halve staat achterlaten: zonder verstuurde mail hoort het adres
+    // ook niet op de lijst te staan.
+    await beheer.ctx.client.from('invitation').delete().eq('email', adres);
+    return verstuurd;
+  }
+
+  revalidatePath('/instellingen');
+  return { ok: true };
+}
+
+export async function resendInvitation(email: string): Promise<Result> {
+  const beheer = await alsBeheerder();
+  if (!beheer.ok) return beheer.fout;
+  const verstuurd = await stuurUitnodiging(email.trim().toLowerCase());
+  if (verstuurd.ok) revalidatePath('/instellingen');
+  return verstuurd;
+}
+
+/** Haalt het adres van de lijst en verwijdert het bijbehorende account. Alles
+ *  wat die persoon logde gaat mee — daarom vraagt de interface om een tweede
+ *  bevestiging. */
+export async function revokeInvitation(email: string): Promise<Result> {
+  const beheer = await alsBeheerder();
+  if (!beheer.ok) return beheer.fout;
+  const adres = email.trim().toLowerCase();
+
+  const { data: rij } = await beheer.ctx.client
+    .from('invitation')
+    .select('user_id')
+    .eq('email', adres)
+    .maybeSingle();
+
+  const { error } = await beheer.ctx.client.from('invitation').delete().eq('email', adres);
+  if (error) return { ok: false, error: error.message };
+
+  const gebruiker = (rij as { user_id: string | null } | null)?.user_id;
+  if (gebruiker) {
+    const { error: verwijderError } = await admin().auth.admin.deleteUser(gebruiker);
+    if (verwijderError) {
+      return { ok: false, error: `Van de lijst gehaald, maar het account bleef staan: ${verwijderError.message}` };
+    }
+  }
+
+  revalidatePath('/instellingen');
+  return { ok: true };
+}
+
+/** Supabase verstuurt de mail met het sjabloon "Invite user"; dat staat in
+ *  supabase/templates/uitnodiging.html en wijst naar /auth/bevestig. */
+async function stuurUitnodiging(adres: string): Promise<Result> {
+  try {
+    const { error } = await admin().auth.admin.inviteUserByEmail(adres);
+    if (!error) return { ok: true };
+    if (/already been registered|already exists/i.test(error.message)) {
+      return { ok: false, error: 'Er bestaat al een account met dat adres.' };
+    }
+    if (/error sending|smtp|mail/i.test(error.message)) {
+      return {
+        ok: false,
+        error: 'De uitnodiging kon niet verstuurd worden. Controleer de SMTP-instellingen in Supabase.',
+      };
+    }
+    return { ok: false, error: error.message };
+  } catch (err) {
+    return { ok: false, error: (err as Error).message };
+  }
 }

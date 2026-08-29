@@ -106,10 +106,24 @@ tokens aan, loop dan ook de sjablonen na.
 
 ### Je account aanmaken
 
-Authentication → Users → Add user, met e-mailadres en wachtwoord. De `athlete`-rij
-komt er automatisch bij (zie de trigger in `0009_athlete_bootstrap.sql`). Wil je in
-plaats daarvan een uitnodiging per mail, gebruik dan Invite — dan komt de gebruiker
-via het `uitnodiging.html`-sjabloon binnen en kiest hij zelf een wachtwoord.
+Authentication → Users → Add user, met **Auto Confirm User** aan. De `athlete`-rij
+komt er automatisch bij, en de eerste gebruiker wordt de eigenaar: alleen die mag
+anderen uitnodigen.
+
+### Toegang op uitnodiging
+
+Onder Instellingen staat "Wie er binnen mag". Voeg je daar een adres toe, dan gaat
+er een uitnodiging uit via het `uitnodiging.html`-sjabloon en kiest die persoon zelf
+een wachtwoord. Hij krijgt zijn **eigen lege plan** — logboek, kracht, analyses en
+Strava staan per persoon gescheiden via RLS.
+
+De lijst is geen sier: een trigger op `auth.users` weigert elk account waarvoor geen
+uitnodiging klaarstaat. Die controle staat in de database, niet in een
+dashboard-instelling, zodat "aanmelden toestaan" per ongeluk aanzetten geen gat
+maakt. De eerste gebruiker is de uitzondering — anders kwam er nooit iemand binnen.
+
+Intrekken haalt het adres van de lijst én verwijdert het account. Alles wat die
+persoon logde gaat mee; de interface vraagt daarom om een tweede klik.
 
 De seed weigert te draaien als het plan niet klopt — hij draait eerst dezelfde
 controles als `test/seed.test.ts`.
