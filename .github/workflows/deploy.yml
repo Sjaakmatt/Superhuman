@@ -88,6 +88,29 @@ jobs:
           vereist "repo-secret CLOUDFLARE_API_TOKEN" "$CF_TOKEN"
           vereist "repo-secret CLOUDFLARE_ACCOUNT_ID" "$CF_ACCOUNT"
 
+          # Vorm, niet alleen aanwezigheid. Een half geplakte sleutel is niet
+          # leeg en bevat geen placeholder, maar levert wel "Invalid API key"
+          # op — en dat merk je pas bij het inloggen.
+          if [ -n "$SUPABASE_ANON_KEY" ]; then
+            case "$SUPABASE_ANON_KEY" in
+              sb_publishable_*)
+                : ;;
+              eyJ*.*.*)
+                : ;;
+              *)
+                echo "::error::NEXT_PUBLIC_SUPABASE_ANON_KEY heeft niet de vorm van een Supabase-sleutel."
+                echo "::error::Verwacht: sb_publishable_… of een JWT met drie delen (kop.inhoud.handtekening)."
+                echo "::error::Gevonden: ${#SUPABASE_ANON_KEY} tekens. Waarschijnlijk half geplakt."
+                fout=1 ;;
+            esac
+          fi
+
+          case "$SUPABASE_URL" in
+            https://*.supabase.co|https://*.supabase.co/) : ;;
+            "") : ;;
+            *) echo "::error::NEXT_PUBLIC_SUPABASE_URL hoort https://<ref>.supabase.co te zijn."; fout=1 ;;
+          esac
+
           optioneel "NEXT_PUBLIC_SITE_URL" "$SITE_URL" \
             "de Strava-callback valt terug op de URL van het verzoek. Zet hem zodra je weet waar de app draait."
           optioneel "NEXT_PUBLIC_VAPID_PUBLIC_KEY" "$VAPID_PUBLIC_KEY" \

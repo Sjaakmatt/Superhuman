@@ -193,13 +193,18 @@ bij de build in de client-bundel, dus die kúnnen niet op de Worker staan:
 | Variable | |
 |---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | vereist |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | vereist |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | vereist — neem de korte `sb_publishable_…`, niet de lange JWT |
 | `NEXT_PUBLIC_SITE_URL` | optioneel — de Strava-callback valt anders terug op de URL van het verzoek |
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | optioneel — leeg betekent geen ochtendmelding |
 
-De deploy weigert te draaien als een vereiste waarde leeg is of een placeholder
-bevat — beter luid falen dan een kapotte bundel uitrollen. Voor de optionele
-geeft hij een waarschuwing en gaat door.
+De deploy weigert te draaien als een vereiste waarde leeg is, een placeholder
+bevat, **of niet de vorm van een Supabase-sleutel heeft**. Dat laatste is er
+bijgekomen nadat een half geplakte JWT — alleen het stuk vóór de eerste punt —
+door de controle glipte en pas bij het inloggen als "Invalid API key" opdook.
+
+Neem daarom de korte `sb_publishable_…`-sleutel. Die is één regel zonder punten
+en overleeft knippen en plakken; de lange JWT breekt bij de eerste punt als je
+hem uit een omgebroken regel selecteert.
 
 **Worker-secrets** (server-side, nooit in de repo). Draai dit vanuit de repo-root,
 zodat wrangler `wrangler.jsonc` oppikt:
