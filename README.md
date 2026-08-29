@@ -201,16 +201,38 @@ De deploy weigert te draaien als een vereiste waarde leeg is of een placeholder
 bevat — beter luid falen dan een kapotte bundel uitrollen. Voor de optionele
 geeft hij een waarschuwing en gaat door.
 
-**Worker-secrets** (server-side, nooit in de repo):
+**Worker-secrets** (server-side, nooit in de repo). Draai dit vanuit de repo-root,
+zodat wrangler `wrangler.jsonc` oppikt:
 
 ```bash
 npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
+npx wrangler secret put CRON_SECRET
 npx wrangler secret put STRAVA_CLIENT_ID
 npx wrangler secret put STRAVA_CLIENT_SECRET
 npx wrangler secret put ANTHROPIC_API_KEY
-npx wrangler secret put CRON_SECRET
 npx wrangler secret put VAPID_PRIVATE_KEY
 ```
+
+| Secret | Waar hij vandaan komt | Wat er niet werkt zonder |
+|---|---|---|
+| `SUPABASE_SERVICE_ROLE_KEY` | Project Settings → API keys → `service_role` | alle crons: sync, analyses, melding |
+| `CRON_SECRET` | zelf kiezen: `openssl rand -base64 32` | alle cron-routes geven 401 — ze falen dicht, en dat hoort |
+| `STRAVA_CLIENT_ID` | strava.com/settings/api | Strava koppelen geeft 503 |
+| `STRAVA_CLIENT_SECRET` | idem | idem |
+| `ANTHROPIC_API_KEY` | console.anthropic.com | de vier analyses geven 503 |
+| `VAPID_PRIVATE_KEY` | `npx web-push generate-vapid-keys` | de ochtendmelding geeft 503 |
+
+`VAPID_SUBJECT` staat al als gewone var in `wrangler.jsonc` en hoeft dus niet als
+secret. `ANTHROPIC_MODEL` is optioneel; zonder die var gebruikt de app het nieuwste
+Sonnet-model.
+
+Secrets overleven een deploy: `wrangler deploy` laat staan wat er staat, dus je zet
+ze één keer. En de vier `NEXT_PUBLIC_*` horen hier **niet** thuis — Next bakt die
+bij de build in de bundel, dus een Worker-secret met die naam doet niets. Die staan
+in GitHub → Variables.
+
+Zonder deze zes werkt de app gewoon: het plan, het loggen en de analyse-schermen
+draaien op je eigen sessie. Ze zetten Strava, de AI-analyses en de melding aan.
 
 **Eigen domein** koppel je via het dashboard (Worker → Settings → Domains &
 Routes → Add Custom Domain), niet via wrangler: de deploy-token heeft geen
