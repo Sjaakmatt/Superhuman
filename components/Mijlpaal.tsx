@@ -23,16 +23,29 @@ export default function Mijlpaal({
   fueling,
   zones,
   today,
+  reference,
 }: {
   milestone: Milestone;
   day: PlanDay | null;
   fueling: Fueling | null;
   zones: Zones;
+  /** De echte dag van vandaag. */
   today: IsoDate;
+  /** De dag die je op het scherm bekijkt. Bladert hij vooruit, dan telt de
+   *  afstand vanaf díe dag — maar "vandaag" mag hij dan niet heten. */
+  reference: IsoDate;
 }) {
-  const over = daysBetween(today, milestone.date);
-  const wanneer =
-    over === 0 ? 'Vandaag' : over === 1 ? 'Morgen' : over > 0 ? `Over ${over} dagen` : `${-over} dagen geleden`;
+  const over = daysBetween(reference, milestone.date);
+  const kijktNaarVandaag = reference === today;
+  const wanneer = kijktNaarVandaag
+    ? over === 0
+      ? 'Vandaag'
+      : over === 1
+        ? 'Morgen'
+        : `Over ${over} dagen`
+    : over === 0
+      ? 'Op deze dag'
+      : `${over} ${over === 1 ? 'dag' : 'dagen'} later`;
 
   const km = day ? Number(day.planned_km) : 0;
   // Voeding is alleen een vraag bij iets van enige lengte; bij een bloedpanel
@@ -42,7 +55,7 @@ export default function Mijlpaal({
   const band = day?.zone && day.zone !== '-' ? zones.bands.find((b) => b.key === day.zone) : null;
   const tempo = day?.pace_range && day.pace_range !== '-' ? day.pace_range : null;
 
-  const vraag = `Ik heb ${over === 0 ? 'vandaag' : over === 1 ? 'morgen' : `over ${over} dagen`} "${milestone.title}" (${milestone.date}). Hoe bereid ik me daarop voor?`;
+  const vraag = `Op ${milestone.date} staat "${milestone.title}" op het programma. Hoe bereid ik me daarop voor?`;
 
   return (
     <Card>
@@ -79,8 +92,8 @@ export default function Mijlpaal({
             Eten en drinken per uur
           </p>
           <dl className="mt-2 flex flex-wrap gap-x-6 gap-y-2">
-            <Getal label="koolhydraten" value={`${fueling.carbs_g_per_h[0]}–${fueling.carbs_g_per_h[1]} gram`} />
-            <Getal label="natrium" value={`${fueling.sodium_mg_per_h[0]}–${fueling.sodium_mg_per_h[1]} mg`} />
+            <Getal label="koolhydraten" value={`${bereik(fueling.carbs_g_per_h)} gram`} />
+            <Getal label="natrium" value={`${bereik(fueling.sodium_mg_per_h)} mg`} />
           </dl>
         </div>
       ) : null}
@@ -98,6 +111,11 @@ export default function Mijlpaal({
       <VraagDeCoach vraag={vraag}>Vraag de coach om een briefing</VraagDeCoach>
     </Card>
   );
+}
+
+/** "30–45" of gewoon "300" als de onder- en bovengrens gelijk zijn. */
+function bereik([laag, hoog]: [number, number]): string {
+  return laag === hoog ? `${laag}` : `${laag}–${hoog}`;
 }
 
 function Getal({ label, value }: { label: string; value: string }) {

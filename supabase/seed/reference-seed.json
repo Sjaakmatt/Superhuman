@@ -1,397 +1,480 @@
 {
- "zones": {
-  "source": "HRmax 188 (leeftijdsformule) — hertest in week 6 en week 30 en werk deze waarden bij",
-  "hr_max": 188,
-  "bands": [
-   {
-    "key": "Z1",
-    "name": "Herstel",
-    "hr_min": 0,
-    "hr_max": 122,
-    "pace": "7:15-8:00"
-   },
-   {
-    "key": "Z2",
-    "name": "Duurloop",
-    "hr_min": 123,
-    "hr_max": 152,
-    "pace": "6:30-7:10"
-   },
-   {
-    "key": "Z3",
-    "name": "Steady",
-    "hr_min": 153,
-    "hr_max": 167,
-    "pace": "5:50-6:20"
-   },
-   {
-    "key": "Z4",
-    "name": "Drempel",
-    "hr_min": 168,
-    "hr_max": 182,
-    "pace": "5:15-5:40"
-   },
-   {
-    "key": "Z5",
-    "name": "VO2max",
-    "hr_min": 183,
-    "hr_max": 220,
-    "pace": "<5:00"
-   }
+  "zones": {
+    "source": "HRmax 188 (leeftijdsformule) — hertest in week 6 en week 30 en werk deze waarden bij",
+    "hr_max": 188,
+    "bands": [
+      {
+        "key": "Z1",
+        "name": "Herstel",
+        "hr_min": 0,
+        "hr_max": 122,
+        "pace": "7:15-8:00"
+      },
+      {
+        "key": "Z2",
+        "name": "Duurloop",
+        "hr_min": 123,
+        "hr_max": 152,
+        "pace": "6:30-7:10"
+      },
+      {
+        "key": "Z3",
+        "name": "Steady",
+        "hr_min": 153,
+        "hr_max": 167,
+        "pace": "5:50-6:20"
+      },
+      {
+        "key": "Z4",
+        "name": "Drempel",
+        "hr_min": 168,
+        "hr_max": 182,
+        "pace": "5:15-5:40"
+      },
+      {
+        "key": "Z5",
+        "name": "VO2max",
+        "hr_min": 183,
+        "hr_max": 220,
+        "pace": "<5:00"
+      }
+    ],
+    "distribution_target": {
+      "z1_z2": 0.78,
+      "z3": 0.15,
+      "z4_z5": 0.07
+    }
+  },
+  "exercises": [
+    {
+      "slug": "trapbar-deadlift",
+      "name": "Trap-bar deadlift",
+      "block": "B",
+      "unit": "kg",
+      "default_sets": 3
+    },
+    {
+      "slug": "back-squat",
+      "name": "Back squat",
+      "block": "A",
+      "unit": "kg",
+      "default_sets": 4
+    },
+    {
+      "slug": "rdl",
+      "name": "Roemeense deadlift",
+      "block": "A",
+      "unit": "kg",
+      "default_sets": 3
+    },
+    {
+      "slug": "bulgarian-split-squat",
+      "name": "Bulgarian split squat",
+      "block": "A",
+      "unit": "kg",
+      "default_sets": 3
+    },
+    {
+      "slug": "standing-calf",
+      "name": "Staande kuitheffing",
+      "block": "A",
+      "unit": "kg",
+      "default_sets": 4
+    },
+    {
+      "slug": "pallof",
+      "name": "Pallof press",
+      "block": "A",
+      "unit": "kg",
+      "default_sets": 3
+    },
+    {
+      "slug": "deadbug",
+      "name": "Dead bug",
+      "block": "A",
+      "unit": "lichaam",
+      "default_sets": 3
+    },
+    {
+      "slug": "bench",
+      "name": "Bankdrukken",
+      "block": "C",
+      "unit": "kg",
+      "default_sets": 4
+    },
+    {
+      "slug": "pullup",
+      "name": "Pull-up of lat pulldown",
+      "block": "C",
+      "unit": "kg",
+      "default_sets": 4
+    },
+    {
+      "slug": "ohp",
+      "name": "Militaire press",
+      "block": "C",
+      "unit": "kg",
+      "default_sets": 3
+    },
+    {
+      "slug": "row",
+      "name": "Roeien",
+      "block": "C",
+      "unit": "kg",
+      "default_sets": 3
+    },
+    {
+      "slug": "sideplank",
+      "name": "Side plank",
+      "block": "C",
+      "unit": "sec",
+      "default_sets": 3
+    },
+    {
+      "slug": "step-up",
+      "name": "Hoge step-up",
+      "block": "B",
+      "unit": "kg",
+      "default_sets": 3
+    },
+    {
+      "slug": "step-down",
+      "name": "Step-down excentrisch",
+      "block": "B",
+      "unit": "lichaam",
+      "default_sets": 3,
+      "note": "Telt mee als afdaalvoorbereiding"
+    },
+    {
+      "slug": "seated-calf",
+      "name": "Zittende kuitheffing (soleus)",
+      "block": "B",
+      "unit": "kg",
+      "default_sets": 3
+    },
+    {
+      "slug": "iso-calf",
+      "name": "Isometrische kuitheffing",
+      "block": "B",
+      "unit": "kg",
+      "default_sets": 5,
+      "note": "5x4 x 3s @ ~90% MVC"
+    },
+    {
+      "slug": "tibialis",
+      "name": "Tibialis raise",
+      "block": "B",
+      "unit": "lichaam",
+      "default_sets": 3
+    },
+    {
+      "slug": "hip-abduction",
+      "name": "Heupabductie band",
+      "block": "B",
+      "unit": "band",
+      "default_sets": 3
+    },
+    {
+      "slug": "plyo",
+      "name": "Plyometrie",
+      "block": "B",
+      "unit": "contacten",
+      "default_sets": 1
+    }
   ],
-  "distribution_target": {
-   "z1_z2": 0.78,
-   "z3": 0.15,
-   "z4_z5": 0.07
-  }
- },
- "exercises": [
-  {
-   "slug": "trapbar-deadlift",
-   "name": "Trap-bar deadlift",
-   "block": "B",
-   "unit": "kg",
-   "default_sets": 3
-  },
-  {
-   "slug": "back-squat",
-   "name": "Back squat",
-   "block": "A",
-   "unit": "kg",
-   "default_sets": 4
-  },
-  {
-   "slug": "rdl",
-   "name": "Roemeense deadlift",
-   "block": "A",
-   "unit": "kg",
-   "default_sets": 3
-  },
-  {
-   "slug": "bulgarian-split-squat",
-   "name": "Bulgarian split squat",
-   "block": "A",
-   "unit": "kg",
-   "default_sets": 3
-  },
-  {
-   "slug": "standing-calf",
-   "name": "Staande kuitheffing",
-   "block": "A",
-   "unit": "kg",
-   "default_sets": 4
-  },
-  {
-   "slug": "pallof",
-   "name": "Pallof press",
-   "block": "A",
-   "unit": "kg",
-   "default_sets": 3
-  },
-  {
-   "slug": "deadbug",
-   "name": "Dead bug",
-   "block": "A",
-   "unit": "lichaam",
-   "default_sets": 3
-  },
-  {
-   "slug": "bench",
-   "name": "Bankdrukken",
-   "block": "C",
-   "unit": "kg",
-   "default_sets": 4
-  },
-  {
-   "slug": "pullup",
-   "name": "Pull-up of lat pulldown",
-   "block": "C",
-   "unit": "kg",
-   "default_sets": 4
-  },
-  {
-   "slug": "ohp",
-   "name": "Militaire press",
-   "block": "C",
-   "unit": "kg",
-   "default_sets": 3
-  },
-  {
-   "slug": "row",
-   "name": "Roeien",
-   "block": "C",
-   "unit": "kg",
-   "default_sets": 3
-  },
-  {
-   "slug": "sideplank",
-   "name": "Side plank",
-   "block": "C",
-   "unit": "sec",
-   "default_sets": 3
-  },
-  {
-   "slug": "step-up",
-   "name": "Hoge step-up",
-   "block": "B",
-   "unit": "kg",
-   "default_sets": 3
-  },
-  {
-   "slug": "step-down",
-   "name": "Step-down excentrisch",
-   "block": "B",
-   "unit": "lichaam",
-   "default_sets": 3,
-   "note": "Telt mee als afdaalvoorbereiding"
-  },
-  {
-   "slug": "seated-calf",
-   "name": "Zittende kuitheffing (soleus)",
-   "block": "B",
-   "unit": "kg",
-   "default_sets": 3
-  },
-  {
-   "slug": "iso-calf",
-   "name": "Isometrische kuitheffing",
-   "block": "B",
-   "unit": "kg",
-   "default_sets": 5,
-   "note": "5x4 x 3s @ ~90% MVC"
-  },
-  {
-   "slug": "tibialis",
-   "name": "Tibialis raise",
-   "block": "B",
-   "unit": "lichaam",
-   "default_sets": 3
-  },
-  {
-   "slug": "hip-abduction",
-   "name": "Heupabductie band",
-   "block": "B",
-   "unit": "band",
-   "default_sets": 3
-  },
-  {
-   "slug": "plyo",
-   "name": "Plyometrie",
-   "block": "B",
-   "unit": "contacten",
-   "default_sets": 1
-  }
- ],
- "strength_phases": [
-  {
-   "weeks": [
-    1,
-    14
-   ],
-   "name": "hypertrofie",
-   "scheme": "3-4x8-12 @65-75%",
-   "freq": 3,
-   "plyo_contacts": 0
-  },
-  {
-   "weeks": [
-    15,
-    28
-   ],
-   "name": "maximaalkracht",
-   "scheme": "4-5x4-6 @80-87%",
-   "freq": 3,
-   "plyo_contacts": 30
-  },
-  {
-   "weeks": [
-    29,
-    44
-   ],
-   "name": "zwaar onderhoud",
-   "scheme": "3x3-5 @85-90%",
-   "freq": 2,
-   "plyo_contacts": 50
-  },
-  {
-   "weeks": [
-    45,
-    53
-   ],
-   "name": "onderhoud",
-   "scheme": "2-3x4 @85%",
-   "freq": 2,
-   "plyo_contacts": 50
-  },
-  {
-   "weeks": [
-    54,
-    56
-   ],
-   "name": "afbouw",
-   "scheme": "2x4 @80%",
-   "freq": 1,
-   "plyo_contacts": 0
-  },
-  {
-   "weeks": [
-    57,
-    57
-   ],
-   "name": "geen",
-   "scheme": "-",
-   "freq": 0,
-   "plyo_contacts": 0
-  }
- ],
- "fueling_by_week": [
-  {
-   "weeks": [
-    1,
-    16
-   ],
-   "carbs_g_per_h": [
-    30,
-    45
-   ],
-   "sodium_mg_per_h": [
-    300,
-    300
-   ]
-  },
-  {
-   "weeks": [
-    17,
-    36
-   ],
-   "carbs_g_per_h": [
-    55,
-    70
-   ],
-   "sodium_mg_per_h": [
-    400,
-    500
-   ]
-  },
-  {
-   "weeks": [
-    37,
-    52
-   ],
-   "carbs_g_per_h": [
-    75,
-    90
-   ],
-   "sodium_mg_per_h": [
-    500,
-    700
-   ]
-  },
-  {
-   "weeks": [
-    53,
-    57
-   ],
-   "carbs_g_per_h": [
-    60,
-    80
-   ],
-   "sodium_mg_per_h": [
-    500,
-    700
-   ]
-  }
- ],
- "milestones": [
-  {
-   "week": 1,
-   "date": "2026-08-31",
-   "kind": "meting",
-   "title": "Bloedpanel T0 + sportkeuring"
-  },
-  {
-   "week": 6,
-   "date": "2026-10-05",
-   "kind": "test",
-   "title": "HRmax-test"
-  },
-  {
-   "week": 12,
-   "date": "2026-11-16",
-   "kind": "meting",
-   "title": "Bloedpanel kort"
-  },
-  {
-   "week": 14,
-   "date": "2026-11-28",
-   "kind": "test",
-   "title": "25 km trailtest"
-  },
-  {
-   "week": 21,
-   "date": "2027-01-18",
-   "kind": "fase",
-   "title": "Start afdaalblok"
-  },
-  {
-   "week": 24,
-   "date": "2027-02-08",
-   "kind": "meting",
-   "title": "Bloedpanel + vitamine D"
-  },
-  {
-   "week": 27,
-   "date": "2027-03-06",
-   "kind": "wedstrijd",
-   "title": "50 km trailwedstrijd"
-  },
-  {
-   "week": 30,
-   "date": "2027-03-22",
-   "kind": "beslissing",
-   "title": "Definitieve wedstrijdkeuze + inschrijving"
-  },
-  {
-   "week": 36,
-   "date": "2027-05-03",
-   "kind": "meting",
-   "title": "Bloedpanel kort"
-  },
-  {
-   "week": 39,
-   "date": "2027-05-29",
-   "kind": "wedstrijd",
-   "title": "65 km trailwedstrijd"
-  },
-  {
-   "week": 52,
-   "date": "2027-08-23",
-   "kind": "meting",
-   "title": "Bloedpanel volledig"
-  },
-  {
-   "week": 53,
-   "date": "2027-09-04",
-   "kind": "simulatie",
-   "title": "Race-simulatie 55 km"
-  },
-  {
-   "week": 54,
-   "date": "2027-09-11",
-   "kind": "grens",
-   "title": "Laatste zware afdaalsessie"
-  },
-  {
-   "week": 56,
-   "date": "2027-09-20",
-   "kind": "fase",
-   "title": "Taper start + slaapbanking"
-  },
-  {
-   "week": 57,
-   "date": "2027-10-02",
-   "kind": "wedstrijd",
-   "title": "DOELWEDSTRIJD 100 KM"
-  }
- ]
+  "strength_phases": [
+    {
+      "weeks": [
+        1,
+        14
+      ],
+      "name": "hypertrofie",
+      "scheme": "3-4x8-12 @65-75%",
+      "freq": 3,
+      "plyo_contacts": 0
+    },
+    {
+      "weeks": [
+        15,
+        28
+      ],
+      "name": "maximaalkracht",
+      "scheme": "4-5x4-6 @80-87%",
+      "freq": 3,
+      "plyo_contacts": 30
+    },
+    {
+      "weeks": [
+        29,
+        44
+      ],
+      "name": "zwaar onderhoud",
+      "scheme": "3x3-5 @85-90%",
+      "freq": 2,
+      "plyo_contacts": 50
+    },
+    {
+      "weeks": [
+        45,
+        53
+      ],
+      "name": "onderhoud",
+      "scheme": "2-3x4 @85%",
+      "freq": 2,
+      "plyo_contacts": 50
+    },
+    {
+      "weeks": [
+        54,
+        56
+      ],
+      "name": "afbouw",
+      "scheme": "2x4 @80%",
+      "freq": 1,
+      "plyo_contacts": 0
+    },
+    {
+      "weeks": [
+        57,
+        57
+      ],
+      "name": "geen",
+      "scheme": "-",
+      "freq": 0,
+      "plyo_contacts": 0
+    }
+  ],
+  "fueling_by_week": [
+    {
+      "weeks": [
+        1,
+        16
+      ],
+      "carbs_g_per_h": [
+        30,
+        45
+      ],
+      "sodium_mg_per_h": [
+        300,
+        300
+      ]
+    },
+    {
+      "weeks": [
+        17,
+        36
+      ],
+      "carbs_g_per_h": [
+        55,
+        70
+      ],
+      "sodium_mg_per_h": [
+        400,
+        500
+      ]
+    },
+    {
+      "weeks": [
+        37,
+        52
+      ],
+      "carbs_g_per_h": [
+        75,
+        90
+      ],
+      "sodium_mg_per_h": [
+        500,
+        700
+      ]
+    },
+    {
+      "weeks": [
+        53,
+        57
+      ],
+      "carbs_g_per_h": [
+        60,
+        80
+      ],
+      "sodium_mg_per_h": [
+        500,
+        700
+      ]
+    }
+  ],
+  "milestones": [
+    {
+      "week": 1,
+      "date": "2026-08-31",
+      "kind": "meting",
+      "title": "Bloedpanel T0 + sportkeuring",
+      "prep": [
+        "Nuchter, 's ochtends, en minstens 48 uur na een zware sessie: inspanning drukt ferritine en CRP allebei de verkeerde kant op.",
+        "Vraag deze bepalingen aan: ferritine, transferrinesaturatie, Hb, CRP, vitamine B12, vitamine D en TSH. Dat zijn precies de velden die je hier straks invult.",
+        "Dit is je nulmeting. Alles wat later afwijkt vergelijk je hiermee, niet met de referentiewaarden van het lab.",
+        "Sportkeuring: bloeddruk en rust-ECG bij de sportarts. Zitten er hartklachten in de familie, vraag dan om een inspannings-ECG.",
+        "Zet de uitslag daarna bij Instellingen onder bloedwaarden."
+      ]
+    },
+    {
+      "week": 6,
+      "date": "2026-10-05",
+      "kind": "test",
+      "title": "HRmax-test",
+      "prep": [
+        "Je zones staan nu op HRmax 188 uit een leeftijdsformule. Deze test vervangt die schatting door een gemeten waarde.",
+        "Doe hem uitgerust: geen zware sessie in de twee dagen ervoor, en niet in de hitte.",
+        "Twintig minuten inlopen. Dan een klim van drie tot vier minuten hard maar beheerst, twee minuten dribbelen, en daarna dezelfde klim alles eruit tot boven.",
+        "Je HRmax is de hoogste waarde in de laatste dertig seconden. Een losse piek van een seconde is meestal ruis van de band, geen hartslag.",
+        "Zet de nieuwe waarde daarna in Instellingen. Al je zones, de zoneverdeling en de Z2-drift rekenen daarmee verder.",
+        "Voel je je niet goed, dan stop je. Een test is geen wedstrijd."
+      ]
+    },
+    {
+      "week": 12,
+      "date": "2026-11-16",
+      "kind": "meting",
+      "title": "Bloedpanel kort",
+      "prep": [
+        "Kort betekent: ferritine, transferrinesaturatie, Hb en CRP. De rest hoeft niet elke keer.",
+        "Nuchter, 's ochtends, minstens 48 uur na een zware sessie.",
+        "Ferritine die zakt terwijl je volume stijgt is waar je naar kijkt. Vergelijk met je eigen T0, niet met de ondergrens van het lab."
+      ]
+    },
+    {
+      "week": 14,
+      "date": "2026-11-28",
+      "kind": "test",
+      "title": "25 km trailtest",
+      "prep": [
+        "Dit is een test, geen wedstrijd. Je meet waar je staat; je gaat niet stuk.",
+        "Loop op gevoel in Z2 en Z3. Noteer achteraf je gemiddelde hartslag, je tempo en je hoogtemeters — die drie leg je in week 39 en week 53 ernaast.",
+        "Draai je wedstrijdspullen: schoenen, sokken, rugzak, stokken, jas. Wat hier schuurt, schuurt over 100 km tien keer zo hard.",
+        "Eet en drink zoals je op wedstrijddag wilt doen. De getallen per uur staan op deze kaart.",
+        "Log achteraf hoe zwaar het voelde, hoe je maag het deed en of er pijn was."
+      ]
+    },
+    {
+      "week": 21,
+      "date": "2027-01-18",
+      "kind": "fase",
+      "title": "Start afdaalblok",
+      "prep": [
+        "Vanaf nu tellen afdaalminuten mee: de seconden waarin het verhang steiler is dan −4 procent, opgeteld per activiteit. Je weekdoel staat bij de week.",
+        "Afdalen is excentrisch werk. De spierpijn komt op dag twee, niet op dag één — plan geen zware sessie de dag erna.",
+        "Bouw op in minuten, niet in steilheid. Langer zacht dalen traint meer dan kort steil dalen kapotmaakt."
+      ]
+    },
+    {
+      "week": 24,
+      "date": "2027-02-08",
+      "kind": "meting",
+      "title": "Bloedpanel + vitamine D",
+      "prep": [
+        "Midden in de winter: dit is het moment waarop je vitamine D het laagst staat.",
+        "Kort panel plus vitamine D: ferritine, transferrinesaturatie, Hb, CRP en vitamine D.",
+        "Nuchter, 's ochtends, minstens 48 uur na een zware sessie."
+      ]
+    },
+    {
+      "week": 27,
+      "date": "2027-03-06",
+      "kind": "wedstrijd",
+      "title": "50 km trailwedstrijd",
+      "prep": [
+        "De eerste echte generale. Het doel is uitkomen met een plan dat werkt, niet een tijd.",
+        "Draai je eten en drinken precies zoals je het in oktober wilt doen. De getallen per uur staan op deze kaart.",
+        "Test het volledige tenue: schoenen, sokken, tape, rugzak, stokken, jas, lamp.",
+        "Schrijf achteraf op wat je zou veranderen. Dat is waar deze dag voor is."
+      ]
+    },
+    {
+      "week": 30,
+      "date": "2027-03-22",
+      "kind": "beslissing",
+      "title": "Definitieve wedstrijdkeuze + inschrijving",
+      "prep": [
+        "Kies op wat je in de 50 km hebt gezien: hoogtemeters, tijdslimieten, hoogte boven zeeniveau, verwacht weer en hoe streng de tussentijden zijn.",
+        "Schrijf je vandaag in. Veel honderd-kilometerwedstrijden zitten maanden van tevoren vol of loten.",
+        "Regel meteen het verplichte materiaal en, als de wedstrijd die vraagt, je kwalificatiepunten."
+      ]
+    },
+    {
+      "week": 36,
+      "date": "2027-05-03",
+      "kind": "meting",
+      "title": "Bloedpanel kort",
+      "prep": [
+        "Kort betekent: ferritine, transferrinesaturatie, Hb en CRP. De rest hoeft niet elke keer.",
+        "Nuchter, 's ochtends, minstens 48 uur na een zware sessie.",
+        "Ferritine die zakt terwijl je volume stijgt is waar je naar kijkt. Vergelijk met je eigen T0, niet met de ondergrens van het lab."
+      ]
+    },
+    {
+      "week": 39,
+      "date": "2027-05-29",
+      "kind": "wedstrijd",
+      "title": "65 km trailwedstrijd",
+      "prep": [
+        "De langste wedstrijd voor de doelwedstrijd. Het gaat hier om het tweede deel: hoe je eet en hoe je loopt na vier uur.",
+        "Alles precies zoals in oktober. Geen nieuwe schoenen, geen nieuw merk gel, geen nieuw idee op de ochtend zelf.",
+        "Noteer waar het misging: je maag, je voeten, je hoofd. Er zijn nog achttien weken om het op te lossen."
+      ]
+    },
+    {
+      "week": 52,
+      "date": "2027-08-23",
+      "kind": "meting",
+      "title": "Bloedpanel volledig",
+      "prep": [
+        "Volledig: ferritine, transferrinesaturatie, Hb, CRP, vitamine B12, vitamine D en TSH. Dezelfde lijst als je T0, zodat je ze naast elkaar kunt leggen.",
+        "Zes weken voor de wedstrijd. Wat hier uitkomt is nog te corrigeren; over een maand niet meer.",
+        "Nuchter, 's ochtends, minstens 48 uur na een zware sessie."
+      ]
+    },
+    {
+      "week": 53,
+      "date": "2027-09-04",
+      "kind": "simulatie",
+      "title": "Race-simulatie 55 km",
+      "prep": [
+        "De generale repetitie. Zelfde starttijd, zelfde ontbijt, zelfde spullen, zelfde soort ondergrond als de wedstrijd.",
+        "Draai het hele voedingsplan af, van het eerste uur tot het eind. Niet alleen als je trek krijgt.",
+        "Na vandaag verander je niets meer aan je materiaal."
+      ]
+    },
+    {
+      "week": 54,
+      "date": "2027-09-11",
+      "kind": "grens",
+      "title": "Laatste zware afdaalsessie",
+      "prep": [
+        "De laatste keer dat je je quadriceps zwaar belast. Daarna heeft spierschade van afdalen weken nodig om helemaal weg te zijn.",
+        "Een zware afdaalsessie in de taper kost je meer dan hij oplevert."
+      ]
+    },
+    {
+      "week": 56,
+      "date": "2027-09-20",
+      "kind": "fase",
+      "title": "Taper start + slaapbanking",
+      "prep": [
+        "Volume omlaag, intensiteit blijft. Kort en scherp houdt je scherp; lang maakt je alleen moe.",
+        "Slaapbanking: een uur extra per nacht in de twee weken voor de start. Slaap van tevoren telt, slaap achteraf niet.",
+        "Niet op dieet in de taper. Minder trainen is niet minder eten — je vult nu je glycogeen aan."
+      ]
+    },
+    {
+      "week": 57,
+      "date": "2027-10-02",
+      "kind": "wedstrijd",
+      "title": "DOELWEDSTRIJD 100 KM",
+      "prep": [
+        "Waar 399 dagen naartoe liepen.",
+        "Eten en drinken per uur staan op deze kaart. Begin in het eerste uur, niet als je honger krijgt — dan ben je al te laat.",
+        "De eerste dertig kilometer horen te makkelijk te voelen. Dat is de bedoeling.",
+        "Verplicht materiaal en dropbags: leg ze de avond ervoor klaar, niet 's ochtends."
+      ]
+    }
+  ]
 }

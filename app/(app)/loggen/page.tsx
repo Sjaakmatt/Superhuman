@@ -1,32 +1,24 @@
 import Link from 'next/link';
-import Agenda from '@/components/Agenda';
 import SessionLogForm from '@/components/SessionLogForm';
 import { Card, CardTitle, Empty, Grid, Note, Pill, Stat } from '@/components/ui';
-import { getDay, getDays, getReference, planBounds } from '@/lib/plan';
+import { getDay } from '@/lib/plan';
 import { getActivities, getLogs, getShoes } from '@/lib/data';
 import { dbConfigured } from '@/lib/db';
-import { addDays, formatLong, formatShort, monthDays, monthOf, today as todayIn } from '@/lib/date';
+import { addDays, formatLong, formatShort, today as todayIn } from '@/lib/date';
 import { km, minutes } from '@/lib/metrics';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Loggen({ searchParams }: { searchParams: Promise<{ d?: string; m?: string }> }) {
+export default async function Loggen({ searchParams }: { searchParams: Promise<{ d?: string }> }) {
   const params = await searchParams;
   const now = todayIn();
   const date = params.d && /^\d{4}-\d{2}-\d{2}$/.test(params.d) ? params.d : now;
-  const month = params.m && /^\d{4}-\d{2}$/.test(params.m) ? params.m : monthOf(date);
-  const bounds = planBounds();
-
-  const [day, shoes, activities, logs, milestones] = await Promise.all([
+  const [day, shoes, activities, logs] = await Promise.all([
     getDay(date),
     getShoes(),
     getActivities(date, date),
     getLogs(addDays(now, -30), now),
-    getReference('milestones'),
   ]);
-
-  const maandDagen = monthDays(month);
-  const agendaDagen = await getDays(maandDagen[0]!, maandDagen.at(-1)!);
 
   const saved = logs.find((l) => l.date === date) ?? null;
   const isLongrun = Boolean(day && (/lang|back-to-back|trail/i.test(day.session_type) || Number(day.planned_km) >= 20));
@@ -98,9 +90,6 @@ export default async function Loggen({ searchParams }: { searchParams: Promise<{
           draai de migraties en <code>npm run db:seed</code>. Daarna kun je hier loggen.
         </Empty>
       )}
-
-      <Agenda month={month} days={agendaDagen} milestones={milestones} selected={date} today={now}
-        first={bounds.first} last={bounds.last} href="/loggen" />
 
       {logs.length > 0 ? (
         <Card sunk>

@@ -11,7 +11,7 @@ import { getDay, getDays, getReference, getWeek, getWeekDays, phaseForWeek, plan
 import { getLogs, getWellness, loadRuleInput } from '@/lib/data';
 import { evaluate } from '@/lib/rules';
 import { meanOver } from '@/lib/metrics';
-import { addDays, daysBetween, formatLong, monthDays, monthOf, today as todayIn } from '@/lib/date';
+import { addDays, daysBetween, formatLong, formatMonth, formatShort, monthDays, monthOf, today as todayIn } from '@/lib/date';
 
 /* Een mijlpaal komt niet uit de lucht vallen: vanaf twee weken van tevoren
  * staat hij op Vandaag, zodat je je erop kunt voorbereiden. */
@@ -19,12 +19,17 @@ const AANLOOP = 14;
 
 export const dynamic = 'force-dynamic';
 
-export default async function Vandaag({ searchParams }: { searchParams: Promise<{ d?: string; m?: string }> }) {
+export default async function Vandaag({
+  searchParams,
+}: {
+  searchParams: Promise<{ d?: string; m?: string; v?: string }>;
+}) {
   const params = await searchParams;
   const bounds = planBounds();
   const now = todayIn();
   const date = params.d && /^\d{4}-\d{2}-\d{2}$/.test(params.d) ? params.d : now;
   const month = params.m && /^\d{4}-\d{2}$/.test(params.m) ? params.m : monthOf(date);
+  const opAgenda = params.v === 'agenda';
 
   const [day, weekDays, milestones, zones] = await Promise.all([
     getDay(date),
@@ -38,11 +43,12 @@ export default async function Vandaag({ searchParams }: { searchParams: Promise<
   const agendaDagen = await getDays(maandDagen[0]!, maandDagen.at(-1)!);
 
   // De mijlpaal van de dag die je bekijkt, en anders de eerstvolgende binnen de
-  // aanloop. Zo zie je hem ook als je er vanuit het seizoensoverzicht op klikt.
+  // aanloop — gerekend vanaf díe dag, niet vanaf vandaag. Anders zie je op
+  // 18 november nog de bloedtest van 31 augustus.
   const komende =
     milestones.find((m) => m.date === date) ??
     milestones
-      .filter((m) => m.date >= now && daysBetween(now, m.date) <= AANLOOP)
+      .filter((m) => m.date > date && daysBetween(date, m.date) <= AANLOOP)
       .sort((a, b) => a.date.localeCompare(b.date))[0] ??
     null;
   const mijlpaalDag = komende ? (komende.date === date ? day : await getDay(komende.date)) : null;
@@ -78,10 +84,48 @@ export default async function Vandaag({ searchParams }: { searchParams: Promise<
         }
       : null;
 
+  const agenda = (
+    <Agenda month={month} days={agendaDagen} milestones={milestones} selected={date} today={now}
+      first={bounds.first} last={bounds.last} />
+  );
+  const tabs = <Tabs date={date} month={month} opAgenda={opAgenda} />;
+
+  if (opAgenda) {
+    // De mijlpalen van de maand die je bekijkt, zodat de agenda zichzelf uitlegt.
+    const vanMaand = milestones.filter((m) => m.date.startsWith(month));
+    return (
+      <div className="mx-auto flex max-w-[860px] flex-col gap-4 pt-2">
+        {tabs}
+        {agenda}
+        {vanMaand.length ? (
+          <Card sunk>
+            <CardTitle aside={`${vanMaand.length} in ${formatMonth(month)}`}>Mijlpalen deze maand</CardTitle>
+            <ol className="flex flex-col">
+              {vanMaand.map((m) => (
+                <li key={m.date + m.title} className="flex items-center gap-3 border-b py-2.5 last:border-0"
+                  style={{ borderColor: 'var(--hair)' }}>
+                  <Link href={`/?d=${m.date}&m=${month}`} className="num w-16 shrink-0 text-[12px]"
+                    style={{ color: 'var(--ink2)' }}>
+                    {formatShort(m.date, now)}
+                  </Link>
+                  <span className="flex-1 text-[14px] font-medium">{m.title}</span>
+                  <Pill tone={m.kind === 'wedstrijd' || m.kind === 'grens' ? 'warn' : 'neutral'}>{m.kind}</Pill>
+                </li>
+              ))}
+            </ol>
+          </Card>
+        ) : (
+          <Note>In {formatMonth(month)} staat geen mijlpaal.</Note>
+        )}
+      </div>
+    );
+  }
+
   if (!day) {
     const untilStart = Math.round((Date.parse(bounds.first) - Date.parse(date)) / 86_400_000);
     return (
       <div className="mx-auto flex max-w-[860px] flex-col gap-4 pt-2">
+        {tabs}
         <DayNav date={date} first={bounds.first} last={bounds.last} month={month} />
         {untilStart > 0 ? (
           <Empty title={untilStart === 1 ? 'Het plan begint morgen' : `Het plan begint over ${untilStart} dagen`}>
@@ -93,8 +137,6 @@ export default async function Vandaag({ searchParams }: { searchParams: Promise<
             Het plan loopt van {bounds.first} tot en met {bounds.last}. Deze dag valt daarbuiten.
           </Empty>
         )}
-        <Agenda month={month} days={agendaDagen} milestones={milestones} selected={date} today={now}
-          first={bounds.first} last={bounds.last} href="/" />
       </div>
     );
   }
@@ -103,12 +145,13 @@ export default async function Vandaag({ searchParams }: { searchParams: Promise<
 
   return (
     <div className="mx-auto flex max-w-[860px] flex-col gap-4 pt-2">
+      {tabs}
       <DayNav date={date} first={bounds.first} last={bounds.last} month={month} />
 
       {hits.length > 0 ? <Alerts hits={hits} /> : null}
 
       {komende ? (
-        <Mijlpaal milestone={komende} day={mijlpaalDag} fueling={fueling} zones={zones} today={now} />
+        <Mijlpaal milestone={komende} day={mijlpaalDag} fueling={fueling} zones={zones} today={now} reference={date} />
       ) : null}
 
       <SessionCard day={day} week={week} />
@@ -135,9 +178,6 @@ export default async function Vandaag({ searchParams }: { searchParams: Promise<
 
       <WeekStrip days={weekDays} today={now} />
 
-      <Agenda month={month} days={agendaDagen} milestones={milestones} selected={date} today={now}
-        first={bounds.first} last={bounds.last} href="/" />
-
       {week ? (
         <Card sunk>
           <CardTitle aside={<Pill tone={week.status === 'DELOAD' ? 'acc' : 'neutral'}>{week.status}</Pill>}>
@@ -157,6 +197,31 @@ export default async function Vandaag({ searchParams }: { searchParams: Promise<
         </Card>
       ) : null}
     </div>
+  );
+}
+
+/** Twee tabbladen op hetzelfde scherm: de dag, en de maand eromheen. Ze delen
+ *  dezelfde gekozen dag, dus je springt heen en weer zonder iets kwijt te raken. */
+function Tabs({ date, month, opAgenda }: { date: string; month: string; opAgenda: boolean }) {
+  const items = [
+    { label: 'Vandaag', href: `/?d=${date}&m=${month}`, actief: !opAgenda },
+    { label: 'Agenda', href: `/?d=${date}&m=${month}&v=agenda`, actief: opAgenda },
+  ];
+  return (
+    <nav aria-label="Weergave" className="flex gap-1 self-start rounded-[var(--r-pill)] p-1"
+      style={{ background: 'var(--card2)' }}>
+      {items.map((item) => (
+        <Link key={item.label} href={item.href} aria-current={item.actief ? 'page' : undefined}
+          className="interactive rounded-[var(--r-pill)] px-4 py-2 text-[13px] font-semibold"
+          style={{
+            background: item.actief ? 'var(--card)' : 'transparent',
+            color: item.actief ? 'var(--ink)' : 'var(--ink3)',
+            boxShadow: item.actief ? 'var(--sh)' : 'none',
+          }}>
+          {item.label}
+        </Link>
+      ))}
+    </nav>
   );
 }
 

@@ -17,7 +17,6 @@ export default function Agenda({
   today,
   first,
   last,
-  href,
 }: {
   month: string;
   days: PlanDay[];
@@ -26,8 +25,6 @@ export default function Agenda({
   today: IsoDate;
   first: IsoDate;
   last: IsoDate;
-  /** `/` of `/loggen` — de agenda stuurt je binnen hetzelfde scherm. */
-  href: '/' | '/loggen';
 }) {
   const perDag = new Map(days.map((d) => [d.date, d]));
   const perMijlpaal = new Map(milestones.map((m) => [m.date, m]));
@@ -44,8 +41,8 @@ export default function Agenda({
       <CardTitle
         aside={
           <span className="flex items-center gap-1">
-            <MaandKnop href={`${href}?d=${selected}&m=${vorige}`} disabled={!kanTerug} label="Maand terug" d="M15 5l-7 7 7 7" />
-            <MaandKnop href={`${href}?d=${selected}&m=${volgende}`} disabled={!kanVerder} label="Maand verder" d="M9 5l7 7-7 7" />
+            <MaandKnop href={`/?d=${selected}&m=${vorige}&v=agenda`} disabled={!kanTerug} label="Maand terug" d="M15 5l-7 7 7 7" />
+            <MaandKnop href={`/?d=${selected}&m=${volgende}&v=agenda`} disabled={!kanVerder} label="Maand verder" d="M9 5l7 7-7 7" />
           </span>
         }
       >
@@ -70,7 +67,6 @@ export default function Agenda({
             mijlpaal={perMijlpaal.get(datum) ?? null}
             isVandaag={datum === today}
             isGekozen={datum === selected}
-            href={href}
             maand={month}
           />
         ))}
@@ -106,7 +102,6 @@ function Dag({
   mijlpaal,
   isVandaag,
   isGekozen,
-  href,
   maand,
 }: {
   datum: IsoDate;
@@ -114,7 +109,6 @@ function Dag({
   mijlpaal: Milestone | null;
   isVandaag: boolean;
   isGekozen: boolean;
-  href: '/' | '/loggen';
   maand: string;
 }) {
   const nummer = Number(datum.slice(8));
@@ -154,7 +148,7 @@ function Dag({
 
   return (
     <Link
-      href={`${href}?d=${datum}&m=${maand}`}
+      href={`/?d=${datum}&m=${maand}`}
       aria-label={label}
       aria-current={isGekozen ? 'date' : undefined}
       className={`interactive ${basis}`}
