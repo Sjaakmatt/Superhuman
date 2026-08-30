@@ -52,6 +52,39 @@ export default async function Vandaag({
       date === now ? getLogs(gisteren, gisteren) : Promise.resolve([]),
     ]);
 
+  const stored = wellness.find((w) => w.date === date) ?? null;
+  // De kolommen mogen null zijn; de schuifjes willen een getal of niets.
+  const savedToday = stored
+    ? Object.fromEntries(
+        (['slept', 'fresh', 'legs', 'mind', 'motivation'] as const)
+          .map((k) => [k, stored[k]])
+          .filter(([, v]) => typeof v === 'number'),
+      )
+    : null;
+  const average = meanOver(wellness, date, 14, (w) => w.total);
+
+  // De pijn van gisteren kun je pas vanochtend beoordelen. Alleen vragen als er
+  // gisteren pijn was en het antwoord nog ontbreekt.
+  const gisterenLog = gisterenLogs[0] ?? null;
+  const pijnGisteren =
+    gisterenLog && Number(gisterenLog.pain_score) > 0
+      ? {
+          date: gisteren,
+          pain_score: Number(gisterenLog.pain_score),
+          pain_note: gisterenLog.pain_note as string | null,
+          pain_next_morning:
+            gisterenLog.pain_next_morning === null ? null : Number(gisterenLog.pain_next_morning),
+        }
+      : null;
+
+  // De ochtendcheck hangt aan de dag, niet aan het plan: hoe je geslapen hebt
+  // is ook op een dag zonder geplande sessie een meting, en wie nog geen plan
+  // heeft kan hem net zo goed invullen.
+  const ochtend =
+    date === now ? (
+      <MorningCheck date={date} saved={savedToday} average={average} yesterday={pijnGisteren} />
+    ) : null;
+
   // Zonder plan is er niets om een dag uit te lezen. Dat is geen fout: je kunt
   // je trainingen loggen en je cijfers zien, er staat alleen niets voorgeschreven.
   if (!bounds) {
@@ -61,6 +94,7 @@ export default async function Vandaag({
           Er staat voor jou geen trainingsschema klaar. Wat je loopt komt gewoon binnen en je kunt het loggen; onder
           Analyse zie je je eigen cijfers terug.
         </Empty>
+        {ochtend}
       </div>
     );
   }
@@ -92,31 +126,6 @@ export default async function Vandaag({
 
   const ruleInput = day && week ? await loadRuleInput(now, week.week, week.status) : null;
   const hits = ruleInput ? evaluate(ruleInput) : [];
-
-  const stored = wellness.find((w) => w.date === date) ?? null;
-  // De kolommen mogen null zijn; de schuifjes willen een getal of niets.
-  const savedToday = stored
-    ? Object.fromEntries(
-        (['slept', 'fresh', 'legs', 'mind', 'motivation'] as const)
-          .map((k) => [k, stored[k]])
-          .filter(([, v]) => typeof v === 'number'),
-      )
-    : null;
-  const average = meanOver(wellness, date, 14, (w) => w.total);
-
-  // De pijn van gisteren kun je pas vanochtend beoordelen. Alleen vragen als er
-  // gisteren pijn was en het antwoord nog ontbreekt.
-  const gisterenLog = gisterenLogs[0] ?? null;
-  const pijnGisteren =
-    gisterenLog && Number(gisterenLog.pain_score) > 0
-      ? {
-          date: gisteren,
-          pain_score: Number(gisterenLog.pain_score),
-          pain_note: gisterenLog.pain_note as string | null,
-          pain_next_morning:
-            gisterenLog.pain_next_morning === null ? null : Number(gisterenLog.pain_next_morning),
-        }
-      : null;
 
   const agenda = (
     <Agenda month={month} days={agendaDagen} milestones={milestones} selected={date} today={now}
@@ -173,6 +182,7 @@ export default async function Vandaag({
             Het plan loopt van {bounds.first} tot en met {bounds.last}. Deze dag valt daarbuiten.
           </Empty>
         )}
+        {ochtend}
       </div>
     );
   }
@@ -210,9 +220,7 @@ export default async function Vandaag({
         </Card>
       ) : null}
 
-      {date === now ? (
-        <MorningCheck date={date} saved={savedToday} average={average} yesterday={pijnGisteren} />
-      ) : null}
+      {ochtend}
 
       <WeekStrip days={weekDays} today={now} gelopen={weekGelopen} />
 
