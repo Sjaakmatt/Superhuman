@@ -5,6 +5,7 @@ import DayNav from '@/components/DayNav';
 import Mijlpaal from '@/components/Mijlpaal';
 import MorningCheck from '@/components/MorningCheck';
 import SessionCard from '@/components/SessionCard';
+import Weekoverzicht from '@/components/Weekoverzicht';
 import WeekStrip from '@/components/WeekStrip';
 import { Card, CardTitle, Empty, Note, Pill } from '@/components/ui';
 import { getDay, getDays, getPlanBounds, getReference, getWeek, getWeekDays, phaseForWeek, planSource } from '@/lib/plan';
@@ -130,6 +131,8 @@ export default async function Vandaag({
       <div className="mx-auto flex max-w-[860px] flex-col gap-4 pt-2">
         {tabs}
         {agenda}
+        <Weekoverzicht days={weekDays} week={week} milestones={milestones} today={now} selected={date}
+          first={bounds.first} last={bounds.last} />
         {vanMaand.length ? (
           <Card sunk>
             <CardTitle aside={`${vanMaand.length} in ${formatMonth(month)}`}>Mijlpalen deze maand</CardTitle>
