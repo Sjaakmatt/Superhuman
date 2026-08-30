@@ -21,7 +21,9 @@ export const dynamic = 'force-dynamic';
 export default async function Analyse() {
   const now = todayIn();
   const [weeks, zones] = await Promise.all([getWeeks(), getZones()]);
-  const current = weeks.find((w) => w.start_date <= now && addDays(w.start_date, 6) >= now) ?? weeks[0]!;
+  // Zonder plan is er geen "deze week": dan valt alles weg wat tegen een doel
+  // afzet, en blijft staan wat van jou is — je lopen, je zones, je welzijn.
+  const current = weeks.find((w) => w.start_date <= now && addDays(w.start_date, 6) >= now) ?? weeks[0] ?? null;
 
   const [actuals, wellness, zoneSeconds, insights] = await Promise.all([
     getWeekActuals(),
@@ -34,11 +36,11 @@ export default async function Analyse() {
   // de lopen van vóór het plan horen er net zo goed bij.
   const aeroob = await getAerobicSessions(BACKFILL_FROM, now);
 
-  const ruleInput = await loadRuleInput(now, current.week, current.status);
+  const ruleInput = current ? await loadRuleInput(now, current.week, current.status) : null;
   const hits = ruleInput ? evaluate(ruleInput) : [];
 
   const actualByWeek = new Map(actuals.map((a) => [a.week, a]));
-  const window = weeks.filter((w) => w.week > current.week - 12 && w.week <= current.week);
+  const window = current ? weeks.filter((w) => w.week > current.week - 12 && w.week <= current.week) : [];
   const bars = window.map((w) => ({
     week: w.week,
     planned: Number(w.target_km),
@@ -46,12 +48,12 @@ export default async function Analyse() {
   }));
 
   const volumes = new Map(actuals.map((a) => [a.week, Number(a.actual_km)]));
-  const jump = weekJump(volumes, current.week);
+  const jump = current ? weekJump(volumes, current.week) : null;
   const dist = distribution(zoneSeconds);
   const trend = wellnessTrend(wellness, now);
   const drift = ruleInput ? z2Drift(ruleInput.z2, ruleInput.z2Ceiling) : null;
 
-  const thisWeek = actualByWeek.get(current.week);
+  const thisWeek = current ? actualByWeek.get(current.week) : undefined;
   const wellnessPoints = Array.from({ length: 28 }, (_, i) => {
     const date = addDays(now, -(27 - i));
     return { label: date, value: wellness.find((w) => w.date === date)?.total ?? null };
@@ -61,35 +63,46 @@ export default async function Analyse() {
     <div className="mx-auto flex max-w-[980px] flex-col gap-4 pt-2">
       {hits.length > 0 ? <Alerts hits={hits} /> : null}
 
-      <Card>
-        <CardTitle aside={<Link href="/seizoen" className="font-semibold" style={{ color: 'var(--acc)' }}>Seizoen →</Link>}>
-          Week {current.week} · {current.status}
-        </CardTitle>
-        <Grid min={130}>
-          <Stat value={thisWeek ? Math.round(Number(thisWeek.actual_km)) : '—'} unit="km"
-            label={`gelopen van ${current.target_km}`} />
-          <Stat value={thisWeek ? Math.round(Number(thisWeek.actual_hm)) : '—'} unit="hm"
-            label={current.hm_target ? `doel ${current.hm_target}` : 'geen doel'} />
-          <Stat value={thisWeek ? Math.round(Number(thisWeek.actual_descent_min)) : '—'} unit="min"
-            label={current.descent_min_target ? `afdalen, doel ${current.descent_min_target}` : 'afdalen'} />
-          <Stat value={thisWeek ? Number(thisWeek.strength_done) : '—'}
-            label={`kracht van ${current.strength_sessions}`} />
-        </Grid>
-        <Note>
-          Afdaalminuten zijn onze eigen maat: seconden waarin het verhang steiler is dan −4%, uit de grade_smooth-stream.
-        </Note>
-      </Card>
-
-      <Card>
-        <CardTitle aside="laatste 12 weken">Gepland tegen gelopen</CardTitle>
-        {bars.some((b) => b.actual !== null) ? (
-          <WeekBars rows={bars} />
-        ) : (
-          <Empty title="Nog niets gelopen">
-            De omtrek is het plan, de vulling wat je liep. Zodra Strava synchroniseert vult dit zich vanzelf.
+      {current ? (
+        <Card>
+          <CardTitle aside={<Link href="/seizoen" className="font-semibold" style={{ color: 'var(--acc)' }}>Seizoen →</Link>}>
+            Week {current.week} · {current.status}
+          </CardTitle>
+          <Grid min={130}>
+            <Stat value={thisWeek ? Math.round(Number(thisWeek.actual_km)) : '—'} unit="km"
+              label={`gelopen van ${current.target_km}`} />
+            <Stat value={thisWeek ? Math.round(Number(thisWeek.actual_hm)) : '—'} unit="hm"
+              label={current.hm_target ? `doel ${current.hm_target}` : 'geen doel'} />
+            <Stat value={thisWeek ? Math.round(Number(thisWeek.actual_descent_min)) : '—'} unit="min"
+              label={current.descent_min_target ? `afdalen, doel ${current.descent_min_target}` : 'afdalen'} />
+            <Stat value={thisWeek ? Number(thisWeek.strength_done) : '—'}
+              label={`kracht van ${current.strength_sessions}`} />
+          </Grid>
+          <Note>
+            Afdaalminuten zijn onze eigen maat: seconden waarin het verhang steiler is dan −4%, uit de grade_smooth-stream.
+          </Note>
+        </Card>
+      ) : (
+        <Card>
+          <Empty title="Je hebt nog geen plan">
+            Er staat geen schema voor je klaar, dus er valt niets tegen een doel af te zetten. Wat je liep en hoe je je
+            voelde staat er wel — dat is van jou, niet van het plan.
           </Empty>
-        )}
-      </Card>
+        </Card>
+      )}
+
+      {current ? (
+        <Card>
+          <CardTitle aside="laatste 12 weken">Gepland tegen gelopen</CardTitle>
+          {bars.some((b) => b.actual !== null) ? (
+            <WeekBars rows={bars} />
+          ) : (
+            <Empty title="Nog niets gelopen">
+              De omtrek is het plan, de vulling wat je liep. Zodra Strava synchroniseert vult dit zich vanzelf.
+            </Empty>
+          )}
+        </Card>
+      ) : null}
 
       <div className="grid gap-4 side:grid-cols-2">
         <Card>

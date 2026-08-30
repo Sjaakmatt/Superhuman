@@ -87,7 +87,9 @@ export default async function Seizoen() {
             <Stat value={Math.round(totalKm)} unit="km" label="gepland in totaal" />
             <Stat value={Math.round(ranKm)} unit="km" label="tot nu toe gelopen" />
             <Stat value={weeks.filter((w) => w.status === 'DELOAD').length} label="deloadweken" />
-            <Stat value={(current ?? weeks[0]!).phase.replace(/^\d+\.\s*/, '')}
+            {/* Plandagen zonder planweken hoort niet voor te komen, maar een
+                scherm dat daarop klapt is erger dan een streepje. */}
+            <Stat value={(current ?? weeks[0])?.phase.replace(/^\d+\.\s*/, '') ?? '—'}
               label={current ? 'fase' : 'eerste fase'} />
           </Grid>
         </div>
