@@ -136,12 +136,20 @@ export default async function Vandaag({
   if (opAgenda) {
     // De mijlpalen van de maand die je bekijkt, zodat de agenda zichzelf uitlegt.
     const vanMaand = milestones.filter((m) => m.date.startsWith(month));
+
+    // Sta je buiten het plan — het begint pas morgen — dan is de week van
+    // vandaag leeg. Een lege kaart is geen antwoord: we tonen dan de eerste
+    // week die er wél is, zodat je altijd ziet wat eraan komt.
+    const anker = date < bounds.first ? bounds.first : date > bounds.last ? bounds.last : date;
+    const lijst = weekDays.length ? weekDays : await getWeekDays(anker);
+    const lijstWeek = week ?? (lijst[0] ? await getWeek(lijst[0].week) : null);
+
     return (
       <div className="mx-auto flex max-w-[860px] flex-col gap-4 pt-2">
         {tabs}
         {agenda}
-        <Weekoverzicht days={weekDays} week={week} milestones={milestones} today={now} selected={date}
-          first={bounds.first} last={bounds.last} />
+        <Weekoverzicht days={lijst} week={lijstWeek} milestones={milestones} today={now}
+          selected={lijst[0]?.date ?? date} first={bounds.first} last={bounds.last} />
         {vanMaand.length ? (
           <Card sunk>
             <CardTitle aside={`${vanMaand.length} in ${formatMonth(month)}`}>Mijlpalen deze maand</CardTitle>
