@@ -53,9 +53,11 @@ export async function saveWellness(input: WellnessInput): Promise<Result> {
   const resultaat = await context();
   if (!resultaat.ok) return resultaat.fout;
   const ctx = resultaat.ctx;
+  // De sleutel is (athlete_id, date) sinds er meer dan één atleet is; alleen
+  // `date` bestaat niet meer als unieke index en Postgres weigert de upsert.
   const { error } = await ctx.client.from('wellness').upsert(
     { ...input, athlete_id: ctx.athlete.id },
-    { onConflict: 'date' },
+    { onConflict: 'athlete_id,date' },
   );
   if (error) return { ok: false, error: error.message };
   revalidatePath('/');

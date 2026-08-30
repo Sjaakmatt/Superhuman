@@ -68,6 +68,7 @@ styles/tokens.css    kleuren en typografie — bron van waarheid
 - Seed-integriteit: 399 dagen, 57 weken, elke dag hoort bij een bestaande week, weektotaal = som van de dagen.
 - `lib/coach.ts` — de begrenzing van een opgevraagd bereik, en dat geen enkel gereedschap kan schrijven.
 - `lib/date.ts` — de maandhulpjes van de agenda, inclusief schrikkeljaar en jaargrens.
+- Elke `onConflict` in de code wijst naar een unieke sleutel die in de migraties staat. Zie `test/upsert.test.ts`: verschuift een sleutel, dan valt de bijbehorende upsert om zonder dat een scherm het merkt.
 - `scripts/import-samsung.ts` — de tijdzone (een sessie om 22:40 UTC hoort bij de volgende dag), en dat een onbekende soort niet geraden wordt.
 - `lib/metrics.ts` — het herschalen van de zones na een HRmax-hertest: geen gat en geen overlap tussen de banden.
 - `lib/metrics.ts` — aerobe efficiëntie stijgt bij een lagere hartslag én bij een hoger tempo, en het voortschrijdend gemiddelde begint bij het eerste punt.
