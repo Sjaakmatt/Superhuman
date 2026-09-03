@@ -214,7 +214,7 @@ export default async function Vandaag({
 
       {day.strength_block ? (
         <Card>
-          <CardTitle aside={<Link href="/kracht" className="font-semibold" style={{ color: 'var(--acc)' }}>Loggen →</Link>}>
+          <CardTitle aside={<Link href={`/kracht?d=${date}`} className="font-semibold" style={{ color: 'var(--acc)' }}>Loggen →</Link>}>
             Kracht vandaag
           </CardTitle>
           <p className="text-[15px] font-semibold">{day.strength_block}</p>

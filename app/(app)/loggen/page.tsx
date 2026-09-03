@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import LogDatum from '@/components/LogDatum';
+import DatumVeld from '@/components/DatumVeld';
 import SessionLogForm from '@/components/SessionLogForm';
 import StravaOphalen from '@/components/StravaOphalen';
 import { Card, CardTitle, Empty, Grid, Note, Pill, Stat } from '@/components/ui';
@@ -48,7 +48,7 @@ export default async function Loggen({ searchParams }: { searchParams: Promise<{
               Vandaag
             </Link>
           ) : null}
-          <LogDatum date={date} max={now} />
+          <DatumVeld pad="/loggen" date={date} max={now} />
           <Pijl href={`/loggen?d=${vorige}`} disabled={false} label="Dag terug" d="M15 5l-7 7 7 7" />
           <Pijl href={`/loggen?d=${volgende}`} disabled={volgende > now} label="Dag verder" d="M9 5l7 7-7 7" />
         </nav>

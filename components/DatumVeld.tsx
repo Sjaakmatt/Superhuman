@@ -2,9 +2,20 @@
 
 import { useRouter } from 'next/navigation';
 
-/** Springen naar een dag om te loggen. Vooruit kan niet: een dag die nog niet
- *  geweest is valt niet te beoordelen. */
-export default function LogDatum({ date, min, max }: { date: string; min?: string; max: string }) {
+/** Springen naar een dag. `pad` is het scherm waar je blijft; `max` begrenst
+ *  hoe ver vooruit je mag — bij loggen tot vandaag, bij kracht mag je verder
+ *  kijken. */
+export default function DatumVeld({
+  pad,
+  date,
+  min,
+  max,
+}: {
+  pad: string;
+  date: string;
+  min?: string;
+  max?: string;
+}) {
   const router = useRouter();
   return (
     <label className="interactive flex items-center gap-2 rounded-[var(--r-btn)] px-3 py-2"
@@ -16,7 +27,7 @@ export default function LogDatum({ date, min, max }: { date: string; min?: strin
         value={date}
         min={min}
         max={max}
-        onChange={(e) => { if (e.target.value) router.push(`/loggen?d=${e.target.value}`); }}
+        onChange={(e) => { if (e.target.value) router.push(`${pad}?d=${e.target.value}`); }}
         className="num bg-transparent text-[12px] font-semibold outline-none"
         style={{ color: 'var(--ink2)' }}
       />
