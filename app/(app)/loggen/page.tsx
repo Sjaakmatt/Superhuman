@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import LogDatum from '@/components/LogDatum';
 import SessionLogForm from '@/components/SessionLogForm';
 import StravaOphalen from '@/components/StravaOphalen';
 import { Card, CardTitle, Empty, Grid, Note, Pill, Stat } from '@/components/ui';
@@ -21,6 +22,12 @@ export default async function Loggen({ searchParams }: { searchParams: Promise<{
     getLogs(addDays(now, -30), now),
   ]);
 
+  // Achteraf loggen mag altijd — ook een dag van vóór het plan, want je liep
+  // toen ook. Vooruit niet: een dag die nog moet komen valt niet te beoordelen.
+  const toekomst = date > now;
+  const vorige = addDays(date, -1);
+  const volgende = addDays(date, 1);
+
   const laatsteSync = await getLastSync();
   const saved = logs.find((l) => l.date === date) ?? null;
   const isLongrun = Boolean(day && (/lang|back-to-back|trail/i.test(day.session_type) || Number(day.planned_km) >= 20));
@@ -29,34 +36,22 @@ export default async function Loggen({ searchParams }: { searchParams: Promise<{
     <div className="mx-auto flex max-w-[860px] flex-col gap-4 pt-2">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-[13px]" style={{ color: 'var(--ink3)' }}>{date === now ? 'Vandaag' : 'Eerdere dag'}</p>
+          <p className="text-[13px]" style={{ color: 'var(--ink3)' }}>
+            {date === now ? 'Vandaag' : date === addDays(now, -1) ? 'Gisteren' : 'Eerdere dag'}
+          </p>
           <p className="text-[17px] font-bold first-letter:uppercase">{formatLong(date)}</p>
         </div>
-        <div className="flex gap-1.5">
-          {[-2, -1].map((offset) => {
-            const d = addDays(now, offset);
-            return (
-              <Link key={d} href={`/loggen?d=${d}`}
-                className="interactive rounded-[var(--r-btn)] px-3 py-2 text-[12px] font-semibold"
-                style={{
-                  background: date === d ? 'var(--acc-soft)' : 'var(--card)',
-                  color: date === d ? 'var(--acc)' : 'var(--ink2)',
-                  border: '1px solid var(--hair)',
-                }}>
-                {offset === -1 ? 'Gisteren' : 'Eergisteren'}
-              </Link>
-            );
-          })}
-          <Link href="/loggen"
-            className="interactive rounded-[var(--r-btn)] px-3 py-2 text-[12px] font-semibold"
-            style={{
-              background: date === now ? 'var(--acc-soft)' : 'var(--card)',
-              color: date === now ? 'var(--acc)' : 'var(--ink2)',
-              border: '1px solid var(--hair)',
-            }}>
-            Vandaag
-          </Link>
-        </div>
+        <nav className="flex items-center gap-1.5" aria-label="Andere dag">
+          {date !== now ? (
+            <Link href="/loggen" className="interactive rounded-[var(--r-btn)] px-3 py-2 text-[12px] font-semibold"
+              style={{ background: 'var(--acc-soft)', color: 'var(--acc)' }}>
+              Vandaag
+            </Link>
+          ) : null}
+          <LogDatum date={date} max={now} />
+          <Pijl href={`/loggen?d=${vorige}`} disabled={false} label="Dag terug" d="M15 5l-7 7 7 7" />
+          <Pijl href={`/loggen?d=${volgende}`} disabled={volgende > now} label="Dag verder" d="M9 5l7 7-7 7" />
+        </nav>
       </div>
 
       {day ? (
@@ -98,7 +93,12 @@ export default async function Loggen({ searchParams }: { searchParams: Promise<{
         </Card>
       ) : null}
 
-      {dbConfigured() ? (
+      {toekomst ? (
+        <Empty title="Deze dag moet nog komen">
+          Loggen kan vanaf de dag zelf. Wat je van plan bent staat bij Vandaag; wat je deed noteer je hier zodra het
+          gebeurd is.
+        </Empty>
+      ) : dbConfigured() ? (
         <SessionLogForm date={date} saved={saved} shoes={shoes} isLongrun={isLongrun} isToday={date === now} />
       ) : (
         <Empty title="Nog geen database verbonden">
@@ -134,5 +134,31 @@ export default async function Loggen({ searchParams }: { searchParams: Promise<{
         </Card>
       ) : null}
     </div>
+  );
+}
+
+function Pijl({ href, disabled, label, d }: { href: string; disabled: boolean; label: string; d: string }) {
+  const style = { background: 'var(--card)', color: 'var(--ink2)', border: '1px solid var(--hair)' };
+  const klas = 'grid h-9 w-9 place-items-center rounded-[var(--r-btn)]';
+  if (disabled) {
+    return (
+      <span aria-hidden className={klas} style={{ ...style, opacity: 0.4 }}>
+        <Glyph d={d} />
+      </span>
+    );
+  }
+  return (
+    <Link href={href} aria-label={label} className={`interactive ${klas}`} style={style}>
+      <Glyph d={d} />
+    </Link>
+  );
+}
+
+function Glyph({ d }: { d: string }) {
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"
+      strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d={d} />
+    </svg>
   );
 }
