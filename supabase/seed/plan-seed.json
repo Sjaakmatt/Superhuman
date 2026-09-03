@@ -920,13 +920,13 @@
    "phase": "1. Fundament",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "4 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "4 km Z2, plat en zacht terrein.",
    "planned_km": 4,
-   "planned_min": 71,
+   "planned_min": 26,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2026-09-04",
@@ -935,13 +935,13 @@
    "phase": "1. Fundament",
    "week_status": "nee",
    "session_type": "Rust",
-   "session_text": "Volledige rust of 45 min wandelen. Longrun voorbereiden: route, voeding, kleding, tape klaarleggen. Nooit zware benen op vrijdag.",
+   "session_text": "Volledige rust of 45 min wandelen. Longrun voorbereiden: route, voeding, kleding, tape klaarleggen. Nooit zware benen op vrijdag. Kracht 6+ uur later of na de loop.",
    "planned_km": 0,
-   "planned_min": 30,
+   "planned_min": 75,
    "zone": "-",
    "pace_range": "-",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
   },
   {
    "date": "2026-09-05",
@@ -1025,13 +1025,13 @@
    "phase": "1. Fundament",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "4 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "4 km Z2, plat en zacht terrein.",
    "planned_km": 4,
-   "planned_min": 71,
+   "planned_min": 26,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2026-09-11",
@@ -1040,13 +1040,13 @@
    "phase": "1. Fundament",
    "week_status": "nee",
    "session_type": "Rust",
-   "session_text": "Volledige rust of 45 min wandelen. Longrun voorbereiden: route, voeding, kleding, tape klaarleggen. Nooit zware benen op vrijdag.",
+   "session_text": "Volledige rust of 45 min wandelen. Longrun voorbereiden: route, voeding, kleding, tape klaarleggen. Nooit zware benen op vrijdag. Kracht 6+ uur later of na de loop.",
    "planned_km": 0,
-   "planned_min": 30,
+   "planned_min": 75,
    "zone": "-",
    "pace_range": "-",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
   },
   {
    "date": "2026-09-12",
@@ -1130,13 +1130,13 @@
    "phase": "1. Fundament",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 78,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2026-09-18",
@@ -1145,13 +1145,13 @@
    "phase": "1. Fundament",
    "week_status": "nee",
    "session_type": "Rust",
-   "session_text": "Volledige rust of 45 min wandelen. Longrun voorbereiden: route, voeding, kleding, tape klaarleggen. Nooit zware benen op vrijdag.",
+   "session_text": "Volledige rust of 45 min wandelen. Longrun voorbereiden: route, voeding, kleding, tape klaarleggen. Nooit zware benen op vrijdag. Kracht 6+ uur later of na de loop.",
    "planned_km": 0,
-   "planned_min": 30,
+   "planned_min": 75,
    "zone": "-",
    "pace_range": "-",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
   },
   {
    "date": "2026-09-19",
@@ -1235,13 +1235,13 @@
    "phase": "1. Fundament",
    "week_status": "ja",
    "session_type": "Rustige duurloop",
-   "session_text": "4 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "4 km Z2, plat en zacht terrein.",
    "planned_km": 4,
-   "planned_min": 71,
+   "planned_min": 26,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2026-09-25",
@@ -1250,13 +1250,13 @@
    "phase": "1. Fundament",
    "week_status": "ja",
    "session_type": "Rust",
-   "session_text": "Volledige rust of 45 min wandelen. Longrun voorbereiden: route, voeding, kleding, tape klaarleggen. Nooit zware benen op vrijdag.",
+   "session_text": "Volledige rust of 45 min wandelen. Longrun voorbereiden: route, voeding, kleding, tape klaarleggen. Nooit zware benen op vrijdag. Kracht 6+ uur later of na de loop.",
    "planned_km": 0,
-   "planned_min": 30,
+   "planned_min": 75,
    "zone": "-",
    "pace_range": "-",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
   },
   {
    "date": "2026-09-26",
@@ -1340,13 +1340,13 @@
    "phase": "1. Fundament",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 78,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2026-10-02",
@@ -1355,13 +1355,13 @@
    "phase": "1. Fundament",
    "week_status": "nee",
    "session_type": "Rust",
-   "session_text": "Volledige rust of 45 min wandelen. Longrun voorbereiden: route, voeding, kleding, tape klaarleggen. Nooit zware benen op vrijdag.",
+   "session_text": "Volledige rust of 45 min wandelen. Longrun voorbereiden: route, voeding, kleding, tape klaarleggen. Nooit zware benen op vrijdag. Kracht 6+ uur later of na de loop.",
    "planned_km": 0,
-   "planned_min": 30,
+   "planned_min": 75,
    "zone": "-",
    "pace_range": "-",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
   },
   {
    "date": "2026-10-03",
@@ -1445,13 +1445,13 @@
    "phase": "1. Fundament",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "6 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "6 km Z2, plat en zacht terrein.",
    "planned_km": 6,
-   "planned_min": 85,
+   "planned_min": 40,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2026-10-09",
@@ -1460,13 +1460,13 @@
    "phase": "1. Fundament",
    "week_status": "nee",
    "session_type": "Rust",
-   "session_text": "Volledige rust of 45 min wandelen. Longrun voorbereiden: route, voeding, kleding, tape klaarleggen. Nooit zware benen op vrijdag.",
+   "session_text": "Volledige rust of 45 min wandelen. Longrun voorbereiden: route, voeding, kleding, tape klaarleggen. Nooit zware benen op vrijdag. Kracht 6+ uur later of na de loop.",
    "planned_km": 0,
-   "planned_min": 30,
+   "planned_min": 75,
    "zone": "-",
    "pace_range": "-",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
   },
   {
    "date": "2026-10-10",
@@ -1550,13 +1550,13 @@
    "phase": "1. Fundament",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "6 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "6 km Z2, plat en zacht terrein.",
    "planned_km": 6,
-   "planned_min": 85,
+   "planned_min": 40,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2026-10-16",
@@ -1565,13 +1565,13 @@
    "phase": "1. Fundament",
    "week_status": "nee",
    "session_type": "Rust",
-   "session_text": "Volledige rust of 45 min wandelen. Longrun voorbereiden: route, voeding, kleding, tape klaarleggen. Nooit zware benen op vrijdag.",
+   "session_text": "Volledige rust of 45 min wandelen. Longrun voorbereiden: route, voeding, kleding, tape klaarleggen. Nooit zware benen op vrijdag. Kracht 6+ uur later of na de loop.",
    "planned_km": 0,
-   "planned_min": 30,
+   "planned_min": 75,
    "zone": "-",
    "pace_range": "-",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
   },
   {
    "date": "2026-10-17",
@@ -1655,13 +1655,13 @@
    "phase": "1. Fundament",
    "week_status": "ja",
    "session_type": "Rustige duurloop",
-   "session_text": "4 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "4 km Z2, plat en zacht terrein.",
    "planned_km": 4,
-   "planned_min": 71,
+   "planned_min": 26,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2026-10-23",
@@ -1670,13 +1670,13 @@
    "phase": "1. Fundament",
    "week_status": "ja",
    "session_type": "Rust",
-   "session_text": "Volledige rust of 45 min wandelen. Longrun voorbereiden: route, voeding, kleding, tape klaarleggen. Nooit zware benen op vrijdag.",
+   "session_text": "Volledige rust of 45 min wandelen. Longrun voorbereiden: route, voeding, kleding, tape klaarleggen. Nooit zware benen op vrijdag. Kracht 6+ uur later of na de loop.",
    "planned_km": 0,
-   "planned_min": 30,
+   "planned_min": 75,
    "zone": "-",
    "pace_range": "-",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
   },
   {
    "date": "2026-10-24",
@@ -1760,13 +1760,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 78,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2026-10-30",
@@ -1775,13 +1775,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 65,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
   },
   {
    "date": "2026-10-31",
@@ -1865,13 +1865,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 78,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2026-11-06",
@@ -1880,13 +1880,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 65,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
   },
   {
    "date": "2026-11-07",
@@ -1970,13 +1970,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "6 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "6 km Z2, plat en zacht terrein.",
    "planned_km": 6,
-   "planned_min": 85,
+   "planned_min": 40,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2026-11-13",
@@ -1985,13 +1985,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 65,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
   },
   {
    "date": "2026-11-14",
@@ -2075,13 +2075,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "ja",
    "session_type": "Rustige duurloop",
-   "session_text": "4 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "4 km Z2, plat en zacht terrein.",
    "planned_km": 4,
-   "planned_min": 71,
+   "planned_min": 26,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2026-11-20",
@@ -2090,13 +2090,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "ja",
    "session_type": "Hersteldraf",
-   "session_text": "2 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "2 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 2,
-   "planned_min": 13,
+   "planned_min": 58,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
   },
   {
    "date": "2026-11-21",
@@ -2180,13 +2180,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 78,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2026-11-27",
@@ -2195,13 +2195,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 65,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
   },
   {
    "date": "2026-11-28",
@@ -2285,13 +2285,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 78,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2026-12-04",
@@ -2300,13 +2300,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 65,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3-4x8-12 @65-75% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
   },
   {
    "date": "2026-12-05",
@@ -2390,13 +2390,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "6 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "6 km Z2, plat en zacht terrein.",
    "planned_km": 6,
-   "planned_min": 85,
+   "planned_min": 40,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2026-12-11",
@@ -2405,13 +2405,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 65,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
   },
   {
    "date": "2026-12-12",
@@ -2495,13 +2495,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "ja",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 78,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2026-12-18",
@@ -2510,13 +2510,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "ja",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 65,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
   },
   {
    "date": "2026-12-19",
@@ -2600,13 +2600,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "feestdagen",
    "session_type": "Rustige duurloop",
-   "session_text": "4 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "4 km Z2, plat en zacht terrein.",
    "planned_km": 4,
-   "planned_min": 71,
+   "planned_min": 26,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2026-12-25",
@@ -2615,13 +2615,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "feestdagen",
    "session_type": "Hersteldraf",
-   "session_text": "2 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "2 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 2,
-   "planned_min": 13,
+   "planned_min": 58,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
   },
   {
    "date": "2026-12-26",
@@ -2705,13 +2705,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "feestdagen",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 78,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-01-01",
@@ -2720,13 +2720,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "feestdagen",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 65,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
   },
   {
    "date": "2027-01-02",
@@ -2810,13 +2810,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "6 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "6 km Z2, plat en zacht terrein.",
    "planned_km": 6,
-   "planned_min": 85,
+   "planned_min": 40,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-01-08",
@@ -2825,13 +2825,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 65,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
   },
   {
    "date": "2027-01-09",
@@ -2915,13 +2915,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "ja",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 78,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-01-15",
@@ -2930,13 +2930,13 @@
    "phase": "2. Aerobe basis",
    "week_status": "ja",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 65,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
   },
   {
    "date": "2027-01-16",
@@ -3020,13 +3020,13 @@
    "phase": "3. Kracht-uithouding",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 78,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-01-22",
@@ -3035,13 +3035,13 @@
    "phase": "3. Kracht-uithouding",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 65,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
   },
   {
    "date": "2027-01-23",
@@ -3125,13 +3125,13 @@
    "phase": "3. Kracht-uithouding",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 78,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-01-29",
@@ -3140,13 +3140,13 @@
    "phase": "3. Kracht-uithouding",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 65,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
   },
   {
    "date": "2027-01-30",
@@ -3230,13 +3230,13 @@
    "phase": "3. Kracht-uithouding",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "6 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "6 km Z2, plat en zacht terrein.",
    "planned_km": 6,
-   "planned_min": 85,
+   "planned_min": 40,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-02-05",
@@ -3245,13 +3245,13 @@
    "phase": "3. Kracht-uithouding",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 4,
-   "planned_min": 26,
+   "planned_min": 71,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
   },
   {
    "date": "2027-02-06",
@@ -3335,13 +3335,13 @@
    "phase": "3. Kracht-uithouding",
    "week_status": "ja",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 78,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-02-12",
@@ -3350,13 +3350,13 @@
    "phase": "3. Kracht-uithouding",
    "week_status": "ja",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 65,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
   },
   {
    "date": "2027-02-13",
@@ -3440,13 +3440,13 @@
    "phase": "3. Kracht-uithouding",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 78,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-02-19",
@@ -3455,13 +3455,13 @@
    "phase": "3. Kracht-uithouding",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 65,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
   },
   {
    "date": "2027-02-20",
@@ -3545,13 +3545,13 @@
    "phase": "3. Kracht-uithouding",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 78,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-02-26",
@@ -3560,13 +3560,13 @@
    "phase": "3. Kracht-uithouding",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 65,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
   },
   {
    "date": "2027-02-27",
@@ -3650,13 +3650,13 @@
    "phase": "3. Kracht-uithouding",
    "week_status": "wedstrijd",
    "session_type": "Rustige duurloop",
-   "session_text": "2 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "2 km Z2, plat en zacht terrein.",
    "planned_km": 2,
-   "planned_min": 58,
+   "planned_min": 13,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-03-05",
@@ -3665,13 +3665,13 @@
    "phase": "3. Kracht-uithouding",
    "week_status": "wedstrijd",
    "session_type": "Hersteldraf",
-   "session_text": "1 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "1 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 1,
-   "planned_min": 7,
+   "planned_min": 52,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
   },
   {
    "date": "2027-03-06",
@@ -3755,13 +3755,13 @@
    "phase": "3. Kracht-uithouding",
    "week_status": "ja",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 78,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht C - onderlichaam posterior + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-03-12",
@@ -3770,13 +3770,13 @@
    "phase": "3. Kracht-uithouding",
    "week_status": "ja",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 65,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht C - onderlichaam posterior + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 4-5x4-6 @80-87% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 (30 contacten)"
   },
   {
    "date": "2027-03-13",
@@ -3860,13 +3860,13 @@
    "phase": "3. Kracht-uithouding",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 73,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-03-19",
@@ -3875,13 +3875,13 @@
    "phase": "3. Kracht-uithouding",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 60,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
   },
   {
    "date": "2027-03-20",
@@ -3965,13 +3965,13 @@
    "phase": "3. Kracht-uithouding",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "6 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "6 km Z2, plat en zacht terrein.",
    "planned_km": 6,
-   "planned_min": 80,
+   "planned_min": 40,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-03-26",
@@ -3980,13 +3980,13 @@
    "phase": "3. Kracht-uithouding",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 4,
-   "planned_min": 26,
+   "planned_min": 66,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
   },
   {
    "date": "2027-03-27",
@@ -4070,13 +4070,13 @@
    "phase": "4. Opbouw",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "6 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "6 km Z2, plat en zacht terrein.",
    "planned_km": 6,
-   "planned_min": 80,
+   "planned_min": 40,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-04-02",
@@ -4085,13 +4085,13 @@
    "phase": "4. Opbouw",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 4,
-   "planned_min": 26,
+   "planned_min": 66,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
   },
   {
    "date": "2027-04-03",
@@ -4175,13 +4175,13 @@
    "phase": "4. Opbouw",
    "week_status": "ja",
    "session_type": "Rustige duurloop",
-   "session_text": "6 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "6 km Z2, plat en zacht terrein.",
    "planned_km": 6,
-   "planned_min": 80,
+   "planned_min": 40,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-04-09",
@@ -4190,13 +4190,13 @@
    "phase": "4. Opbouw",
    "week_status": "ja",
    "session_type": "Hersteldraf",
-   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 4,
-   "planned_min": 26,
+   "planned_min": 66,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
   },
   {
    "date": "2027-04-10",
@@ -4280,13 +4280,13 @@
    "phase": "4. Opbouw",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 73,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-04-16",
@@ -4295,13 +4295,13 @@
    "phase": "4. Opbouw",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 60,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
   },
   {
    "date": "2027-04-17",
@@ -4385,13 +4385,13 @@
    "phase": "4. Opbouw",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "6 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "6 km Z2, plat en zacht terrein.",
    "planned_km": 6,
-   "planned_min": 80,
+   "planned_min": 40,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-04-23",
@@ -4400,13 +4400,13 @@
    "phase": "4. Opbouw",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 4,
-   "planned_min": 26,
+   "planned_min": 66,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
   },
   {
    "date": "2027-04-24",
@@ -4490,13 +4490,13 @@
    "phase": "4. Opbouw",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "6 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "6 km Z2, plat en zacht terrein.",
    "planned_km": 6,
-   "planned_min": 80,
+   "planned_min": 40,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-04-30",
@@ -4505,13 +4505,13 @@
    "phase": "4. Opbouw",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 4,
-   "planned_min": 26,
+   "planned_min": 66,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
   },
   {
    "date": "2027-05-01",
@@ -4595,13 +4595,13 @@
    "phase": "4. Opbouw",
    "week_status": "ja",
    "session_type": "Rustige duurloop",
-   "session_text": "6 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "6 km Z2, plat en zacht terrein.",
    "planned_km": 6,
-   "planned_min": 80,
+   "planned_min": 40,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-05-07",
@@ -4610,13 +4610,13 @@
    "phase": "4. Opbouw",
    "week_status": "ja",
    "session_type": "Hersteldraf",
-   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 4,
-   "planned_min": 26,
+   "planned_min": 66,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
   },
   {
    "date": "2027-05-08",
@@ -4700,13 +4700,13 @@
    "phase": "4. Opbouw",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 73,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-05-14",
@@ -4715,13 +4715,13 @@
    "phase": "4. Opbouw",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 60,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
   },
   {
    "date": "2027-05-15",
@@ -4805,13 +4805,13 @@
    "phase": "4. Opbouw",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 73,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-05-21",
@@ -4820,13 +4820,13 @@
    "phase": "4. Opbouw",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 60,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
   },
   {
    "date": "2027-05-22",
@@ -4910,13 +4910,13 @@
    "phase": "4. Opbouw",
    "week_status": "wedstrijd",
    "session_type": "Rustige duurloop",
-   "session_text": "2 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "2 km Z2, plat en zacht terrein.",
    "planned_km": 2,
-   "planned_min": 53,
+   "planned_min": 13,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-05-28",
@@ -4925,13 +4925,13 @@
    "phase": "4. Opbouw",
    "week_status": "wedstrijd",
    "session_type": "Hersteldraf",
-   "session_text": "1 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "1 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 1,
-   "planned_min": 7,
+   "planned_min": 47,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
   },
   {
    "date": "2027-05-29",
@@ -5015,13 +5015,13 @@
    "phase": "4. Opbouw",
    "week_status": "ja",
    "session_type": "Rustige duurloop",
-   "session_text": "6 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "6 km Z2, plat en zacht terrein.",
    "planned_km": 6,
-   "planned_min": 80,
+   "planned_min": 40,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-06-04",
@@ -5030,13 +5030,13 @@
    "phase": "4. Opbouw",
    "week_status": "ja",
    "session_type": "Hersteldraf",
-   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 4,
-   "planned_min": 26,
+   "planned_min": 66,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
   },
   {
    "date": "2027-06-05",
@@ -5120,13 +5120,13 @@
    "phase": "5. Specifiek",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 73,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-06-11",
@@ -5135,13 +5135,13 @@
    "phase": "5. Specifiek",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 60,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
   },
   {
    "date": "2027-06-12",
@@ -5225,13 +5225,13 @@
    "phase": "5. Specifiek",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 73,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-06-18",
@@ -5240,13 +5240,13 @@
    "phase": "5. Specifiek",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 60,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
   },
   {
    "date": "2027-06-19",
@@ -5330,13 +5330,13 @@
    "phase": "5. Specifiek",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "6 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "6 km Z2, plat en zacht terrein.",
    "planned_km": 6,
-   "planned_min": 80,
+   "planned_min": 40,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-06-25",
@@ -5345,13 +5345,13 @@
    "phase": "5. Specifiek",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 4,
-   "planned_min": 26,
+   "planned_min": 66,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
   },
   {
    "date": "2027-06-26",
@@ -5435,13 +5435,13 @@
    "phase": "5. Specifiek",
    "week_status": "ja",
    "session_type": "Rustige duurloop",
-   "session_text": "6 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "6 km Z2, plat en zacht terrein.",
    "planned_km": 6,
-   "planned_min": 80,
+   "planned_min": 40,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-07-02",
@@ -5450,13 +5450,13 @@
    "phase": "5. Specifiek",
    "week_status": "ja",
    "session_type": "Hersteldraf",
-   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 4,
-   "planned_min": 26,
+   "planned_min": 66,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 3x3-5 @85-90% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: drop jumps 3x6 (45 cm) + stiff-leg bounds 2x10 (50 contacten)"
   },
   {
    "date": "2027-07-03",
@@ -5540,13 +5540,13 @@
    "phase": "5. Specifiek",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 73,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 2-3x4 @85% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 + hop-and-stick 3x6 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-07-09",
@@ -5555,13 +5555,13 @@
    "phase": "5. Specifiek",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 60,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 2-3x4 @85% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 + hop-and-stick 3x6 (50 contacten)"
   },
   {
    "date": "2027-07-10",
@@ -5645,13 +5645,13 @@
    "phase": "5. Specifiek",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 73,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 2-3x4 @85% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 + hop-and-stick 3x6 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-07-16",
@@ -5660,13 +5660,13 @@
    "phase": "5. Specifiek",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 60,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 2-3x4 @85% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 + hop-and-stick 3x6 (50 contacten)"
   },
   {
    "date": "2027-07-17",
@@ -5750,13 +5750,13 @@
    "phase": "5. Specifiek",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 73,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 2-3x4 @85% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 + hop-and-stick 3x6 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-07-23",
@@ -5765,13 +5765,13 @@
    "phase": "5. Specifiek",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 60,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 2-3x4 @85% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 + hop-and-stick 3x6 (50 contacten)"
   },
   {
    "date": "2027-07-24",
@@ -5855,13 +5855,13 @@
    "phase": "5. Specifiek",
    "week_status": "ja",
    "session_type": "Rustige duurloop",
-   "session_text": "6 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "6 km Z2, plat en zacht terrein.",
    "planned_km": 6,
-   "planned_min": 80,
+   "planned_min": 40,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 2-3x4 @85% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 + hop-and-stick 3x6 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-07-30",
@@ -5870,13 +5870,13 @@
    "phase": "5. Specifiek",
    "week_status": "ja",
    "session_type": "Hersteldraf",
-   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 4,
-   "planned_min": 26,
+   "planned_min": 66,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 2-3x4 @85% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 + hop-and-stick 3x6 (50 contacten)"
   },
   {
    "date": "2027-07-31",
@@ -5960,13 +5960,13 @@
    "phase": "5. Specifiek",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "4 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "4 km Z2, plat en zacht terrein.",
    "planned_km": 4,
-   "planned_min": 66,
+   "planned_min": 26,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 2-3x4 @85% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 + hop-and-stick 3x6 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-08-06",
@@ -5975,13 +5975,13 @@
    "phase": "5. Specifiek",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 60,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 2-3x4 @85% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 + hop-and-stick 3x6 (50 contacten)"
   },
   {
    "date": "2027-08-07",
@@ -6065,13 +6065,13 @@
    "phase": "5. Specifiek",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "4 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "4 km Z2, plat en zacht terrein.",
    "planned_km": 4,
-   "planned_min": 66,
+   "planned_min": 26,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 2-3x4 @85% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 + hop-and-stick 3x6 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-08-13",
@@ -6080,13 +6080,13 @@
    "phase": "5. Specifiek",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 60,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 2-3x4 @85% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 + hop-and-stick 3x6 (50 contacten)"
   },
   {
    "date": "2027-08-14",
@@ -6170,13 +6170,13 @@
    "phase": "5. Specifiek",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 73,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 2-3x4 @85% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 + hop-and-stick 3x6 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-08-20",
@@ -6185,13 +6185,13 @@
    "phase": "5. Specifiek",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 60,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 2-3x4 @85% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 + hop-and-stick 3x6 (50 contacten)"
   },
   {
    "date": "2027-08-21",
@@ -6275,13 +6275,13 @@
    "phase": "5. Specifiek",
    "week_status": "ja",
    "session_type": "Rustige duurloop",
-   "session_text": "6 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "6 km Z2, plat en zacht terrein.",
    "planned_km": 6,
-   "planned_min": 80,
+   "planned_min": 40,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 2-3x4 @85% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 + hop-and-stick 3x6 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-08-27",
@@ -6290,13 +6290,13 @@
    "phase": "5. Specifiek",
    "week_status": "ja",
    "session_type": "Hersteldraf",
-   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "4 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 4,
-   "planned_min": 26,
+   "planned_min": 66,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 2-3x4 @85% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 + hop-and-stick 3x6 (50 contacten)"
   },
   {
    "date": "2027-08-28",
@@ -6380,13 +6380,13 @@
    "phase": "6. Piek & overload",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "4 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "4 km Z2, plat en zacht terrein.",
    "planned_km": 4,
-   "planned_min": 66,
+   "planned_min": 26,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
-   "strength_detail": "Trap-bar of conventionele deadlift 2-3x4 @85% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 + hop-and-stick 3x6 (50 contacten)"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-09-03",
@@ -6395,13 +6395,13 @@
    "phase": "6. Piek & overload",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 60,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam + plyo + prehab",
+   "strength_detail": "Trap-bar of conventionele deadlift 2-3x4 @85% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15 | Plyometrie: pogo hops 3x10 + hop-and-stick 3x6 (50 contacten)"
   },
   {
    "date": "2027-09-04",
@@ -6485,13 +6485,13 @@
    "phase": "6. Piek & overload",
    "week_status": "nee",
    "session_type": "Rustige duurloop",
-   "session_text": "5 km Z2, plat en zacht terrein. Kracht 6+ uur later of na de loop.",
+   "session_text": "5 km Z2, plat en zacht terrein.",
    "planned_km": 5,
-   "planned_min": 73,
+   "planned_min": 33,
    "zone": "Z2",
    "pace_range": "6:30-7:10/km",
-   "strength_block": "Kracht B - onderlichaam licht",
-   "strength_detail": "Trap-bar of conventionele deadlift 2x4 @80% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
+   "strength_block": null,
+   "strength_detail": null
   },
   {
    "date": "2027-09-10",
@@ -6500,13 +6500,13 @@
    "phase": "6. Piek & overload",
    "week_status": "nee",
    "session_type": "Hersteldraf",
-   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen.",
+   "session_text": "3 km Z1, los. Vervangbaar door 45 min wandelen. Kracht 6+ uur later of na de loop.",
    "planned_km": 3,
-   "planned_min": 20,
+   "planned_min": 60,
    "zone": "Z1",
    "pace_range": "7:15-8:00/km",
-   "strength_block": null,
-   "strength_detail": null
+   "strength_block": "Kracht B - onderlichaam licht",
+   "strength_detail": "Trap-bar of conventionele deadlift 2x4 @80% | Hoge step-up 3x8 p/b | Step-down excentrisch 3x8 p/b (afdaalvoorbereiding) | Zittende kuitheffing (soleus) 3x15 | Isometrische kuitheffing 5x4 x 3s @~90% | Tibialis raise 3x15 | Heupabductie band 3x15"
   },
   {
    "date": "2027-09-11",
